@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, ArrowRight, Search } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { categories } from '../data/products';
 import FuranoLogo from './FuranoLogo';
@@ -11,18 +11,17 @@ import FuranoLogo from './FuranoLogo';
 import 'firebase/firestore';
 import { db, collection, getDocs } from '../localDB';
 
+import GlobalSearchModal from './GlobalSearchModal';
+
 export default function Header() {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language === 'en' ? 'EN' : 'VN');
   const [blogCategories, setBlogCategories] = useState<any[]>([]);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function fetchCats() {
@@ -59,12 +58,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchOpen]);
-
   const navLinks = [
     { name: t('Trang Chủ'), href: '/' },
     { name: t('Sản Phẩm'), href: '/products' },
@@ -72,15 +65,6 @@ export default function Header() {
     { name: t('Góc Kiến Thức'), href: '/blog' },
     { name: t('Hỏi Đáp'), href: '/faq' },
   ];
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
 
   return (
     <header
@@ -182,39 +166,13 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-4 z-50">
-          
-          {/* Search Button & Input */}
-          <div className="relative">
-             {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm min-w-[200px] lg:min-w-[240px]">
-                   <Search className="w-4 h-4 text-gray-400" />
-                   <input
-                     ref={searchInputRef}
-                     type="text"
-                     value={searchQuery}
-                     onChange={(e) => setSearchQuery(e.target.value)}
-                     placeholder={t("Tìm kiếm...")}
-                     className="w-full bg-transparent border-none outline-none text-sm px-2 text-gray-700"
-                   />
-                   {searchQuery && (
-                      <button type="button" onClick={() => setSearchQuery('')} className="p-1 hover:bg-gray-100 rounded-full text-gray-400">
-                         <X className="w-3 h-3" />
-                      </button>
-                   )}
-                   <button type="button" onClick={() => setSearchOpen(false)} className="p-1 hover:bg-gray-100 rounded-full ml-1 text-gray-500">
-                      <X className="w-4 h-4" />
-                   </button>
-                </form>
-             ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  aria-label="Search"
-                  className="p-2 text-gray-700 hover:text-brand-800 bg-white/50 hover:bg-white rounded-full transition-colors shadow-sm"
-                >
-                   <Search className="w-5 h-5" />
-                </button>
-             )}
-          </div>
+          <button
+            onClick={() => setSearchModalOpen(true)}
+            className="p-2 text-gray-700 hover:text-brand-800 bg-white/50 hover:bg-white rounded-full transition-colors shadow-sm"
+            aria-label="Search"
+          >
+            <Search className="w-5 h-5" />
+          </button>
 
           {/* Language Switcher */}
           <div className="relative">
@@ -322,6 +280,7 @@ export default function Header() {
           </div>
         )}
       </div>
+      <GlobalSearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
     </header>
   );
 }
