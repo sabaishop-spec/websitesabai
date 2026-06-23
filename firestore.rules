@@ -30,6 +30,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /blogCategories/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
     match /faqs/{id} {
       allow read: if true;
       allow write: if isAdmin();

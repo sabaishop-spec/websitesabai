@@ -5,7 +5,8 @@ import { Clock, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { db, collection, getDocs } from '../localDB';
+import { db } from '../firebase';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import SEO from '../components/SEO';
@@ -20,37 +21,23 @@ function BlogPageContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        
-        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
-        posts.sort((a: any, b: any) => {
-           const timeA = a.createdAt || 0;
-           const timeB = b.createdAt || 0;
-           return timeB - timeA;
-        });
-        setBlogPosts(posts);
-      } catch (err) {
-        // console.warn('Firebase fetch failed:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
+    const q = collection(db, 'blogPosts');
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+      posts = posts.filter((p: any) => p.status === 'published' || !p.status);
+      posts.sort((a: any, b: any) => {
+         const timeA = a.createdAt || 0;
+         const timeB = b.createdAt || 0;
+         return timeB - timeA;
+      });
+      setBlogPosts(posts);
+      setLoading(false);
+    }, (error) => {
+      console.error("Firebase fetch failed:", error);
+      setLoading(false);
+    });
 
-    const handleUpdate = () => {
-      fetchPosts();
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('localDB_updated', handleUpdate);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('localDB_updated', handleUpdate);
-      }
-    };
+    return () => unsubscribe();
   }, []);
 
   const loadMore = () => {

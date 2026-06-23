@@ -1,46 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '../localDB';
-import { supabase } from '../lib/supabase';
-import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil, ArrowUp, ArrowDown } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil } from 'lucide-react';
 
 const BlogCategoriesManager = () => {
     const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingCat, setEditingCat] = useState<any>(null);
 
-    useEffect(() => { fetchCats(); }, []);
-    
-    async function fetchCats() {
-        setLoading(true);
-        try {
-            const snap = await getDocs(collection(db, 'blogCategories'));
-            let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if (data.length === 0) {
-               data = [
-                  { id: '1', name: 'Kiến thức bọc răng sứ' },
-                  { id: '2', name: 'Kiến thức tổng quát' },
-                  { id: '3', name: 'Kiến thức niềng răng' },
-                  { id: '4', name: 'Kiến thức trồng răng' }
-               ];
-            }
-            setCategories(data);
-        } catch(e) {
-             setCategories([
-                  { id: '1', name: 'Kiến thức bọc răng sứ' },
-                  { id: '2', name: 'Kiến thức tổng quát' },
-                  { id: '3', name: 'Kiến thức niềng răng' },
-                  { id: '4', name: 'Kiến thức trồng răng' }
-              ]);
+  useEffect(() => {
+    setLoading(true);
+    const unsubscribeCats = onSnapshot(collection(db, 'blogCategories'), (snap) => {
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (data.length === 0) {
+           data = [
+              { id: '1', name: 'Kiến thức bọc răng sứ' },
+              { id: '2', name: 'Kiến thức tổng quát' },
+              { id: '3', name: 'Kiến thức niềng răng' },
+              { id: '4', name: 'Kiến thức trồng răng' }
+           ];
         }
+        setCategories(data);
         setLoading(false);
-    }
+    }, (error) => {
+        setCategories([
+              { id: '1', name: 'Kiến thức bọc răng sứ' },
+              { id: '2', name: 'Kiến thức tổng quát' },
+              { id: '3', name: 'Kiến thức niềng răng' },
+              { id: '4', name: 'Kiến thức trồng răng' }
+        ]);
+        setLoading(false);
+    });
+    return () => unsubscribeCats();
+  }, []);
     
     const handleSave = async (data: any) => {
         try {
             const id = data.id || Date.now().toString();
             await setDoc(doc(db, 'blogCategories', id), { ...data, id });
             setEditingCat(null);
-            fetchCats();
         } catch(e) {}
     }
     
@@ -48,7 +46,6 @@ const BlogCategoriesManager = () => {
         if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return;
         try {
             await deleteDoc(doc(db, 'blogCategories', id));
-            fetchCats();
         } catch(e) {}
     }
 
@@ -151,48 +148,66 @@ export default function AdminBlogManager() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash' | 'categories'>('published');
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [isMigrating, setIsMigrating] = useState(false);
+
+  // Migration logic
+  const migrateLocalData = async () => {
+    try {
+      if (typeof window === 'undefined') return;
+      
+      const localPostsStr = localStorage.getItem('localDB_data_blogPosts');
+      const localCatsStr = localStorage.getItem('localDB_data_blogCategories');
+      
+      if (!localPostsStr && !localCatsStr) {
+         window.alert("Không tìm thấy dữ liệu cũ trong Local Storage.");
+         return;
+      }
+
+      const confirmMigrate = window.confirm("Đã tìm thấy dữ liệu cũ trong Local Storage. Bạn có muốn đồng bộ lên Database không?");
+      if (!confirmMigrate) return;
+
+      setIsMigrating(true);
+      
+      if (localPostsStr) {
+          const localPosts = JSON.parse(localPostsStr);
+          for (const post of localPosts) {
+              if (post.id && !post._deleted) {
+                  const dbSnap = await getDoc(doc(db, 'blogPosts', post.id));
+                  if (!dbSnap.exists()) {
+                      await setDoc(doc(db, 'blogPosts', post.id), post);
+                  }
+              }
+          }
+      }
+
+      if (localCatsStr) {
+          const localCats = JSON.parse(localCatsStr);
+          for (const cat of localCats) {
+              if (cat.id && !cat._deleted) {
+                  const dbSnap = await getDoc(doc(db, 'blogCategories', cat.id));
+                  if (!dbSnap.exists()) {
+                      await setDoc(doc(db, 'blogCategories', cat.id), cat);
+                  }
+              }
+          }
+      }
+
+      localStorage.removeItem('localDB_data_blogPosts');
+      localStorage.removeItem('localDB_data_blogCategories');
+      window.alert("Đồng bộ dữ liệu thành công!");
+
+    } catch (error) {
+      console.error("Migration error:", error);
+      window.alert("Lỗi khi đồng bộ: " + (error as any).message);
+    } finally {
+      setIsMigrating(false);
+    }
+  };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  async function syncLocalToSupabase() {
-    try {
-      const dbStr = localStorage.getItem('localDB_data_blogPosts');
-      if (!dbStr) return;
-      const localPosts = JSON.parse(dbStr);
-      if (!Array.isArray(localPosts) || localPosts.length === 0) return;
-      
-      const { data: existingData, error } = await supabase.from('blogPosts').select('id');
-      if (error) return;
-      const existingIds = existingData?.map(d => d.id) || [];
-      
-      const toInsert = localPosts.filter(p => !existingIds.includes(p.id) && !p._deleted);
-      if (toInsert.length > 0) {
-        await supabase.from('blogPosts').insert(toInsert.map(p => ({
-          ...p,
-          created_at: p.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          is_active: p.status === 'published' ? true : p.is_active !== false,
-          order_index: p.order_index || 0
-        })));
-        alert(`Đã hoàn tất đồng bộ ${toInsert.length} bài viết từ Local Storage lên Supabase!`);
-      }
-      
-      // Clean up local storage if synced
-      localStorage.removeItem('localDB_data_blogPosts');
-    } catch(e) {
-      console.error("Lỗi đồng bộ local storage:", e);
-    }
-  }
-
-  async function fetchPosts() {
     setLoading(true);
-    await syncLocalToSupabase();
-    try {
-      const { data: errorData, error } = await supabase.from('blogPosts').select('*');
-      if (error) throw error;
-      let data = errorData || [];
+    const unsubscribe = onSnapshot(collection(db, 'blogPosts'), async (snapshot) => {
+      let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
       // Clean up posts in trash older than 7 days
       const now = new Date();
@@ -201,7 +216,7 @@ export default function AdminBlogManager() {
          if (p.status === 'trash' && p.deletedAt) {
             const deletedTime = new Date(p.deletedAt).getTime();
             if (now.getTime() - deletedTime > SEVEN_DAYS) {
-               await supabase.from('blogPosts').delete().eq('id', p.id);
+               await deleteDoc(doc(db, 'blogPosts', p.id));
                return null;
             }
          }
@@ -209,24 +224,20 @@ export default function AdminBlogManager() {
       }));
       data = data.filter(Boolean);
       data.sort((a: any, b: any) => {
-         const orderA = typeof a.order_index === 'number' ? a.order_index : 999;
-         const orderB = typeof b.order_index === 'number' ? b.order_index : 999;
-         if (orderA === orderB) {
-            const timeA = a.createdAt || a.created_at || 0;
-            const timeB = b.createdAt || b.created_at || 0;
-            return (new Date(timeB).getTime()) - (new Date(timeA).getTime());
-         }
-         return orderA - orderB;
+         const timeA = a.createdAt || 0;
+         const timeB = b.createdAt || 0;
+         return timeB - timeA;
       });
 
       setPosts(data);
-    } catch(e) {
-      console.error(e);
-      alert("Lỗi tải dữ liệu. Vui lòng kiểm tra kết nối Supabase.");
-    } finally {
       setLoading(false);
-    }
-  }
+    }, (error) => {
+      console.error(error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleEdit = (post: any) => {
     setEditingPost({
@@ -284,53 +295,34 @@ export default function AdminBlogManager() {
     });
     
     const isPublishing = forceStatus === 'published' || (!forceStatus && editingPost.status === 'published');
-    const computedStatus = forceStatus || editingPost.status || 'draft';
 
     const updateData = { 
         ...editingPost, 
         id: postId,
-        status: computedStatus,
-        is_active: computedStatus === 'published',
+        status: forceStatus || editingPost.status || 'draft',
         date: editingPost.date || currentDate,
-        updated_at: new Date().toISOString()
+        ...(isCreating ? { createdAt: Date.now() } : {})
     };
 
     try {
       if (isCreating) {
-         const { data: existing } = await supabase.from('blogPosts').select('id').eq('id', postId).single();
-         if (existing) {
+         const existing = await getDoc(doc(db, 'blogPosts', postId));
+         if (existing.exists()) {
             if (isBackgroundMode) return;
             try { window.alert("Đường dẫn này đã tồn tại, vui lòng chọn đường dẫn khác."); } catch(e) {}
             return;
          }
-         updateData.created_at = new Date().toISOString();
-         updateData.createdAt = Date.now();
-         
-         const { error } = await supabase.from('blogPosts').insert([updateData]);
-         if (error) throw error;
-      } else {
-         const { error } = await supabase.from('blogPosts').update(updateData).eq('id', editingPost.id);
-         if (error) throw error;
-         
-         if (postId !== editingPost.id) {
-             // If slug (primary key id) changed, we have to copy & delete the old one. This is tricky since Supabase UUID logic vs text.
-             // Given it's a primary key, it's safer right now not to allow changing the slug, but if so:
-             // We inserted a new row and delete the old one. Wait, update doesn't allow changing primary key easily?
-             // Since we didn't insert a new one if not isCreating, update might fail if `id` is primary key.
-             // But let's assume `id` constraint allows. If it doesn't, we should just insert & delete.
-             // Actually to be safe, if postId changed during edit:
-             // we should insert new and delete old.
-             const { error: err2 } = await supabase.from('blogPosts').insert([updateData]);
-             if (!err2) {
-                 await supabase.from('blogPosts').update({ status: 'trash' }).eq('id', editingPost.id);
-             }
-         }
+      }
+      
+      await setDoc(doc(db, 'blogPosts', postId), updateData, { merge: true });
+      if (!isCreating && postId !== editingPost.id) {
+          // If slug changed, instead of hard deleting (which makes defaults respawn), we mark as trash
+          await setDoc(doc(db, 'blogPosts', editingPost.id), { ...editingPost, status: 'trash' }, { merge: true });
       }
 
       if (!isBackgroundMode) {
          setEditingPost(null);
          setIsCreating(false);
-         fetchPosts();
          try { window.alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`); } catch(e) {}
       } else {
          setIsCreating(false);
@@ -340,10 +332,7 @@ export default function AdminBlogManager() {
       console.error("Error saving post", e);
       if (!isBackgroundMode) {
          const errorMsg = [
-           `Lỗi Supabase: ${e.message || 'Không xác định'}`,
-           e.details && `Chi tiết: ${e.details}`,
-           e.hint && `Gợi ý: ${e.hint}`,
-           e.code && `Mã lỗi: ${e.code}`
+           `Lỗi Database: ${e.message || 'Không xác định'}`
          ].filter(Boolean).join('\n');
          
          try { window.alert("Đã xảy ra lỗi khi lưu:\n\n" + errorMsg); } catch(err) {}
@@ -359,8 +348,7 @@ export default function AdminBlogManager() {
     
     if (confirmed) {
       try {
-        await supabase.from('blogPosts').delete().eq('id', id);
-        fetchPosts();
+        await deleteDoc(doc(db, 'blogPosts', id));
       } catch (e: any) {
         console.error(e);
         alert("Có lỗi xảy ra: " + e.message);
@@ -376,8 +364,7 @@ export default function AdminBlogManager() {
      
      if (confirmed) {
        try {
-          await supabase.from('blogPosts').update({ status: 'trash', is_active: false, deletedAt: new Date().toISOString() }).eq('id', post.id);
-          fetchPosts();
+          await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
        } catch (e: any) {
           console.error(e);
           alert("Có lỗi xảy ra: " + e.message);
@@ -387,8 +374,9 @@ export default function AdminBlogManager() {
 
   const handleRestore = async (post: any) => {
      try {
-        await supabase.from('blogPosts').update({ status: 'draft', is_active: false, deletedAt: null }).eq('id', post.id);
-        fetchPosts();
+        const updateData = { ...post, status: 'draft' };
+        delete updateData.deletedAt;
+        await setDoc(doc(db, 'blogPosts', post.id), updateData, { merge: true });
      } catch (e) {
         console.error(e);
      }
@@ -414,7 +402,6 @@ export default function AdminBlogManager() {
         }
       }
       setSelectedPostIds([]);
-      fetchPosts();
     } catch (e: any) {
       console.error(e);
       alert("Có lỗi xảy ra: " + e.message);
@@ -453,9 +440,19 @@ export default function AdminBlogManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <h2 className="text-xl font-bold font-sans text-gray-800">Quản lý Góc kiến thức</h2>
-        <button onClick={handleCreateNew} className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-blue-700 transition">
-          <Plus size={18} /> Viết bài mới
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+             onClick={migrateLocalData} 
+             disabled={isMigrating}
+             className="bg-green-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-green-700 transition disabled:opacity-50"
+             title="Chuyển dữ liệu cũ từ máy tính này lên Database"
+          >
+            {isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ Dữ liệu cũ'}
+          </button>
+          <button onClick={handleCreateNew} className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-blue-700 transition">
+            <Plus size={18} /> Viết bài mới
+          </button>
+        </div>
       </div>
 
       <div className="bg-white shadow-sm border border-gray-200 overflow-hidden">
@@ -517,13 +514,11 @@ export default function AdminBlogManager() {
                 <th className="p-4 font-semibold text-gray-700">Tiêu đề / Bài viết</th>
                 <th className="p-4 font-semibold text-gray-700">Trạng thái</th>
                 <th className="p-4 font-semibold text-gray-700">Chuyên mục</th>
-                <th className="p-4 font-semibold text-gray-700 w-24 text-center">Vị trí</th>
-                <th className="p-4 font-semibold text-gray-700 w-24 text-center">Bật/Tắt</th>
                 <th className="p-4 font-semibold text-gray-700 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {activePosts.map((post, idx) => (
+              {activePosts.map(post => (
                 <tr key={post.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="p-4 text-center">
                     <input 
@@ -545,40 +540,7 @@ export default function AdminBlogManager() {
                         {post.status === 'published' ? 'Đã xuất bản' : post.status === 'trash' ? 'Thùng rác' : 'Bản nháp'}
                      </span>
                   </td>
-                  <td className="p-4 text-sm text-gray-700">{post.category || post.type || '—'}</td>
-                  
-                  {/* DRAG AND DROP / ORDER */}
-                  <td className="p-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button 
-                          onClick={() => handleMoveRank(idx, 'up')} 
-                          disabled={idx === 0 || currentTab !== 'published'}
-                          className="p-1 text-gray-500 hover:text-black hover:bg-gray-200 rounded disabled:opacity-30"
-                          title="Lên trên"
-                        >
-                          <ArrowUp size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleMoveRank(idx, 'down')} 
-                          disabled={idx === activePosts.length - 1 || currentTab !== 'published'}
-                          className="p-1 text-gray-500 hover:text-black hover:bg-gray-200 rounded disabled:opacity-30"
-                          title="Xuống dưới"
-                        >
-                          <ArrowDown size={16} />
-                        </button>
-                      </div>
-                  </td>
-
-                  {/* TOGGLE IS_ACTIVE */}
-                  <td className="p-4 text-center">
-                     <button
-                        onClick={() => handleToggleActive(post)}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${post.is_active !== false ? 'bg-green-500' : 'bg-gray-300'}`}
-                     >
-                        <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${post.is_active !== false ? 'translate-x-4' : 'translate-x-1'}`} />
-                     </button>
-                  </td>
-
+                  <td className="p-4 text-sm text-gray-700">{post.category || '—'}</td>
                   <td className="p-4 text-right">
                     {post.status !== 'trash' ? (
                        <>

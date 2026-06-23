@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '../data/products';
-import { db, collection, getDocs } from '../localDB';
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;

@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import CTASection from '../components/CTASection';
-import { knowledgeAPI } from '../lib/knowledgeAPI';
+import { db } from '../firebase';
+import { doc, getDoc, onSnapshot, collection, getDocs } from 'firebase/firestore';
 import SEO from '../components/SEO';
 
 export default function BlogDetailPage({ params }: { params?: { id?: string } }) {
@@ -16,23 +17,26 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      if (!id) return;
-      try {
-        const item = await knowledgeAPI.getItem(id);
-        if (item && item.is_active) {
-          setPost(item);
+    if (!id) return;
+    const unsubscribe = onSnapshot(doc(db, 'blogPosts', id), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (!data._deleted && data.status === 'published') {
+          setPost({ id: docSnap.id, ...data });
         } else {
-          setPost(null);
+           setPost(null);
         }
-      } catch (err) {
-        console.error("Failed to load post", err);
-      } finally {
-        setLoading(false);
+      } else {
+         setPost(null);
       }
-    };
-    fetchPost();
+      setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setLoading(false);
+    });
     window.scrollTo(0, 0);
+
+    return () => unsubscribe();
   }, [id]);
 
   const getLocalized = (field: string) => {

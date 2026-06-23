@@ -4,22 +4,30 @@ import { ArrowRight, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { knowledgeAPI, KnowledgeItem } from '../lib/knowledgeAPI';
+import { db } from '../firebase';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 
 export default function Blog() {
   const { t, i18n } = useTranslation();
-  const [blogPosts, setBlogPosts] = useState<KnowledgeItem[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const posts = await knowledgeAPI.fetchActiveItems();
-        setBlogPosts(posts);
-      } catch (err) {
-        console.error("Failed to load knowledge items", err);
-      }
-    };
-    fetchPosts();
+    const q = collection(db, 'blogPosts');
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+      posts = posts.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt);
+      posts.sort((a: any, b: any) => {
+         const timeA = a.createdAt || 0;
+         const timeB = b.createdAt || 0;
+         return timeB - timeA;
+      });
+      setBlogPosts(posts);
+    }, (error) => {
+      console.error("Error fetching blog posts:", error);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const latestPosts = blogPosts.slice(0, 4);
