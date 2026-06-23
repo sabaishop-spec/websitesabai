@@ -295,38 +295,36 @@ export default function AdminBlogManager() {
   };
 
   const handleDelete = async (id: string) => {
-    const pwd = prompt("Nhập mật khẩu để tiếp tục xóa:");
-    if (pwd !== "1234") {
-      alert("Mật khẩu không đúng. Hủy xóa.");
-      return;
-    }
-
     let confirmed = false;
     try {
-       confirmed = window.confirm('Bạn có chắc chắn muốn xóa bài viết này không? Tổn thất này không thể phục hồi!');
+       confirmed = window.confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể phục hồi!');
     } catch(e) { confirmed = true; } // Fallback if blocked
     
     if (confirmed) {
       try {
         await deleteDoc(doc(db, 'blogPosts', id));
         fetchPosts();
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        alert("Có lỗi xảy ra: " + e.message);
       }
     }
   };
 
   const handleMoveToTrash = async (post: any) => {
-     const pwd = prompt("Nhập mật khẩu để tiếp tục xóa:");
-     if (pwd !== "1234") {
-       alert("Mật khẩu không đúng. Hủy xóa.");
-       return;
-     }
+     let confirmed = false;
      try {
-        await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
-        fetchPosts();
-     } catch (e) {
-        console.error(e);
+        confirmed = window.confirm('Bạn có chắc chắn muốn chuyển bài viết này vào thùng rác?');
+     } catch(e) { confirmed = true; }
+     
+     if (confirmed) {
+       try {
+          await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
+          fetchPosts();
+       } catch (e: any) {
+          console.error(e);
+          alert("Có lỗi xảy ra: " + e.message);
+       }
      }
   };
 
@@ -343,14 +341,9 @@ export default function AdminBlogManager() {
 
   const handleBulkDelete = async () => {
     if (selectedPostIds.length === 0) return;
-    const pwd = prompt("Nhập mật khẩu để tiếp tục xóa các mục đã chọn:");
-    if (pwd !== "1234") {
-      alert("Mật khẩu không đúng. Hủy xóa.");
-      return;
-    }
     try {
       if (currentTab === 'trash') {
-        const confirmPermanent = window.confirm("Xóa vĩnh viễn các bài viết này?");
+        const confirmPermanent = window.confirm("Bác có chắc chắn muốn xóa vĩnh viễn các bài viết này?");
         if (!confirmPermanent) return;
         for (const id of selectedPostIds) {
           await deleteDoc(doc(db, 'blogPosts', id));
@@ -367,8 +360,9 @@ export default function AdminBlogManager() {
       }
       setSelectedPostIds([]);
       fetchPosts();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert("Có lỗi xảy ra: " + e.message);
     }
   };
 

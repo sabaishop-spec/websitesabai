@@ -134,20 +134,18 @@ export const getDoc = async (docRef: any) => {
     const localDocs = getMemData(docRef.path);
     data = localDocs.find((d: any) => d.id === docRef.id) || null;
     
-    if (!data || data._deleted) {
+    // Only fall back to defaults if in local mode and memory is completely empty
+    if (!data) {
       const defaults = DEFAULTS_MAP[docRef.path] || [];
-      const defaultItem = defaults.find((d: any) => d.id === docRef.id);
-      if (defaultItem) {
-        data = defaultItem;
-      } else {
-        data = null;
+      if (localDocs.length === 0) {
+        data = defaults.find((d: any) => d.id === docRef.id) || null;
       }
     }
   }
 
   return {
     id: docRef.id,
-    exists: () => !!data,
+    exists: () => !!data && !data._deleted,
     data: () => data
   };
 };
