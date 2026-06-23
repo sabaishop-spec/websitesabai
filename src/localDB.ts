@@ -8,6 +8,7 @@ export const auth = {
 };
 
 import { supabase } from './lib/supabase';
+import { removeVietnameseAccents } from './lib/stringUtils';
 import { blogPosts as defaultBlogPosts } from './data/blogPosts';
 import { faqs as defaultFaqs } from './data/faqs';
 import { categories as defaultCategories } from './data/products';
@@ -288,4 +289,64 @@ export const writeBatch = (db: any) => {
       }
     }
   };
+};
+
+export const searchPosts = async (keyword: string, page = 1, limit = 12) => {
+  if (!keyword || !keyword.trim()) return { docs: [], total: 0 };
+  
+  const normKeyword = removeVietnameseAccents(keyword).toLowerCase();
+  
+  let allPosts: any[] = [];
+  
+  if (HAS_SUPABASE) {
+    try {
+      const { data, error } = await supabase
+        .from('blogPosts')
+        .select('*')
+        .or('status.eq.published,status.is.null');
+      
+      allPosts = data || [];
+    } catch(e) {}
+  } else {
+    const memData = getMemData('blogPosts');
+    allPosts = memData.filter((p: any) => !p._deleted && (p.status === 'published' || !p.status));
+    if (memData.length === 0) {
+      allPosts = (DEFAULTS_MAP['blogPosts'] || []).filter((p: any) => !p._deleted && (p.status === 'published' || !p.status));
+    }
+  }
+
+  const scoredPosts = allPosts.map(post => {
+    const title = post.title?.vi || post.title?.en || post.title || '';
+    const desc = post.excerpt?.vi || post.excerpt?.en || post.excerpt || post.seoDescription || '';
+    const content = post.content?.vi || post.content?.en || post.content || '';
+    const category = post.category?.vi || post.category?.en || post.category || '';
+    
+    // Normalize properties
+    const normTitle = removeVietnameseAccents(title).toLowerCase();
+    const normDesc = removeVietnameseAccents(desc).toLowerCase();
+    const normContent = removeVietnameseAccents(content).toLowerCase();
+    const normCat = removeVietnameseAccents(category).toLowerCase();
+    
+    let score = 0;
+    
+    if (normTitle === normKeyword) score += 100;
+    else if (normTitle.includes(normKeyword)) score += 50;
+    
+    if (normDesc.includes(normKeyword)) score += 20;
+    if (normContent.includes(normKeyword)) score += 10;
+    if (normCat.includes(normKeyword)) score += 5;
+
+    return { ...post, score, time: post.createdAt ? new Date(post.createdAt).getTime() : 0 };
+  }).filter(p => p.score > 0);
+
+  scoredPosts.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.time - a.time;
+  });
+
+  const total = scoredPosts.length;
+  const start = (page - 1) * limit;
+  const paginated = scoredPosts.slice(start, start + limit);
+
+  return { docs: paginated, total };
 };

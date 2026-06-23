@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '../localDB';
-import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil } from 'lucide-react';
+import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil, Search } from 'lucide-react';
 
 const BlogCategoriesManager = () => {
     const [categories, setCategories] = useState<any[]>([]);
@@ -141,6 +141,7 @@ function QuillEditor({ value, onChange, placeholder }: any) {
   );
 }
 
+import { removeVietnameseAccents } from '../lib/stringUtils';
 import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 
 export default function AdminBlogManager() {
@@ -150,6 +151,7 @@ export default function AdminBlogManager() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash' | 'categories'>('published');
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [searchAdminQuery, setSearchAdminQuery] = useState('');
 
   useEffect(() => {
     fetchPosts();
@@ -392,7 +394,29 @@ export default function AdminBlogManager() {
     );
   }
 
-  const activePosts = posts.filter(p => currentTab === 'published' ? (p.status === 'published' || !p.status) : currentTab === 'draft' ? p.status === 'draft' : p.status === 'trash');
+  const getLocalized = (obj: any, key: string) => {
+    if (!obj || !obj[key]) return '';
+    if (typeof obj[key] === 'string') return obj[key];
+    return obj[key]['vi'] || obj[key]['en'] || '';
+  };
+
+  const activePosts = posts.filter(p => {
+    // Filter by tab
+    const inTab = currentTab === 'published' ? (p.status === 'published' || !p.status) : currentTab === 'draft' ? p.status === 'draft' : p.status === 'trash';
+    if (!inTab) return false;
+    
+    // Filter by search query
+    if (searchAdminQuery.trim()) {
+       const keyword = removeVietnameseAccents(searchAdminQuery).toLowerCase();
+       const title = removeVietnameseAccents(getLocalized(p, 'title')).toLowerCase();
+       const desc = removeVietnameseAccents(getLocalized(p, 'excerpt') || p.seoDescription || '').toLowerCase();
+       const content = removeVietnameseAccents(getLocalized(p, 'content')).toLowerCase();
+       const cat = removeVietnameseAccents(getLocalized(p, 'category')).toLowerCase();
+       
+       return title.includes(keyword) || desc.includes(keyword) || content.includes(keyword) || cat.includes(keyword) || p.id?.includes(keyword);
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -432,16 +456,31 @@ export default function AdminBlogManager() {
                Danh mục
              </button>
           </div>
-          {selectedPostIds.length > 0 && (
-            <div className="flex items-center">
+          <div className="flex items-center gap-3 py-2">
+            <div className="relative">
+               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+               <input
+                 type="text"
+                 placeholder="Tìm kiếm bài viết..."
+                 value={searchAdminQuery}
+                 onChange={(e) => setSearchAdminQuery(e.target.value)}
+                 className="pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               />
+               {searchAdminQuery && (
+                  <button onClick={() => setSearchAdminQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                     <X className="w-3.5 h-3.5" />
+                  </button>
+               )}
+            </div>
+            {selectedPostIds.length > 0 && (
               <button 
                 onClick={handleBulkDelete} 
                 className="bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition flex items-center gap-1"
               >
                 <Trash2 size={14} /> {currentTab === 'trash' ? 'Xóa vĩnh viễn' : 'Xóa'} ({selectedPostIds.length})
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {currentTab === 'categories' ? (
