@@ -67,6 +67,7 @@ export default function AdminBlogManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash'>('published');
+  const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchPosts();
@@ -212,6 +213,12 @@ export default function AdminBlogManager() {
   };
 
   const handleDelete = async (id: string) => {
+    const pwd = prompt("Nhập mật khẩu để tiếp tục xóa (1234):");
+    if (pwd !== "1234") {
+      alert("Mật khẩu không đúng. Hủy xóa.");
+      return;
+    }
+
     let confirmed = false;
     try {
        confirmed = window.confirm('Bạn có chắc chắn muốn xóa bài viết này không? Tổn thất này không thể phục hồi!');
@@ -228,6 +235,11 @@ export default function AdminBlogManager() {
   };
 
   const handleMoveToTrash = async (post: any) => {
+     const pwd = prompt("Nhập mật khẩu để tiếp tục xóa (1234):");
+     if (pwd !== "1234") {
+       alert("Mật khẩu không đúng. Hủy xóa.");
+       return;
+     }
      try {
         await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
         fetchPosts();
@@ -245,6 +257,49 @@ export default function AdminBlogManager() {
      } catch (e) {
         console.error(e);
      }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedPostIds.length === 0) return;
+    const pwd = prompt("Nhập mật khẩu để tiếp tục xóa các mục đã chọn (1234):");
+    if (pwd !== "1234") {
+      alert("Mật khẩu không đúng. Hủy xóa.");
+      return;
+    }
+    try {
+      if (currentTab === 'trash') {
+        const confirmPermanent = window.confirm("Xóa vĩnh viễn các bài viết này?");
+        if (!confirmPermanent) return;
+        for (const id of selectedPostIds) {
+          await deleteDoc(doc(db, 'blogPosts', id));
+        }
+      } else {
+        const confirmTrash = window.confirm("Đưa các bài viết đã chọn vào thùng rác?");
+        if (!confirmTrash) return;
+        for (const id of selectedPostIds) {
+          const post = posts.find((p) => p.id === id);
+          if (post) {
+            await setDoc(doc(db, 'blogPosts', id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
+          }
+        }
+      }
+      setSelectedPostIds([]);
+      fetchPosts();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const toggleSelectPost = (id: string) => {
+    setSelectedPostIds(prev => prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedPostIds.length === activePosts.length) {
+      setSelectedPostIds([]);
+    } else {
+      setSelectedPostIds(activePosts.map(p => p.id));
+    }
   };
 
   if (loading) return <div className="p-8 text-center text-gray-500">Đang tải danh sách bài viết...</div>;
@@ -274,31 +329,51 @@ export default function AdminBlogManager() {
 
       <div className="bg-white shadow-sm border border-gray-200 overflow-hidden">
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 bg-gray-50 px-4">
-           <button 
-             onClick={() => setCurrentTab('published')} 
-             className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'published' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
-           >
-             Đã xuất bản ({posts.filter(p => p.status === 'published').length})
-           </button>
-           <button 
-             onClick={() => setCurrentTab('draft')} 
-             className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'draft' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
-           >
-             Bản nháp ({posts.filter(p => p.status === 'draft').length})
-           </button>
-           <button 
-             onClick={() => setCurrentTab('trash')} 
-             className={`p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
-           >
-             <Trash2 size={16} /> Thùng rác ({posts.filter(p => p.status === 'trash').length})
-           </button>
+        <div className="flex border-b border-gray-200 bg-gray-50 px-4 justify-between items-center">
+          <div className="flex">
+             <button 
+               onClick={() => { setCurrentTab('published'); setSelectedPostIds([]); }} 
+               className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'published' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+             >
+               Đã xuất bản ({posts.filter(p => p.status === 'published').length})
+             </button>
+             <button 
+               onClick={() => { setCurrentTab('draft'); setSelectedPostIds([]); }} 
+               className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'draft' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+             >
+               Bản nháp ({posts.filter(p => p.status === 'draft').length})
+             </button>
+             <button 
+               onClick={() => { setCurrentTab('trash'); setSelectedPostIds([]); }} 
+               className={`p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+             >
+               <Trash2 size={16} /> Thùng rác ({posts.filter(p => p.status === 'trash').length})
+             </button>
+          </div>
+          {selectedPostIds.length > 0 && (
+            <div className="flex items-center">
+              <button 
+                onClick={handleBulkDelete} 
+                className="bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition flex items-center gap-1"
+              >
+                <Trash2 size={14} /> {currentTab === 'trash' ? 'Xóa vĩnh viễn' : 'Xóa'} ({selectedPostIds.length})
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white border-b border-gray-200 text-sm">
+                <th className="p-4 w-12 text-center">
+                  <input 
+                    type="checkbox" 
+                    className="w-4 h-4 cursor-pointer" 
+                    checked={activePosts.length > 0 && selectedPostIds.length === activePosts.length} 
+                    onChange={toggleSelectAll} 
+                  />
+                </th>
                 <th className="p-4 font-semibold text-gray-700">Tiêu đề / Bài viết</th>
                 <th className="p-4 font-semibold text-gray-700">Trạng thái</th>
                 <th className="p-4 font-semibold text-gray-700">Chuyên mục</th>
@@ -308,6 +383,14 @@ export default function AdminBlogManager() {
             <tbody>
               {activePosts.map(post => (
                 <tr key={post.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="p-4 text-center">
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 cursor-pointer" 
+                      checked={selectedPostIds.includes(post.id)} 
+                      onChange={() => toggleSelectPost(post.id)} 
+                    />
+                  </td>
                   <td className="p-4">
                     <div className="font-bold text-blue-600 hover:underline cursor-pointer" onClick={() => post.status !== 'trash' && handleEdit(post)}>{post.title}</div>
                     <div className="text-sm text-gray-500 mt-1">{post.slug}</div>
@@ -340,7 +423,7 @@ export default function AdminBlogManager() {
               ))}
               {activePosts.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">Không có bài viết nào trong mục này.</td>
+                  <td colSpan={5} className="p-8 text-center text-gray-500">Không có bài viết nào trong mục này.</td>
                 </tr>
               )}
             </tbody>

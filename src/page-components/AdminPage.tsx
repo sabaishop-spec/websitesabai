@@ -617,6 +617,11 @@ const CategoriesProductsManager = () => {
   };
 
   const handleDeleteCategory = async (id: string) => {
+    const pwd = prompt("Nhập mật khẩu để tiếp tục xóa (1234):");
+    if (pwd !== "1234") {
+      alert("Mật khẩu không đúng. Hủy xóa.");
+      return;
+    }
     if(!confirm("Xóa danh mục này sẽ xóa toàn bộ sản phẩm bên trong. Tiếp tục?")) return;
     await deleteDoc(doc(db, 'products', id));
     if(selectedCategoryId === id) {
