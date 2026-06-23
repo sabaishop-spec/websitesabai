@@ -15,9 +15,26 @@ export default function Blog() {
     const fetchPosts = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
-        if (posts.length > 0) setBlogPosts(posts);
+        let firebasePosts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        
+        let mergedPosts = [...defaultBlogPosts];
+        firebasePosts.forEach(fp => {
+            const index = mergedPosts.findIndex(mp => mp.id === fp.id);
+            if (index >= 0) {
+                mergedPosts[index] = { ...mergedPosts[index], ...fp };
+            } else {
+                mergedPosts.push(fp);
+            }
+        });
+
+        const posts = mergedPosts.filter((p: any) => p.status === 'published' || !p.status);
+        posts.sort((a: any, b: any) => {
+           const timeA = a.createdAt || 0;
+           const timeB = b.createdAt || 0;
+           return timeB - timeA;
+        });
+
+        setBlogPosts(posts);
       } catch (err) {}
     };
     fetchPosts();
@@ -72,7 +89,7 @@ export default function Blog() {
               >
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-6 bg-gray-100">
                   <img 
-                    src={post.image || undefined} 
+                    src={post.image} 
                     alt={getLocalized(post, 'title')} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

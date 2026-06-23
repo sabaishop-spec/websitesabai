@@ -84,14 +84,8 @@ export default function Footer() {
 
         </div>
 
-        <div className="pt-8 border-t border-brand-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+        <div className="pt-8 border-t border-brand-200 flex flex-col md:flex-row justify-center items-center gap-4 text-xs text-gray-500">
           <p>&copy; {new Date().getFullYear()} {t("CÔNG TY TNHH FURANO VN. All rights reserved.")}</p>
-          <div className="flex gap-2 items-center">
-            <div className="px-2 py-1 bg-white rounded text-gray-600 font-bold text-[10px] shadow-sm">VISA</div>
-            <div className="px-2 py-1 bg-white rounded text-gray-600 font-bold text-[10px] shadow-sm">Mastercard</div>
-            <div className="px-2 py-1 bg-white rounded text-gray-600 font-bold text-[10px] shadow-sm">MoMo</div>
-            <div className="px-2 py-1 bg-white rounded text-gray-600 font-bold text-[10px] shadow-sm">VNPay</div>
-          </div>
         </div>
       </div>
     </footer>

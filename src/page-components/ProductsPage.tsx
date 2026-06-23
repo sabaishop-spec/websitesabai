@@ -31,8 +31,8 @@ export default function ProductsPage() {
         description={t("Khám phá các dòng sản phẩm chăm sóc răng miệng chuyên biệt từ Furano dành cho người chỉnh nha.")}
       />
       {settings?.productsCoverImage && (
-        <div className="w-full h-48 md:h-64 lg:h-80 relative overflow-hidden mb-8">
-           <img src={settings.productsCoverImage || undefined} alt={t("Sản phẩm")} className="w-full h-full object-cover" />
+        <div className="w-full relative overflow-hidden mb-8 flex justify-center bg-gray-900 mx-auto">
+           <img src={settings.productsCoverImage} alt={t("Sản phẩm")} className="w-full h-auto max-h-[50vh] object-contain" />
            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{t("Sản Phẩm")}</h1>
            </div>

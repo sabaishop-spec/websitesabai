@@ -19,14 +19,25 @@ export default function BlogPage() {
     const fetchPosts = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        posts = posts.filter((p: any) => p.status === 'published' || !p.status); // Keep published posts and default posts
+        let firebasePosts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        
+        let mergedPosts = [...defaultBlogPosts];
+        firebasePosts.forEach(fp => {
+            const index = mergedPosts.findIndex(mp => mp.id === fp.id);
+            if (index >= 0) {
+                mergedPosts[index] = { ...mergedPosts[index], ...fp };
+            } else {
+                mergedPosts.push(fp);
+            }
+        });
+
+        const posts = mergedPosts.filter((p: any) => p.status === 'published' || !p.status);
         posts.sort((a: any, b: any) => {
            const timeA = a.createdAt || 0;
            const timeB = b.createdAt || 0;
            return timeB - timeA;
         });
-        if (posts.length > 0) setBlogPosts(posts);
+        setBlogPosts(posts);
       } catch (err) {
         // console.warn('Firebase fetch failed:', err);
       }
@@ -67,8 +78,8 @@ export default function BlogPage() {
         description={t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
       />
       {settings?.blogCoverImage && (
-        <div className="w-full h-48 md:h-64 lg:h-80 relative overflow-hidden mb-12">
-           <img src={settings.blogCoverImage || undefined} alt={t("Blog")} className="w-full h-full object-cover" />
+        <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto">
+           <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-auto max-h-[50vh] object-contain" />
            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{t("Blog")}</h1>
            </div>
@@ -95,7 +106,7 @@ export default function BlogPage() {
               >
                 <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
                   <img 
-                    src={post.image || undefined} 
+                    src={post.image} 
                     alt={getLocalized(post, 'title')} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

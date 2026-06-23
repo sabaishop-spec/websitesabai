@@ -133,11 +133,11 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-12">
           {post.image && (
-            <div className="aspect-[21/9] w-full bg-gray-100">
+            <div className="w-full bg-gray-100 border-b border-gray-100">
               <img
-                src={post.image || undefined}
+                src={post.image}
                 alt={post.seoTitle || getLocalized('title')}
-                className="w-full h-full object-cover"
+                className="w-full h-auto max-h-[80vh] object-contain"
               />
             </div>
           )}
@@ -222,7 +222,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
     <div className="space-y-8 font-sans">
        {showTOC !== false && tocEntries.length > 0 && !blocks.find(b => b.type === 'toc') && (
          <div className="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100 mb-10">
-           <h3 className="text-xl font-bold font-serif mb-4 flex items-center gap-2 text-gray-900">
+           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
              Mục lục bài viết
            </h3>
            <ul className="space-y-3">
@@ -233,7 +233,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    onClick={(e) => scrollToElement(e, entry.id)}
                    className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                  >
-                   <span className="text-brand-600 mr-2 min-w-[24px] font-mono shrink-0">{entry.number}.</span>
+                   <span className="text-brand-600 mr-2 min-w-[24px] shrink-0">{entry.number}.</span>
                    <span>{entry.title}</span>
                  </a>
                </li>
@@ -253,7 +253,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                   if (tocEntries.length === 0) return null;
                   return (
                     <div key={block.id} className="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100 my-10 w-full">
-                       <h3 className="text-xl font-bold font-serif mb-4 flex items-center gap-2 text-gray-900">
+                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
                          Mục lục bài viết
                        </h3>
                        <ul className="space-y-3">
@@ -264,7 +264,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                                onClick={(e) => scrollToElement(e, entry.id)}
                                className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                              >
-                               <span className="text-brand-600 mr-2 min-w-[24px] font-mono shrink-0">{entry.number}.</span>
+                               <span className="text-brand-600 mr-2 min-w-[24px] shrink-0">{entry.number}.</span>
                                <span>{entry.title}</span>
                              </a>
                            </li>
@@ -275,14 +275,14 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'h2':
                 return (
                   <h2 id={`block-${block.id}`} key={block.id} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
-                    {tocEntry && <span className="text-brand-600 mr-2 font-mono select-none">{tocEntry.number}.</span>}
+                    {tocEntry && <span className="text-brand-600 mr-2 select-none">{tocEntry.number}.</span>}
                     {data.text || ''}
                   </h2>
                 );
               case 'h3':
                 return (
                   <h3 id={`block-${block.id}`} key={block.id} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
-                    {tocEntry && <span className="text-brand-600 mr-2 font-mono select-none">{tocEntry.number}.</span>}
+                    {tocEntry && <span className="text-brand-600 mr-2 select-none">{tocEntry.number}.</span>}
                     {data.text || ''}
                   </h3>
                 );
@@ -334,14 +334,14 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'image':
                  return (
                    <div key={block.id} className="my-10 w-full flex flex-col items-center text-center">
-                     <img src={data.url || undefined} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mx-auto" />
+                     <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mx-auto" />
                      {data.alt && <p className="text-sm text-gray-500 italic mt-3 text-center text-balance">{data.alt}</p>}
                    </div>
                  );
               case 'figure':
                  return (
                    <figure key={block.id} className="my-10 w-full flex flex-col items-center text-center">
-                     <img src={data.url || undefined} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mb-3 mx-auto" />
+                     <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mb-3 mx-auto" />
                      {data.caption && <figcaption className="text-sm text-gray-500 italic text-center text-balance">{data.caption}</figcaption>}
                    </figure>
                  );
@@ -349,7 +349,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  return (
                    <div key={block.id} className={`my-10 flex flex-col md:flex-row gap-8 items-center ${data.layout === 'img-right' ? 'md:flex-row-reverse' : ''}`}>
                      <div className="w-full md:w-1/2">
-                       <img src={data.url || undefined} alt={data.alt} loading="lazy" className="w-full rounded-2xl aspect-square md:aspect-auto object-cover" />
+                       <img src={data.url} alt={data.alt} loading="lazy" className="w-full rounded-2xl aspect-square md:aspect-auto object-cover" />
                      </div>
                      <div className="w-full md:w-1/2 prose prose-lg">
                        <p className="whitespace-pre-wrap">{data.text}</p>
@@ -359,8 +359,8 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'images-2':
                  return (
                    <div key={block.id} className="my-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <img src={data.url1 || undefined} alt={data.alt1} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
-                     <img src={data.url2 || undefined} alt={data.alt2} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
+                     <img src={data.url1} alt={data.alt1} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
+                     <img src={data.url2} alt={data.alt2} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
                    </div>
                  );
               case 'gallery':
@@ -370,7 +370,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  return (
                    <div key={block.id} className={`my-10 grid grid-cols-1 gap-4 ${cols}`}>
                      {imgs.map((img: any, i: number) => (
-                       <img key={i} src={img.url || undefined} alt={img.alt} loading="lazy" className="w-full aspect-square object-cover rounded-2xl" />
+                       <img key={i} src={img.url} alt={img.alt} loading="lazy" className="w-full aspect-square object-cover rounded-2xl" />
                      ))}
                    </div>
                  );
