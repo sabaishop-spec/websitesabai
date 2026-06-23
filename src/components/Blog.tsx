@@ -9,25 +9,15 @@ import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 
 export default function Blog() {
   const { t, i18n } = useTranslation();
-  const [blogPosts, setBlogPosts] = useState<any[]>(() => defaultBlogPosts.filter((p: any) => p.status === 'published' || !p.status));
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let firebasePosts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
         
-        let mergedPosts = [...defaultBlogPosts];
-        firebasePosts.forEach(fp => {
-            const index = mergedPosts.findIndex(mp => mp.id === fp.id);
-            if (index >= 0) {
-                mergedPosts[index] = { ...mergedPosts[index], ...fp };
-            } else {
-                mergedPosts.push(fp);
-            }
-        });
-
-        const posts = mergedPosts.filter((p: any) => p.status === 'published' || !p.status);
+        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
         posts.sort((a: any, b: any) => {
            const timeA = a.createdAt || 0;
            const timeB = b.createdAt || 0;

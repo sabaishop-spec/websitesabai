@@ -1,6 +1,86 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '../localDB';
-import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil } from 'lucide-react';
+
+const BlogCategoriesManager = () => {
+    const [categories, setCategories] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editingCat, setEditingCat] = useState<any>(null);
+
+    useEffect(() => { fetchCats(); }, []);
+    
+    async function fetchCats() {
+        setLoading(true);
+        try {
+            const snap = await getDocs(collection(db, 'blogCategories'));
+            let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (data.length === 0) {
+               data = [
+                  { id: '1', name: 'Kiến thức bọc răng sứ' },
+                  { id: '2', name: 'Kiến thức tổng quát' },
+                  { id: '3', name: 'Kiến thức niềng răng' },
+                  { id: '4', name: 'Kiến thức trồng răng' }
+               ];
+            }
+            setCategories(data);
+        } catch(e) {
+             setCategories([
+                  { id: '1', name: 'Kiến thức bọc răng sứ' },
+                  { id: '2', name: 'Kiến thức tổng quát' },
+                  { id: '3', name: 'Kiến thức niềng răng' },
+                  { id: '4', name: 'Kiến thức trồng răng' }
+              ]);
+        }
+        setLoading(false);
+    }
+    
+    const handleSave = async (data: any) => {
+        try {
+            const id = data.id || Date.now().toString();
+            await setDoc(doc(db, 'blogCategories', id), { ...data, id });
+            setEditingCat(null);
+            fetchCats();
+        } catch(e) {}
+    }
+    
+    const handleDelete = async (id: string) => {
+        if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return;
+        try {
+            await deleteDoc(doc(db, 'blogCategories', id));
+            fetchCats();
+        } catch(e) {}
+    }
+
+    if (loading) return <div className="p-8 text-center">Đang tải...</div>;
+    return (
+        <div className="p-4 space-y-4">
+            <h3 className="text-xl font-bold">Danh mục bài viết</h3>
+            {editingCat && (
+                <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg flex items-center gap-3">
+                    <input type="text" placeholder="Tên danh mục..." value={editingCat.name || ''} onChange={e => setEditingCat({...editingCat, name: e.target.value})} className="border p-2 rounded flex-1" />
+                    <button onClick={() => handleSave(editingCat)} className="bg-blue-600 text-white px-4 py-2 rounded">Lưu</button>
+                    <button onClick={() => setEditingCat(null)} className="text-gray-500">Hủy</button>
+                </div>
+            )}
+            {!editingCat && (
+                <button onClick={() => setEditingCat({})} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded">
+                    <Plus size={16} /> Thêm danh mục
+                </button>
+            )}
+            <ul className="space-y-2 mt-4">
+                {categories.map(cat => (
+                    <li key={cat.id} className="flex justify-between items-center bg-white p-3 border border-gray-200 rounded-lg shadow-sm">
+                        <span className="font-bold">{cat.name}</span>
+                        <div className="flex items-center gap-3">
+                             <button onClick={() => setEditingCat(cat)} className="text-gray-600 hover:text-blue-600"><Pencil size={18} /></button>
+                             <button onClick={() => handleDelete(cat.id)} className="text-red-500 hover:text-red-700"><Trash2 size={18} /></button>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
 import { compressImage } from '../lib/imageUtils';
 import type QuillType from 'quill';
 import 'quill/dist/quill.snow.css';
@@ -68,7 +148,7 @@ export default function AdminBlogManager() {
   const [editingPost, setEditingPost] = useState<any>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash'>('published');
+  const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash' | 'categories'>('published');
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -79,17 +159,7 @@ export default function AdminBlogManager() {
     setLoading(true);
     try {
       const snapshot = await getDocs(collection(db, 'blogPosts'));
-      let firebaseData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      let data = [...defaultBlogPosts];
-      firebaseData.forEach(fp => {
-          const index = data.findIndex(p => p.id === fp.id);
-          if (index >= 0) {
-              data[index] = { ...data[index], ...fp };
-          } else {
-              data.push(fp);
-          }
-      });
+      let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
       // Clean up posts in trash older than 7 days
       const now = new Date();
@@ -357,9 +427,15 @@ export default function AdminBlogManager() {
              </button>
              <button 
                onClick={() => { setCurrentTab('trash'); setSelectedPostIds([]); }} 
-               className={`p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+               className={`p-3 font-medium text-sm border-b-2 mr-4 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
              >
                <Trash2 size={16} /> Thùng rác ({posts.filter(p => p.status === 'trash').length})
+             </button>
+             <button 
+               onClick={() => { setCurrentTab('categories'); setSelectedPostIds([]); }} 
+               className={`p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'categories' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+             >
+               Danh mục
              </button>
           </div>
           {selectedPostIds.length > 0 && (
@@ -374,6 +450,9 @@ export default function AdminBlogManager() {
           )}
         </div>
 
+        {currentTab === 'categories' ? (
+           <BlogCategoriesManager />
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -441,6 +520,7 @@ export default function AdminBlogManager() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   );
@@ -466,6 +546,33 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
   const autoSaveRef = useRef(onAutoSave);
   const postRef = useRef(post);
   const isManuallySavingRef = useRef(false);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchCats() {
+       try {
+           const snap = await getDocs(collection(db, 'blogCategories'));
+           let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+           if (data.length === 0) {
+               data = [
+                  { id: '1', name: 'Kiến thức bọc răng sứ' },
+                  { id: '2', name: 'Kiến thức tổng quát' },
+                  { id: '3', name: 'Kiến thức niềng răng' },
+                  { id: '4', name: 'Kiến thức trồng răng' }
+               ];
+           }
+           setCategories(data);
+       } catch(e) {
+           setCategories([
+              { id: '1', name: 'Kiến thức bọc răng sứ' },
+              { id: '2', name: 'Kiến thức tổng quát' },
+              { id: '3', name: 'Kiến thức niềng răng' },
+              { id: '4', name: 'Kiến thức trồng răng' }
+           ]);
+       }
+    }
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     autoSaveRef.current = onAutoSave;
@@ -685,7 +792,12 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
                   Chuyên mục
                 </div>
                 <div className="p-4">
-                   <input type="text" value={post.category || ''} onChange={e => setField('category', e.target.value)} className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-blue-500" placeholder="VD: Kiến thức nha khoa" />
+                   <select value={post.category || ''} onChange={e => setField('category', e.target.value)} className="w-full border border-gray-300 p-2 text-sm outline-none focus:border-blue-500 bg-white">
+                      <option value="">-- Chọn chuyên mục --</option>
+                      {categories.map(cat => (
+                         <option key={cat.id} value={cat.name}>{cat.name}</option>
+                      ))}
+                   </select>
                 </div>
              </div>
 

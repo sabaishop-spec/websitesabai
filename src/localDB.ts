@@ -97,23 +97,17 @@ export const getDocs = async (collectionRef: any) => {
     } catch (e) {
       console.error(e);
     }
-    // Do not override with local fallback if Supabase is being used to prevent stale data
-    // local docs should only be used if HAS_SUPABASE is false.
-    // If you need migration, you can write a one-time migration script.
-    // Here we just use the data from Supabase directly.
   } else {
     data = getMemData(collectionRef.path);
+    // Only merge defaults for localDB if it's completely empty
+    const defaults = DEFAULTS_MAP[collectionRef.path] || [];
+    if (data.length === 0) {
+      data = [...defaults];
+      setMemData(collectionRef.path, data);
+    }
   }
 
-  // Merge with defaults
-  const defaults = DEFAULTS_MAP[collectionRef.path] || [];
-  const dbIds = new Set(data.map(d => d.id));
-  const deletedIds = new Set(data.filter(d => d._deleted).map(d => d.id));
-  
-  const mergedData = [
-    ...data.filter(d => !d._deleted),
-    ...defaults.filter(d => !dbIds.has(d.id) && !deletedIds.has(d.id))
-  ];
+  const mergedData = data.filter(d => !d._deleted);
 
   return {
     docs: mergedData.map((item: any) => ({
@@ -135,24 +129,20 @@ export const getDoc = async (docRef: any) => {
         if (!error && resData) {
             data = resData;
         }
-        
-        // We do not merge local memory data because it can contain stale state 
-        // from before Supabase was connected.
     } catch (e) {}
   } else {
     const localDocs = getMemData(docRef.path);
     data = localDocs.find((d: any) => d.id === docRef.id) || null;
-  }
-
-  // Fallback to defaults
-  if (!data || data._deleted) {
+    
+    if (!data || data._deleted) {
       const defaults = DEFAULTS_MAP[docRef.path] || [];
       const defaultItem = defaults.find((d: any) => d.id === docRef.id);
-      if (defaultItem && (!data || !data._deleted)) {
-          data = defaultItem;
+      if (defaultItem) {
+        data = defaultItem;
       } else {
-          data = null;
+        data = null;
       }
+    }
   }
 
   return {

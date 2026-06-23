@@ -372,12 +372,6 @@ const GenericCollectionManager = ({ title, collectionName, fields, allowReorder 
     try {
       const snapshot = await getDocs(collection(db, collectionName));
       let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      
-      // Fallback for UI if DB empty
-      if (data.length === 0) {
-          if (collectionName === 'blogPosts') data = defaultBlogPosts;
-          // You could add other collection fallbacks here if needed
-      }
 
       if (allowReorder) {
         data.sort((a, b) => {
@@ -390,7 +384,7 @@ const GenericCollectionManager = ({ title, collectionName, fields, allowReorder 
       
       setItems(data);
     } catch(e) {
-      if (collectionName === 'blogPosts') setItems(defaultBlogPosts);
+      setItems([]);
     } finally {
       setLoading(false);
     }

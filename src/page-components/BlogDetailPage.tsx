@@ -6,15 +6,14 @@ import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-rea
 import ReactMarkdown from 'react-markdown';
 import CTASection from '../components/CTASection';
 import { db, doc, getDoc } from '../localDB';
-import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import SEO from '../components/SEO';
 
 export default function BlogDetailPage({ params }: { params?: { id?: string } }) {
   const id = params?.id;
   const { t, i18n } = useTranslation();
 
-  const [post, setPost] = useState<any>(() => defaultBlogPosts.find(p => p.id === id) || null);
-  const [loading, setLoading] = useState(!post);
+  const [post, setPost] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -22,7 +21,14 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
       try {
         const docSnap = await getDoc(doc(db, 'blogPosts', id));
         if (docSnap.exists()) {
-          setPost({ id: docSnap.id, ...docSnap.data() });
+          const data = docSnap.data();
+          if (!data._deleted && data.status === 'published') {
+            setPost({ id: docSnap.id, ...data });
+          } else {
+             setPost(null);
+          }
+        } else {
+           setPost(null);
         }
       } catch (err) {
       } finally {

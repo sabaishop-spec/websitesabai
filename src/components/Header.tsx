@@ -8,6 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { categories } from '../data/products';
 import FuranoLogo from './FuranoLogo';
 
+import 'firebase/firestore';
+import { db, collection, getDocs } from '../localDB';
+
 export default function Header() {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
@@ -15,6 +18,34 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language === 'en' ? 'EN' : 'VN');
+  const [blogCategories, setBlogCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchCats() {
+       try {
+           const snap = await getDocs(collection(db, 'blogCategories'));
+           let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+           if (data.length > 0) {
+              setBlogCategories(data);
+           } else {
+              setBlogCategories([
+                  { id: '1', name: 'Kiến thức bọc răng sứ' },
+                  { id: '2', name: 'Kiến thức tổng quát' },
+                  { id: '3', name: 'Kiến thức niềng răng' },
+                  { id: '4', name: 'Kiến thức trồng răng' }
+               ]);
+           }
+       } catch(e) {
+           setBlogCategories([
+              { id: '1', name: 'Kiến thức bọc răng sứ' },
+              { id: '2', name: 'Kiến thức tổng quát' },
+              { id: '3', name: 'Kiến thức niềng răng' },
+              { id: '4', name: 'Kiến thức trồng răng' }
+           ]);
+       }
+    }
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,6 +118,31 @@ export default function Header() {
                           ))}
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : link.href === '/blog' ? (
+              <div key={link.name} className="relative group/blog">
+                <Link
+                  href={link.href}
+                  className={`flex items-center gap-1 text-sm font-semibold transition-colors hover:text-brand-800 ${
+                    pathname === link.href ? 'text-brand-800' : 'text-gray-600'
+                  }`}
+                >
+                  {link.name}
+                  <ChevronDown className="w-4 h-4 transition-transform group-hover/blog:rotate-180" />
+                </Link>
+                <div className="absolute top-full -left-[50px] pt-4 hidden group-hover/blog:block transition-all z-50">
+                  <div className="min-w-[220px] bg-white rounded-xl shadow-xl border border-gray-100 py-3 flex flex-col">
+                    {blogCategories.map((category) => (
+                       <Link
+                         key={category.id}
+                         href={`/blog?category=${encodeURIComponent(category.name)}`}
+                         className="px-5 py-2.5 text-sm text-gray-700 hover:text-brand-800 hover:bg-gray-50 transition-colors"
+                       >
+                         {t(category.name)}
+                       </Link>
                     ))}
                   </div>
                 </div>

@@ -1,37 +1,31 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'motion/react';
 import { Clock, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { db, collection, getDocs } from '../localDB';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import SEO from '../components/SEO';
 
-export default function BlogPage() {
+function BlogPageContent() {
   const { t, i18n } = useTranslation();
   const settings = useSiteSettings();
+  const searchParams = useSearchParams();
+  const categoryQuery = searchParams?.get('category');
   const [visibleCount, setVisibleCount] = useState(12);
-  const [blogPosts, setBlogPosts] = useState<any[]>(defaultBlogPosts);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let firebasePosts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
         
-        let mergedPosts = [...defaultBlogPosts];
-        firebasePosts.forEach(fp => {
-            const index = mergedPosts.findIndex(mp => mp.id === fp.id);
-            if (index >= 0) {
-                mergedPosts[index] = { ...mergedPosts[index], ...fp };
-            } else {
-                mergedPosts.push(fp);
-            }
-        });
-
-        const posts = mergedPosts.filter((p: any) => p.status === 'published' || !p.status);
+        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
         posts.sort((a: any, b: any) => {
            const timeA = a.createdAt || 0;
            const timeB = b.createdAt || 0;
@@ -40,6 +34,8 @@ export default function BlogPage() {
         setBlogPosts(posts);
       } catch (err) {
         // console.warn('Firebase fetch failed:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPosts();
@@ -69,35 +65,55 @@ export default function BlogPage() {
   };
 
   // Ensure default data is also filtered if missing status
-  const filteredBlogPosts = blogPosts.filter((p: any) => p.status === 'published' || (!p.status));
+  const filteredBlogPosts = blogPosts.filter((p: any) => {
+      const isPublished = p.status === 'published' || !p.status;
+      if (!isPublished) return false;
+      if (categoryQuery && p.category !== categoryQuery) return false;
+      return true;
+  });
 
   return (
     <main className="pt-24 pb-24 min-h-screen bg-gray-50">
       <SEO 
-        title={t("Cẩm Nang Chăm Sóc Nụ Cười")}
+        title={categoryQuery ? `${t("Cẩm Nang")} - ${categoryQuery}` : t("Cẩm Nang Chăm Sóc Nụ Cười")}
         description={t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
       />
       {settings?.blogCoverImage && (
         <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto">
            <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-auto max-h-[50vh] object-contain" />
-           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{t("Blog")}</h1>
+           <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
+             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{categoryQuery || t("Blog")}</h1>
            </div>
         </div>
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {!settings?.blogCoverImage && (
           <div className="text-center max-w-2xl mx-auto mb-16 pt-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm Sóc Nụ Cười")}</span></h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm Sóc Nụ Cười")}</span></>}</h1>
             <p className="text-lg text-gray-600">
               {t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
             </p>
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredBlogPosts.slice(0, visibleCount).map((post, index) => (
-            <Link href={`/blog/${post.id}`} key={post.id} className="block group cursor-pointer h-full">
+        <div className="flex flex-wrap gap-4 mb-10 items-center">
+             <Link href="/blog" className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${!categoryQuery ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>Tất cả</Link>
+             {Array.from(new Set(blogPosts.map(p => p.category).filter(Boolean))).map((cat: any) => (
+                 <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${categoryQuery === cat ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
+                    {cat}
+                 </Link>
+             ))}
+        </div>
+
+        {loading ? (
+            <div className="text-center py-20 text-gray-500 animate-pulse">Đang tải danh sách bài viết...</div>
+        ) : filteredBlogPosts.length === 0 ? (
+           <div className="text-center py-20 text-gray-500">Không có bài viết nào trong chuyên mục này.</div>
+        ) : (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredBlogPosts.slice(0, visibleCount).map((post, index) => (
+                <Link href={`/blog/${post.id}`} key={post.id} className="block group cursor-pointer h-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -146,7 +162,17 @@ export default function BlogPage() {
             </button>
           </div>
         )}
+        </>
+        )}
       </div>
     </main>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen pt-24 text-center">Loading...</div>}>
+      <BlogPageContent />
+    </Suspense>
   );
 }
