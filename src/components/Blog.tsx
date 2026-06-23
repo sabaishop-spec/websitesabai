@@ -4,42 +4,22 @@ import { ArrowRight, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { db, collection, getDocs } from '../localDB';
-import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
+import { knowledgeAPI, KnowledgeItem } from '../lib/knowledgeAPI';
 
 export default function Blog() {
   const { t, i18n } = useTranslation();
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [blogPosts, setBlogPosts] = useState<KnowledgeItem[]>([]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const snapshot = await getDocs(collection(db, 'blogPosts'));
-        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        
-        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
-        posts.sort((a: any, b: any) => {
-           const timeA = a.createdAt || 0;
-           const timeB = b.createdAt || 0;
-           return timeB - timeA;
-        });
-
+        const posts = await knowledgeAPI.fetchActiveItems();
         setBlogPosts(posts);
-      } catch (err) {}
-    };
-    fetchPosts();
-
-    const handleUpdate = () => {
-      fetchPosts();
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('localDB_updated', handleUpdate);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('localDB_updated', handleUpdate);
+      } catch (err) {
+        console.error("Failed to load knowledge items", err);
       }
     };
+    fetchPosts();
   }, []);
 
   const latestPosts = blogPosts.slice(0, 4);

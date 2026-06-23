@@ -7,7 +7,7 @@ import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import AdminUsersManager from '../components/AdminUsersManager';
 import AdminTestimonialsManager from '../components/AdminTestimonialsManager';
 import SiteSettingsManager from '../components/SiteSettingsManager';
-import AdminBlogManager from '../components/AdminBlogManager';
+import AdminKnowledgeManager from '../components/AdminKnowledgeManager';
 import Link from 'next/link';
 import { compressImage } from '../lib/imageUtils';
 
@@ -933,7 +933,7 @@ export default function AdminPage() {
       </TabPanel>
       
       <TabPanel active={activeTab === 'Blog Posts'}>
-        <AdminBlogManager />
+        <AdminKnowledgeManager />
       </TabPanel>
       
       <TabPanel active={activeTab === 'FAQs'}>

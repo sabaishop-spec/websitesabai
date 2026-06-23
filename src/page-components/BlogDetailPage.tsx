@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import CTASection from '../components/CTASection';
-import { db, doc, getDoc } from '../localDB';
+import { knowledgeAPI } from '../lib/knowledgeAPI';
 import SEO from '../components/SEO';
 
 export default function BlogDetailPage({ params }: { params?: { id?: string } }) {
@@ -19,36 +19,20 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
     const fetchPost = async () => {
       if (!id) return;
       try {
-        const docSnap = await getDoc(doc(db, 'blogPosts', id));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (!data._deleted && data.status === 'published') {
-            setPost({ id: docSnap.id, ...data });
-          } else {
-             setPost(null);
-          }
+        const item = await knowledgeAPI.getItem(id);
+        if (item && item.is_active) {
+          setPost(item);
         } else {
-           setPost(null);
+          setPost(null);
         }
       } catch (err) {
+        console.error("Failed to load post", err);
       } finally {
         setLoading(false);
       }
     };
     fetchPost();
     window.scrollTo(0, 0);
-
-    const handleUpdate = () => {
-      fetchPost();
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('localDB_updated', handleUpdate);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('localDB_updated', handleUpdate);
-      }
-    };
   }, [id]);
 
   const getLocalized = (field: string) => {
