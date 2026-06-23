@@ -239,8 +239,8 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    onClick={(e) => scrollToElement(e, entry.id)}
                    className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                  >
-                   <span className="text-brand-600 mr-2 min-w-[24px] shrink-0">{entry.number}.</span>
-                   <span>{entry.title}</span>
+                   <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
+                   <span>{entry.title.replace(/^(\d+\.)+\s*/, '')}</span>
                  </a>
                </li>
              ))}
@@ -270,8 +270,8 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                                onClick={(e) => scrollToElement(e, entry.id)}
                                className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                              >
-                               <span className="text-brand-600 mr-2 min-w-[24px] shrink-0">{entry.number}.</span>
-                               <span>{entry.title}</span>
+                               <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
+                               <span>{entry.title.replace(/^(\d+\.)+\s*/, '')}</span>
                              </a>
                            </li>
                          ))}
@@ -281,15 +281,15 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'h2':
                 return (
                   <h2 id={`block-${block.id}`} key={block.id} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
-                    {tocEntry && <span className="text-brand-600 mr-2 select-none">{tocEntry.number}.</span>}
-                    {data.text || ''}
+                    {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
+                    {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h2>
                 );
               case 'h3':
                 return (
                   <h3 id={`block-${block.id}`} key={block.id} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
-                    {tocEntry && <span className="text-brand-600 mr-2 select-none">{tocEntry.number}.</span>}
-                    {data.text || ''}
+                    {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
+                    {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h3>
                 );
               case 'p':
