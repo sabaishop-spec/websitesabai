@@ -72,7 +72,7 @@ export default function Blog() {
               >
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-6 bg-gray-100">
                   <img 
-                    src={post.image} 
+                    src={post.image || undefined} 
                     alt={getLocalized(post, 'title')} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

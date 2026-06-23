@@ -53,7 +53,7 @@ function ProductCard({ product }: { product: ProductDetail }) {
         )}
         <div className="relative aspect-square rounded-[1rem] overflow-hidden bg-gray-50 mb-4 mix-blend-multiply flex-shrink-0">
           <img
-            src={currentImage}
+            src={currentImage || undefined}
             alt={t(product.name)}
             className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
           />
@@ -163,7 +163,7 @@ export default function Products() {
               {category.heroImage && (
                 <div className="w-full h-48 md:h-64 lg:h-80 rounded-[2rem] overflow-hidden mb-12 shadow-sm block group">
                   <img 
-                    src={category.heroImage} 
+                    src={category.heroImage || undefined} 
                     alt={t(category.title)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                   />

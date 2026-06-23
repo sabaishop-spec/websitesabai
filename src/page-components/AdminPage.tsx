@@ -203,7 +203,7 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                   />
                 ) : field.type === 'image' ? (
                   <div className="flex gap-4 items-start">
-                    {val && <img src={val} alt="Preview" className="w-24 h-24 object-cover rounded-lg border" />}
+                    {val && <img src={val || undefined} alt="Preview" className="w-24 h-24 object-cover rounded-lg border" />}
                     <div className="flex-1 space-y-2">
                       <input
                         type="text"
@@ -306,7 +306,7 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                                 }} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500" />
                              
                              <div className="flex gap-4 items-center">
-                               {review.image && <img src={review.image} alt="Review" className="w-16 h-16 object-cover rounded-lg border" />}
+                               {review.image && <img src={review.image || undefined} alt="Review" className="w-16 h-16 object-cover rounded-lg border" />}
                                <input type="file" accept="image/*" onChange={async (e) => {
                                  const file = e.target.files?.[0];
                                  if (file) {
@@ -521,7 +521,7 @@ const GenericCollectionManager = ({ title, collectionName, fields, allowReorder 
                 <tr key={item.id} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4">
                     {item.image || item.heroImage ? (
-                      <img src={item.image || item.heroImage} className="w-16 h-12 object-cover rounded" alt="Thumb" />
+                      <img src={item.image || item.heroImage || undefined} className="w-16 h-12 object-cover rounded" alt="Thumb" />
                     ) : (
                       <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400">
                         <ImageIcon className="w-5 h-5" />
@@ -733,7 +733,7 @@ const CategoriesProductsManager = () => {
                <div className="grid grid-cols-2 gap-4">
                   {selectedCat.products?.map((p: any) => (
                     <div key={p.id} onClick={() => setEditingProduct(p)} className="border rounded-xl p-3 flex gap-4 bg-white relative group cursor-pointer hover:border-brand-500 hover:shadow-md transition-all">
-                       <img src={p.image} alt={p.name} className="w-20 h-20 object-cover rounded-lg border bg-gray-50" />
+                       <img src={p.image || undefined} alt={p.name} className="w-20 h-20 object-cover rounded-lg border bg-gray-50" />
                        <div className="flex-1">
                           <h4 className="font-bold text-sm mb-1 line-clamp-2">{p.name}</h4>
                           <p className="text-xs text-gray-500 line-clamp-1">{p.id}</p>

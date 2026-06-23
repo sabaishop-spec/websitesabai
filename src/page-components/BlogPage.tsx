@@ -68,7 +68,7 @@ export default function BlogPage() {
       />
       {settings?.blogCoverImage && (
         <div className="w-full h-48 md:h-64 lg:h-80 relative overflow-hidden mb-12">
-           <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-full object-cover" />
+           <img src={settings.blogCoverImage || undefined} alt={t("Blog")} className="w-full h-full object-cover" />
            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{t("Blog")}</h1>
            </div>
@@ -95,7 +95,7 @@ export default function BlogPage() {
               >
                 <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
                   <img 
-                    src={post.image} 
+                    src={post.image || undefined} 
                     alt={getLocalized(post, 'title')} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

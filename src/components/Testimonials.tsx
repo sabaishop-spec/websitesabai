@@ -92,7 +92,7 @@ export default function Testimonials() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
                 transition={{ duration: 0.5 }}
-                src={testimonials[currentIndex].image}
+                src={testimonials[currentIndex].image || undefined}
                 alt="Khách hàng"
                 className="w-full h-full object-cover absolute inset-0"
               />

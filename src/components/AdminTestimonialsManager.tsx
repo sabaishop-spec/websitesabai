@@ -190,7 +190,7 @@ export default function AdminTestimonialsManager() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh Khách hàng</label>
                 <div className="flex flex-col md:flex-row gap-4 items-start">
                   {formData.image ? (
-                    <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded-lg border shadow-sm flex-shrink-0" />
+                    <img src={formData.image || undefined} alt="Preview" className="w-32 h-32 object-cover rounded-lg border shadow-sm flex-shrink-0" />
                   ) : (
                     <div className="w-32 h-32 bg-gray-50 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-xs text-gray-400 flex-shrink-0">
                       <ImageIcon className="w-6 h-6 mb-2 opacity-50" />
@@ -245,7 +245,7 @@ export default function AdminTestimonialsManager() {
                 <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition">
                   <div className="aspect-[4/3] w-full bg-gray-100 relative group">
                     {item.image ? (
-                      <img src={item.image} alt="Avatar" className="w-full h-full object-cover" />
+                      <img src={item.image || undefined} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300">
                         <ImageIcon className="w-12 h-12" />

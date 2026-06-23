@@ -55,7 +55,7 @@ export default function Routine() {
             >
               <div className="relative w-56 h-56 mx-auto mb-8 rounded-full bg-gradient-to-tr from-brand-100 to-brand-50 p-2 shadow-sm group-hover:shadow-2xl group-hover:shadow-brand-500/20 group-hover:-translate-y-3 transition-all duration-500">
                 <img 
-                  src={step.img} 
+                  src={step.img || undefined} 
                   alt={step.title} 
                   className="w-full h-full object-cover rounded-full border-4 border-white"
                 />

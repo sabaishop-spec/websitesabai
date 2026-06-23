@@ -135,7 +135,7 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
           {post.image && (
             <div className="aspect-[21/9] w-full bg-gray-100">
               <img
-                src={post.image}
+                src={post.image || undefined}
                 alt={post.seoTitle || getLocalized('title')}
                 className="w-full h-full object-cover"
               />
@@ -334,14 +334,14 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'image':
                  return (
                    <div key={block.id} className="my-10 w-full flex flex-col items-center text-center">
-                     <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mx-auto" />
+                     <img src={data.url || undefined} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mx-auto" />
                      {data.alt && <p className="text-sm text-gray-500 italic mt-3 text-center text-balance">{data.alt}</p>}
                    </div>
                  );
               case 'figure':
                  return (
                    <figure key={block.id} className="my-10 w-full flex flex-col items-center text-center">
-                     <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mb-3 mx-auto" />
+                     <img src={data.url || undefined} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mb-3 mx-auto" />
                      {data.caption && <figcaption className="text-sm text-gray-500 italic text-center text-balance">{data.caption}</figcaption>}
                    </figure>
                  );
@@ -349,7 +349,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  return (
                    <div key={block.id} className={`my-10 flex flex-col md:flex-row gap-8 items-center ${data.layout === 'img-right' ? 'md:flex-row-reverse' : ''}`}>
                      <div className="w-full md:w-1/2">
-                       <img src={data.url} alt={data.alt} loading="lazy" className="w-full rounded-2xl aspect-square md:aspect-auto object-cover" />
+                       <img src={data.url || undefined} alt={data.alt} loading="lazy" className="w-full rounded-2xl aspect-square md:aspect-auto object-cover" />
                      </div>
                      <div className="w-full md:w-1/2 prose prose-lg">
                        <p className="whitespace-pre-wrap">{data.text}</p>
@@ -359,8 +359,8 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'images-2':
                  return (
                    <div key={block.id} className="my-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <img src={data.url1} alt={data.alt1} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
-                     <img src={data.url2} alt={data.alt2} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
+                     <img src={data.url1 || undefined} alt={data.alt1} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
+                     <img src={data.url2 || undefined} alt={data.alt2} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
                    </div>
                  );
               case 'gallery':
@@ -370,7 +370,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  return (
                    <div key={block.id} className={`my-10 grid grid-cols-1 gap-4 ${cols}`}>
                      {imgs.map((img: any, i: number) => (
-                       <img key={i} src={img.url} alt={img.alt} loading="lazy" className="w-full aspect-square object-cover rounded-2xl" />
+                       <img key={i} src={img.url || undefined} alt={img.alt} loading="lazy" className="w-full aspect-square object-cover rounded-2xl" />
                      ))}
                    </div>
                  );

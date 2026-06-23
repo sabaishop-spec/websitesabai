@@ -718,7 +718,7 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
                 <div className="p-4">
                    {post.image ? (
                      <div className="relative group cursor-pointer">
-                        <img src={post.image} className="w-full h-auto object-cover border border-gray-200" alt="Featured" />
+                        <img src={post.image || undefined} className="w-full h-auto object-cover border border-gray-200" alt="Featured" />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                            <span className="text-white text-sm font-medium">Bấm vào để thay đổi</span>
                            <input type="file" accept="image/*" onChange={async (e) => {
@@ -859,7 +859,7 @@ function BlockEditor({ block, onChange, onUpload }: any) {
         <div className="space-y-2 border border-dashed border-gray-300 p-4 bg-gray-50 text-center relative">
           {block.data.url ? (
              <>
-               <img src={block.data.url} alt="preview" className="max-h-[300px] mx-auto mb-2 shadow-sm" />
+               <img src={block.data.url || undefined} alt="preview" className="max-h-[300px] mx-auto mb-2 shadow-sm" />
                <input type="file" accept="image/*" onChange={e => handleImageSelect(e, 'url')} className="text-xs absolute top-2 right-2 bg-white/80 p-1" />
                <input type="text" value={block.data.alt || ''} onChange={e => handleChange('alt', e.target.value)} placeholder="Tùy chọn: Nhập thuộc tính Alt Text cho ảnh SEO" className="w-full max-w-sm border p-1.5 mt-2 text-sm mx-auto block" />
              </>
@@ -878,7 +878,7 @@ function BlockEditor({ block, onChange, onUpload }: any) {
     case 'figure':
       return (
         <div className="space-y-2 border border-dashed border-gray-300 p-4 bg-gray-50 text-center">
-          {block.data.url && <img src={block.data.url} alt="preview" className="max-h-[300px] mx-auto shadow-sm" />}
+          {block.data.url && <img src={block.data.url || undefined} alt="preview" className="max-h-[300px] mx-auto shadow-sm" />}
           <input type="file" accept="image/*" onChange={e => handleImageSelect(e, 'url')} className="text-xs" />
           <input type="text" value={block.data.caption || ''} onChange={e => handleChange('caption', e.target.value)} placeholder="Nhập chú thích hiển thị dưới ảnh (Caption)" className="w-full border p-1.5 font-serif text-center mt-2 text-sm" />
         </div>

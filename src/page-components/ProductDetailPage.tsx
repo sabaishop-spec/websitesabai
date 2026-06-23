@@ -120,7 +120,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
           <div className="space-y-6 sticky top-24">
             <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden mix-blend-multiply flex items-center justify-center border border-gray-100">
               <img
-                src={currentImage}
+                src={currentImage || undefined}
                 alt={product.name}
                 className="w-full h-full object-cover mix-blend-multiply rounded-2xl"
               />

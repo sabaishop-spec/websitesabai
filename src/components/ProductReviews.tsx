@@ -43,7 +43,7 @@ export default function ProductReviews({ reviews = [] }: { reviews?: any[] }) {
             </div>
             <p className="text-gray-700 leading-relaxed mb-3">{review.comment}</p>
             {review.image && (
-              <img src={review.image} alt="User upload" className="max-w-[150px] max-h-[150px] rounded-lg border object-cover" />
+              <img src={review.image || undefined} alt="User upload" className="max-w-[150px] max-h-[150px] rounded-lg border object-cover" />
             )}
           </div>
         ))}

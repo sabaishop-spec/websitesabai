@@ -83,7 +83,7 @@ export default function SiteSettingsManager() {
       </div>
       <div className="flex flex-col md:flex-row gap-4 items-start">
         {settings[key] ? (
-          <img src={settings[key]} alt="Settings Preview" className="w-56 h-32 object-cover rounded-lg border shadow-sm bg-gray-50 flex-shrink-0" />
+          <img src={settings[key] || undefined} alt="Settings Preview" className="w-56 h-32 object-cover rounded-lg border shadow-sm bg-gray-50 flex-shrink-0" />
         ) : (
           <div className="w-56 h-32 bg-gray-50 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-sm text-gray-400 flex-shrink-0">
             <ImageIcon className="w-6 h-6 mb-2 opacity-50" />
