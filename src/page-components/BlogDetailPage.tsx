@@ -8,42 +8,15 @@ import CTASection from '../components/CTASection';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
 
-export default function BlogDetailPage({ params }: { params?: { id?: string } }) {
-  const id = params?.id;
+export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
   const { t, i18n } = useTranslation();
 
-  const [post, setPost] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState<any>(initialPost);
 
   useEffect(() => {
-    if (!id) return;
-    const fetchPost = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('blogPosts')
-          .select('*')
-          .or(`id.eq.${id},slug.eq.${id}`)
-          .single();
-
-        if (error) throw error;
-
-        if (data && (!data.deletedAt && data.status === 'published')) {
-          setPost(data);
-        } else {
-           setPost(null);
-        }
-      } catch (error) {
-        console.error("Supabase fetch post error:", error);
-        setPost(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
+    setPost(initialPost);
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [initialPost]);
 
   const getLocalized = (field: string) => {
     if (!post) return '';
@@ -63,19 +36,6 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
     "dateModified": getLocalized('date'),
     "author": [{ "@type": "Person", "name": "Chuyên gia Furano" }],
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col pt-28">
-        <div className="max-w-4xl mx-auto w-full px-4 animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-24 mb-8"></div>
-          <div className="h-12 bg-gray-200 rounded w-3/4 mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/2 mb-8"></div>
-          <div className="h-[400px] bg-gray-200 rounded-3xl w-full mb-12"></div>
-        </div>
-      </div>
-    );
-  }
 
   if (!post) {
     return (

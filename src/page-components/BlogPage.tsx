@@ -9,51 +9,19 @@ import { supabase } from '../lib/supabase';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import SEO from '../components/SEO';
 
-function BlogPageContent() {
+function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: any[], initialCategories: string[] }) {
   const { t, i18n } = useTranslation();
   const settings = useSiteSettings();
   const searchParams = useSearchParams();
   const categoryQuery = searchParams?.get('category');
   const [visibleCount, setVisibleCount] = useState(12);
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        let query = supabase
-          .from('blogPosts')
-          .select('id, title, title_en, slug, category, category_en, image, date, date_en, excerpt, excerpt_en, seoDescription, seoDescription_en, createdAt, status')
-          .or('status.eq.published,status.is.null')
-          .order('createdAt', { ascending: false });
-
-        if (categoryQuery) {
-          query = query.eq('category', categoryQuery);
-        }
-
-        const { data: posts, error } = await query;
-        if (error) throw error;
-        
-        setBlogPosts(posts || []);
-
-        // Also fetch unique categories from posts (or from blogCategories if you prefer)
-        const { data: catData } = await supabase.from('blogCategories').select('name');
-        if (catData) {
-           setCategories(catData.map(c => c.name));
-        }
-      } catch (error) {
-        console.error("Supabase fetch failed:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, [categoryQuery]);
+  const filteredPosts = categoryQuery
+    ? initialPosts.filter(p => p.category === categoryQuery)
+    : initialPosts;
 
   const loadMore = () => {
-    setVisibleCount(prev => Math.min(prev + 12, blogPosts.length));
+    setVisibleCount(prev => Math.min(prev + 12, filteredPosts.length));
   };
   
   const getLocalized = (post: any, field: string) => {
@@ -89,21 +57,19 @@ function BlogPageContent() {
 
         <div className="flex flex-wrap gap-4 mb-10 items-center">
              <Link href="/blog" className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${!categoryQuery ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>Tất cả</Link>
-             {categories.map((cat: string) => (
+             {initialCategories.map((cat: string) => (
                  <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${categoryQuery === cat ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
                     {cat}
                  </Link>
              ))}
         </div>
 
-        {loading ? (
-            <div className="text-center py-20 text-gray-500 animate-pulse">Đang tải danh sách bài viết...</div>
-        ) : blogPosts.length === 0 ? (
+        {filteredPosts.length === 0 ? (
            <div className="text-center py-20 text-gray-500">Không có bài viết nào trong chuyên mục này.</div>
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {blogPosts.slice(0, visibleCount).map((post, index) => (
+              {filteredPosts.slice(0, visibleCount).map((post, index) => (
                 <Link href={`/blog/${post.slug || post.id}`} key={post.id} className="block group cursor-pointer h-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -144,13 +110,13 @@ function BlogPageContent() {
           ))}
         </div>
 
-        {visibleCount < blogPosts.length && (
+        {visibleCount < filteredPosts.length && (
           <div className="mt-16 text-center">
             <button 
               onClick={loadMore}
               className="px-8 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-full shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-95"
             >
-              {t("Xem thêm")} ({blogPosts.length - visibleCount})
+              {t("Xem thêm")} ({filteredPosts.length - visibleCount})
             </button>
           </div>
         )}
@@ -161,10 +127,10 @@ function BlogPageContent() {
   );
 }
 
-export default function BlogPage() {
+export default function BlogPage({ initialPosts, initialCategories }: { initialPosts: any[], initialCategories: string[] }) {
   return (
     <Suspense fallback={<div className="min-h-screen pt-24 text-center">Loading...</div>}>
-      <BlogPageContent />
+      <BlogPageContent initialPosts={initialPosts} initialCategories={initialCategories} />
     </Suspense>
   );
 }

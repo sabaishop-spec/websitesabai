@@ -295,18 +295,12 @@ export default function AdminBlogManager() {
     };
 
     try {
-      if (isCreating) {
-         const { data: existing } = await supabase.from('blogPosts').select('id').eq('id', postId).single();
-         if (existing) {
-            if (!isBackgroundMode) alert("Đường dẫn này đã tồn tại, vui lòng chọn đường dẫn khác.");
-            return;
-         }
-      }
+      const { saveBlogPost, deleteBlogPost } = await import('@/app/actions/blog');
+      const res = await saveBlogPost(updateData, isCreating, editingPost.id);
       
-      await supabase.from('blogPosts').upsert(updateData);
-      
-      if (!isCreating && postId !== editingPost.id) {
-          await supabase.from('blogPosts').update({ status: 'trash' }).eq('id', editingPost.id);
+      if (!res.success) {
+        if (!isBackgroundMode) alert(res.error || "Đã xảy ra lỗi khi lưu.");
+        return;
       }
 
       if (!isBackgroundMode) {
@@ -328,7 +322,9 @@ export default function AdminBlogManager() {
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể phục hồi!')) return;
     try {
-      await supabase.from('blogPosts').delete().eq('id', id);
+      const { permanentlyDeleteBlogPost } = await import('@/app/actions/blog');
+      const res = await permanentlyDeleteBlogPost(id);
+      if (!res.success) throw new Error(res.error);
       fetchPosts();
     } catch (e: any) {
       alert("Có lỗi xảy ra: " + e.message);
@@ -338,7 +334,9 @@ export default function AdminBlogManager() {
   const handleMoveToTrash = async (post: any) => {
      if (!confirm('Bạn có chắc chắn muốn chuyển bài viết này vào thùng rác?')) return;
      try {
-        await supabase.from('blogPosts').update({ status: 'trash', deletedAt: new Date().toISOString() }).eq('id', post.id);
+        const { deleteBlogPost } = await import('@/app/actions/blog');
+        const res = await deleteBlogPost(post.id);
+        if (!res.success) throw new Error(res.error);
         fetchPosts();
      } catch (e: any) {
         alert("Có lỗi xảy ra: " + e.message);
@@ -347,22 +345,28 @@ export default function AdminBlogManager() {
 
   const handleRestore = async (post: any) => {
      try {
-        await supabase.from('blogPosts').update({ status: 'draft', deletedAt: null }).eq('id', post.id);
+        const { saveBlogPost } = await import('@/app/actions/blog');
+        const res = await saveBlogPost({ ...post, status: 'draft', deletedAt: null }, false, post.id);
+        if (!res.success) throw new Error(res.error);
         fetchPosts();
-     } catch (e) {
+     } catch (e: any) {
         console.error(e);
+        alert("Có lỗi xảy ra: " + e.message);
      }
   };
 
   const handleBulkDelete = async () => {
     if (selectedPostIds.length === 0) return;
     try {
+      const { bulkDeleteBlogPosts, bulkTrashBlogPosts } = await import('@/app/actions/blog');
       if (currentTab === 'trash') {
         if (!confirm("Bác có chắc chắn muốn xóa vĩnh viễn các bài viết này?")) return;
-        await supabase.from('blogPosts').delete().in('id', selectedPostIds);
+        const res = await bulkDeleteBlogPosts(selectedPostIds);
+        if (!res.success) throw new Error(res.error);
       } else {
         if (!confirm("Đưa các bài viết đã chọn vào thùng rác?")) return;
-        await supabase.from('blogPosts').update({ status: 'trash', deletedAt: new Date().toISOString() }).in('id', selectedPostIds);
+        const res = await bulkTrashBlogPosts(selectedPostIds);
+        if (!res.success) throw new Error(res.error);
       }
       setSelectedPostIds([]);
       fetchPosts();
@@ -404,14 +408,6 @@ export default function AdminBlogManager() {
       <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <h2 className="text-xl font-bold font-sans text-gray-800">Quản lý Góc kiến thức</h2>
         <div className="flex items-center gap-3">
-          <button 
-             onClick={migrateLocalData} 
-             disabled={isMigrating}
-             className="bg-green-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-green-700 transition disabled:opacity-50"
-             title="Chuyển dữ liệu cũ từ máy tính này lên Database"
-          >
-            {isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ Dữ liệu cũ'}
-          </button>
           <button 
              onClick={() => fetchPosts()} 
              className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-gray-200 transition"
