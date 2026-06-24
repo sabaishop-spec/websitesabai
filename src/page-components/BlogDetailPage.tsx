@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import CTASection from '../components/CTASection';
-import { db } from '../firebase';
-import { doc, getDoc, onSnapshot, collection, getDocs } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
 
 export default function BlogDetailPage({ params }: { params?: { id?: string } }) {
@@ -18,25 +17,32 @@ export default function BlogDetailPage({ params }: { params?: { id?: string } })
 
   useEffect(() => {
     if (!id) return;
-    const unsubscribe = onSnapshot(doc(db, 'blogPosts', id), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (!data._deleted && data.status === 'published') {
-          setPost({ id: docSnap.id, ...data });
+    const fetchPost = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('blogPosts')
+          .select('*')
+          .or(`id.eq.${id},slug.eq.${id}`)
+          .single();
+
+        if (error) throw error;
+
+        if (data && (!data.deletedAt && data.status === 'published')) {
+          setPost(data);
         } else {
            setPost(null);
         }
-      } else {
-         setPost(null);
+      } catch (error) {
+        console.error("Supabase fetch post error:", error);
+        setPost(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }, (error) => {
-      console.error(error);
-      setLoading(false);
-    });
-    window.scrollTo(0, 0);
+    };
 
-    return () => unsubscribe();
+    fetchPost();
+    window.scrollTo(0, 0);
   }, [id]);
 
   const getLocalized = (field: string) => {

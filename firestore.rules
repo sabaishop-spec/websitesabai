@@ -7,8 +7,6 @@ service cloud.firestore {
     
     function isAdmin() {
       return request.auth != null && (
-        request.auth.token.email == 'sonnt.credit@gmail.com' || 
-        request.auth.token.email == 'sabaishop7979@gmail.com' ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
         (exists(/databases/$(database)/documents/settings/admin) && request.auth.uid == get(/databases/$(database)/documents/settings/admin).data.uid)
       );
@@ -37,10 +35,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     match /faqs/{id} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /testimonials/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }

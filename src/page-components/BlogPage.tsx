@@ -5,10 +5,8 @@ import { Clock, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { db } from '../firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
-import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import SEO from '../components/SEO';
 
 function BlogPageContent() {
@@ -18,29 +16,41 @@ function BlogPageContent() {
   const categoryQuery = searchParams?.get('category');
   const [visibleCount, setVisibleCount] = useState(12);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
-        const q = collection(db, 'blogPosts');
-        const snapshot = await getDocs(q);
-        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
-        posts.sort((a: any, b: any) => {
-           const timeA = a.createdAt || 0;
-           const timeB = b.createdAt || 0;
-           return timeB - timeA;
-        });
-        setBlogPosts(posts);
-        setLoading(false);
+        let query = supabase
+          .from('blogPosts')
+          .select('id, title, title_en, slug, category, category_en, image, date, date_en, excerpt, excerpt_en, seoDescription, seoDescription_en, createdAt, status')
+          .or('status.eq.published,status.is.null')
+          .order('createdAt', { ascending: false });
+
+        if (categoryQuery) {
+          query = query.eq('category', categoryQuery);
+        }
+
+        const { data: posts, error } = await query;
+        if (error) throw error;
+        
+        setBlogPosts(posts || []);
+
+        // Also fetch unique categories from posts (or from blogCategories if you prefer)
+        const { data: catData } = await supabase.from('blogCategories').select('name');
+        if (catData) {
+           setCategories(catData.map(c => c.name));
+        }
       } catch (error) {
-        console.error("Firebase fetch failed:", error);
+        console.error("Supabase fetch failed:", error);
+      } finally {
         setLoading(false);
       }
     };
     fetchPosts();
-  }, []);
+  }, [categoryQuery]);
 
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 12, blogPosts.length));
@@ -52,14 +62,6 @@ function BlogPageContent() {
     }
     return post[field];
   };
-
-  // Ensure default data is also filtered if missing status
-  const filteredBlogPosts = blogPosts.filter((p: any) => {
-      const isPublished = p.status === 'published' || !p.status;
-      if (!isPublished) return false;
-      if (categoryQuery && p.category !== categoryQuery) return false;
-      return true;
-  });
 
   return (
     <main className="pt-24 pb-24 min-h-screen bg-gray-50">
@@ -87,7 +89,7 @@ function BlogPageContent() {
 
         <div className="flex flex-wrap gap-4 mb-10 items-center">
              <Link href="/blog" className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${!categoryQuery ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>Tất cả</Link>
-             {Array.from(new Set(blogPosts.map(p => p.category).filter(Boolean))).map((cat: any) => (
+             {categories.map((cat: string) => (
                  <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${categoryQuery === cat ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
                     {cat}
                  </Link>
@@ -96,13 +98,13 @@ function BlogPageContent() {
 
         {loading ? (
             <div className="text-center py-20 text-gray-500 animate-pulse">Đang tải danh sách bài viết...</div>
-        ) : filteredBlogPosts.length === 0 ? (
+        ) : blogPosts.length === 0 ? (
            <div className="text-center py-20 text-gray-500">Không có bài viết nào trong chuyên mục này.</div>
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredBlogPosts.slice(0, visibleCount).map((post, index) => (
-                <Link href={`/blog/${post.id}`} key={post.id} className="block group cursor-pointer h-full">
+              {blogPosts.slice(0, visibleCount).map((post, index) => (
+                <Link href={`/blog/${post.slug || post.id}`} key={post.id} className="block group cursor-pointer h-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -111,9 +113,10 @@ function BlogPageContent() {
               >
                 <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
                   <img 
-                    src={post.image} 
+                    src={post.image || 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=800'} 
                     alt={getLocalized(post, 'title')} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-white/90 backdrop-blur text-brand-800 text-xs font-bold rounded-full shadow-sm">
@@ -130,7 +133,7 @@ function BlogPageContent() {
                     {getLocalized(post, 'title')}
                   </h4>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                    {getLocalized(post, 'excerpt') || post.seoDescription}
+                    {getLocalized(post, 'excerpt') || post.seoDescription || '...'}
                   </p>
                   <div className="mt-auto pt-4 flex items-center text-sm font-medium text-brand-800 border-t border-gray-50">
                     {t("Đọc tiếp")} <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -141,13 +144,13 @@ function BlogPageContent() {
           ))}
         </div>
 
-        {visibleCount < filteredBlogPosts.length && (
+        {visibleCount < blogPosts.length && (
           <div className="mt-16 text-center">
             <button 
               onClick={loadMore}
               className="px-8 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-full shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-95"
             >
-              {t("Xem thêm")} ({filteredBlogPosts.length - visibleCount})
+              {t("Xem thêm")} ({blogPosts.length - visibleCount})
             </button>
           </div>
         )}
