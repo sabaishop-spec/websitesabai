@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '../data/products';
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -22,6 +21,20 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   const [allPosts, setAllPosts] = useState<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const fetchAllPosts = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('blogPosts')
+        .select('id, title, slug, excerpt, category, content, status, deletedAt');
+        
+      if (!error && data) {
+         setAllPosts(data.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt));
+      }
+    } catch (e) {
+      console.error('Error fetching posts for search:', e);
+    }
+  }, []);
+
   // Focus input when open
   useEffect(() => {
     if (isOpen) {
@@ -33,39 +46,14 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       }
     } else {
       document.body.style.overflow = '';
-      setQuery('');
-      setResults({ products: [], posts: [] });
+      setTimeout(() => {
+        setQuery('');
+        setResults({ products: [], posts: [] });
+      }, 0);
     }
-  }, [isOpen]);
+  }, [isOpen, allPosts.length, fetchAllPosts]);
 
-  const fetchAllPosts = async () => {
-    try {
-      const snap = await getDocs(collection(db, 'blogPosts'));
-      const posts = snap.docs
-        .map((doc: any) => ({ id: doc.id, ...doc.data() }))
-        .filter((p: any) => p.status === 'published' || !p.status); // only published
-      setAllPosts(posts);
-    } catch (e) {
-      console.error('Error fetching posts for search:', e);
-    }
-  };
-
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults({ products: [], posts: [] });
-      return;
-    }
-
-    setLoading(true);
-    const searchTimeout = setTimeout(() => {
-      performSearch(query);
-      setLoading(false);
-    }, 300);
-
-    return () => clearTimeout(searchTimeout);
-  }, [query, allPosts]);
-
-  const performSearch = (q: string) => {
+  const performSearch = useCallback((q: string) => {
     const term = q.toLowerCase();
 
     // 1. Search products
@@ -93,7 +81,22 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
     );
 
     setResults({ products: matchedProducts, posts: matchedPosts });
-  };
+  }, [allPosts]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setTimeout(() => setResults({ products: [], posts: [] }), 0);
+      return;
+    }
+
+    setLoading(true);
+    const searchTimeout = setTimeout(() => {
+      performSearch(query);
+      setLoading(false);
+    }, 300);
+
+    return () => clearTimeout(searchTimeout);
+  }, [query, performSearch]);
 
   return (
     <AnimatePresence>
