@@ -1,51 +1,50 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { db, doc, getDoc, setDoc, collection, getDocs, deleteDoc, onSnapshot } from '../localDB';
+import { Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Check, X, Image as ImageIcon, Settings, Eye, Globe, RotateCcw, Pencil } from 'lucide-react';
 
 const BlogCategoriesManager = () => {
     const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingCat, setEditingCat] = useState<any>(null);
 
-  const fetchCats = async () => {
+  useEffect(() => {
     setLoading(true);
-    try {
-        const { data, error } = await supabase.from('blogCategories').select('*');
-        if (!error && data && data.length > 0) {
-            setCategories(data);
-        } else {
-            setCategories([
+    const unsubscribeCats = onSnapshot(collection(db, 'blogCategories'), (snap) => {
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (data.length === 0) {
+           data = [
               { id: '1', name: 'Kiến thức bọc răng sứ' },
               { id: '2', name: 'Kiến thức tổng quát' },
               { id: '3', name: 'Kiến thức niềng răng' },
               { id: '4', name: 'Kiến thức trồng răng' }
-            ]);
+           ];
         }
-    } catch(e) {
-        console.error(e);
-    } finally {
+        setCategories(data);
         setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCats();
+    }, (error) => {
+        setCategories([
+              { id: '1', name: 'Kiến thức bọc răng sứ' },
+              { id: '2', name: 'Kiến thức tổng quát' },
+              { id: '3', name: 'Kiến thức niềng răng' },
+              { id: '4', name: 'Kiến thức trồng răng' }
+        ]);
+        setLoading(false);
+    });
+    return () => unsubscribeCats();
   }, []);
     
     const handleSave = async (data: any) => {
         try {
             const id = data.id || Date.now().toString();
-            await supabase.from('blogCategories').upsert({ ...data, id });
+            await setDoc(doc(db, 'blogCategories', id), { ...data, id });
             setEditingCat(null);
-            fetchCats();
         } catch(e) {}
     }
     
     const handleDelete = async (id: string) => {
         if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return;
         try {
-            await supabase.from('blogCategories').delete().eq('id', id);
-            fetchCats();
+            await deleteDoc(doc(db, 'blogCategories', id));
         } catch(e) {}
     }
 
@@ -148,109 +147,113 @@ export default function AdminBlogManager() {
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash' | 'categories'>('published');
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
-  
-  // Pagination & Search
-  const [page, setPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [totalPages, setTotalPages] = useState(1);
-  const [counts, setCounts] = useState({ published: 0, draft: 0, trash: 0 });
-  const POSTS_PER_PAGE = 20;
+  const [isMigrating, setIsMigrating] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-      setPage(1); // Reset page on new search
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const fetchCounts = async () => {
+  // Migration logic
+  const migrateLocalData = async () => {
     try {
-      const getCount = async (statusFilter: string) => {
-        let q = supabase.from('blogPosts').select('id', { count: 'exact', head: true });
-        if (statusFilter === 'published') {
-           q = q.or('status.eq.published,status.is.null');
-        } else {
-           q = q.eq('status', statusFilter);
-        }
-        const { count } = await q;
-        return count || 0;
-      };
-      const [pub, draft, trash] = await Promise.all([
-        getCount('published'),
-        getCount('draft'),
-        getCount('trash')
-      ]);
-      setCounts({ published: pub, draft, trash });
-    } catch(e) {
-       console.error("Count error:", e);
+      if (typeof window === 'undefined') return;
+      
+      const localPostsStr = localStorage.getItem('localDB_data_blogPosts');
+      const localCatsStr = localStorage.getItem('localDB_data_blogCategories');
+      
+      if (!localPostsStr && !localCatsStr) {
+         window.alert("Không tìm thấy dữ liệu cũ trong Local Storage.");
+         return;
+      }
+
+      const confirmMigrate = window.confirm("Đã tìm thấy dữ liệu cũ trong Local Storage. Bạn có muốn đồng bộ lên Database không?");
+      if (!confirmMigrate) return;
+
+      setIsMigrating(true);
+      
+      if (localPostsStr) {
+          const localPosts = JSON.parse(localPostsStr);
+          for (const post of localPosts) {
+              if (post.id && !post._deleted) {
+                  const dbSnap = await getDoc(doc(db, 'blogPosts', post.id));
+                  if (!dbSnap.exists()) {
+                      await setDoc(doc(db, 'blogPosts', post.id), post);
+                  }
+              }
+          }
+      }
+
+      if (localCatsStr) {
+          const localCats = JSON.parse(localCatsStr);
+          for (const cat of localCats) {
+              if (cat.id && !cat._deleted) {
+                  const dbSnap = await getDoc(doc(db, 'blogCategories', cat.id));
+                  if (!dbSnap.exists()) {
+                      await setDoc(doc(db, 'blogCategories', cat.id), cat);
+                  }
+              }
+          }
+      }
+
+      localStorage.removeItem('localDB_data_blogPosts');
+      localStorage.removeItem('localDB_data_blogCategories');
+      window.alert("Đồng bộ dữ liệu thành công!");
+
+    } catch (error) {
+      console.error("Migration error:", error);
+      window.alert("Lỗi khi đồng bộ: " + (error as any).message);
+    } finally {
+      setIsMigrating(false);
     }
   };
 
-  const fetchPosts = useCallback(async () => {
-    if (currentTab === 'categories') return;
+  const fetchPosts = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('blogPosts')
-        .select('id, title, slug, category, status, date, createdAt, deletedAt', { count: 'exact' });
+      const snapshot = await getDocs(collection(db, 'blogPosts'));
+      let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      // Tab filter
-      if (currentTab === 'published') {
-        query = query.or('status.eq.published,status.is.null');
-      } else {
-        query = query.eq('status', currentTab);
-      }
+      // Clean up posts in trash older than 7 days
+      const now = new Date();
+      const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      data = await Promise.all(data.map(async (p: any) => {
+         if (p.status === 'trash' && p.deletedAt) {
+            const deletedTime = new Date(p.deletedAt).getTime();
+            if (now.getTime() - deletedTime > SEVEN_DAYS) {
+               try {
+                  await deleteDoc(doc(db, 'blogPosts', p.id));
+               } catch(e) {}
+               return null;
+            }
+         }
+         return p;
+      }));
+      data = data.filter(Boolean);
+      data.sort((a: any, b: any) => {
+         const timeA = a.createdAt || 0;
+         const timeB = b.createdAt || 0;
+         return timeB - timeA;
+      });
 
-      // Search filter
-      if (debouncedSearch) {
-        query = query.ilike('title', `%${debouncedSearch}%`);
-      }
-
-      // Pagination
-      const from = (page - 1) * POSTS_PER_PAGE;
-      const to = from + POSTS_PER_PAGE - 1;
-      query = query.order('createdAt', { ascending: false }).range(from, to);
-
-      const { data, count, error } = await query;
-      if (error) throw error;
-
-      setPosts(data || []);
-      setTotalPages(count ? Math.ceil(count / POSTS_PER_PAGE) : 1);
-      
-      if (!debouncedSearch) {
-         fetchCounts(); // Update counts if not searching
-      }
+      setPosts(data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [currentTab, page, debouncedSearch]);
+  };
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+  }, []);
 
-  const handleEdit = async (postSummary: any) => {
+  const handleEdit = (post: any) => {
+    setEditingPost({
+      ...post,
+      blocks: post.blocks || [],
+      showTOC: post.showTOC ?? true,
+      slug: post.slug || post.id,
+      status: post.status || 'published',
+      tags: post.tags || '',
+      excerpt: post.excerpt || ''
+    });
     setIsCreating(false);
-    // Fetch full post detail when editing
-    try {
-      const { data, error } = await supabase.from('blogPosts').select('*').eq('id', postSummary.id).single();
-      if (error) throw error;
-      setEditingPost({
-        ...data,
-        blocks: data.blocks || [],
-        showTOC: data.showTOC ?? true,
-        slug: data.slug || data.id,
-        status: data.status || 'published',
-        tags: data.tags || '',
-        excerpt: data.excerpt || ''
-      });
-    } catch(e) {
-      alert("Lỗi khi tải chi tiết bài viết");
-    }
   };
 
   const handleCreateNew = () => {
@@ -277,15 +280,26 @@ export default function AdminBlogManager() {
   };
 
   const handleSave = async (forceStatus?: 'draft' | 'published' | 'trash', isBackgroundMode = false) => {
-    if (!editingPost.title || !editingPost.slug) {
-       if (!isBackgroundMode) alert("Vui lòng nhập tiêu đề và đường dẫn");
+    if (!editingPost.title) {
+       if (isBackgroundMode) return;
+       try { window.alert("Vui lòng nhập tiêu đề"); } catch(e) {}
+       return;
+    }
+    if (!editingPost.slug) {
+       if (isBackgroundMode) return;
+       try { window.alert("Vui lòng nhập đường dẫn (slug)"); } catch(e) {}
        return;
     }
 
     const postId = editingPost.slug.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const currentDate = new Date().toLocaleDateString('vi-VN');
+    const currentDate = new Date().toLocaleDateString('vi-VN', {
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric'
+    });
     
     const isPublishing = forceStatus === 'published' || (!forceStatus && editingPost.status === 'published');
+
     const updateData = { 
         ...editingPost, 
         id: postId,
@@ -296,24 +310,25 @@ export default function AdminBlogManager() {
 
     try {
       if (isCreating) {
-         const { data: existing } = await supabase.from('blogPosts').select('id').eq('id', postId).single();
-         if (existing) {
-            if (!isBackgroundMode) alert("Đường dẫn này đã tồn tại, vui lòng chọn đường dẫn khác.");
+         const existing = await getDoc(doc(db, 'blogPosts', postId));
+         if (existing.exists()) {
+            if (isBackgroundMode) return;
+            try { window.alert("Đường dẫn này đã tồn tại, vui lòng chọn đường dẫn khác."); } catch(e) {}
             return;
          }
       }
       
-      await supabase.from('blogPosts').upsert(updateData);
-      
+      await setDoc(doc(db, 'blogPosts', postId), updateData, { merge: true });
       if (!isCreating && postId !== editingPost.id) {
-          await supabase.from('blogPosts').update({ status: 'trash' }).eq('id', editingPost.id);
+          // If slug changed, instead of hard deleting (which makes defaults respawn), we mark as trash
+          await setDoc(doc(db, 'blogPosts', editingPost.id), { ...editingPost, status: 'trash' }, { merge: true });
       }
 
       if (!isBackgroundMode) {
          setEditingPost(null);
          setIsCreating(false);
          fetchPosts();
-         alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`);
+         try { window.alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`); } catch(e) {}
       } else {
          setIsCreating(false);
          setEditingPost((prev: any) => ({...prev, id: postId}));
@@ -321,33 +336,55 @@ export default function AdminBlogManager() {
       }
     } catch (e: any) {
       console.error("Error saving post", e);
-      if (!isBackgroundMode) alert("Đã xảy ra lỗi khi lưu.");
+      if (!isBackgroundMode) {
+         const errorMsg = [
+           `Lỗi Database: ${e.message || 'Không xác định'}`
+         ].filter(Boolean).join('\n');
+         
+         try { window.alert("Đã xảy ra lỗi khi lưu:\n\n" + errorMsg); } catch(err) {}
+      }
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể phục hồi!')) return;
+    let confirmed = false;
     try {
-      await supabase.from('blogPosts').delete().eq('id', id);
-      fetchPosts();
-    } catch (e: any) {
-      alert("Có lỗi xảy ra: " + e.message);
+       confirmed = window.confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể phục hồi!');
+    } catch(e) { confirmed = true; } // Fallback if blocked
+    
+    if (confirmed) {
+      try {
+        await deleteDoc(doc(db, 'blogPosts', id));
+        fetchPosts();
+      } catch (e: any) {
+        console.error(e);
+        alert("Có lỗi xảy ra: " + e.message);
+      }
     }
   };
 
   const handleMoveToTrash = async (post: any) => {
-     if (!confirm('Bạn có chắc chắn muốn chuyển bài viết này vào thùng rác?')) return;
+     let confirmed = false;
      try {
-        await supabase.from('blogPosts').update({ status: 'trash', deletedAt: new Date().toISOString() }).eq('id', post.id);
-        fetchPosts();
-     } catch (e: any) {
-        alert("Có lỗi xảy ra: " + e.message);
+        confirmed = window.confirm('Bạn có chắc chắn muốn chuyển bài viết này vào thùng rác?');
+     } catch(e) { confirmed = true; }
+     
+     if (confirmed) {
+       try {
+          await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
+          fetchPosts();
+       } catch (e: any) {
+          console.error(e);
+          alert("Có lỗi xảy ra: " + e.message);
+       }
      }
   };
 
   const handleRestore = async (post: any) => {
      try {
-        await supabase.from('blogPosts').update({ status: 'draft', deletedAt: null }).eq('id', post.id);
+        const updateData = { ...post, status: 'draft' };
+        delete updateData.deletedAt;
+        await setDoc(doc(db, 'blogPosts', post.id), updateData, { merge: true });
         fetchPosts();
      } catch (e) {
         console.error(e);
@@ -358,15 +395,25 @@ export default function AdminBlogManager() {
     if (selectedPostIds.length === 0) return;
     try {
       if (currentTab === 'trash') {
-        if (!confirm("Bác có chắc chắn muốn xóa vĩnh viễn các bài viết này?")) return;
-        await supabase.from('blogPosts').delete().in('id', selectedPostIds);
+        const confirmPermanent = window.confirm("Bác có chắc chắn muốn xóa vĩnh viễn các bài viết này?");
+        if (!confirmPermanent) return;
+        for (const id of selectedPostIds) {
+          await deleteDoc(doc(db, 'blogPosts', id));
+        }
       } else {
-        if (!confirm("Đưa các bài viết đã chọn vào thùng rác?")) return;
-        await supabase.from('blogPosts').update({ status: 'trash', deletedAt: new Date().toISOString() }).in('id', selectedPostIds);
+        const confirmTrash = window.confirm("Đưa các bài viết đã chọn vào thùng rác?");
+        if (!confirmTrash) return;
+        for (const id of selectedPostIds) {
+          const post = posts.find((p) => p.id === id);
+          if (post) {
+            await setDoc(doc(db, 'blogPosts', id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
+          }
+        }
       }
       setSelectedPostIds([]);
       fetchPosts();
     } catch (e: any) {
+      console.error(e);
       alert("Có lỗi xảy ra: " + e.message);
     }
   };
@@ -376,10 +423,10 @@ export default function AdminBlogManager() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedPostIds.length === posts.length) {
+    if (selectedPostIds.length === activePosts.length) {
       setSelectedPostIds([]);
     } else {
-      setSelectedPostIds(posts.map(p => p.id));
+      setSelectedPostIds(activePosts.map(p => p.id));
     }
   };
 
@@ -425,56 +472,44 @@ export default function AdminBlogManager() {
       </div>
 
       <div className="bg-white shadow-sm border border-gray-200 overflow-hidden">
-        {/* Tabs & Search */}
-        <div className="flex flex-col md:flex-row border-b border-gray-200 bg-gray-50 px-4 justify-between md:items-center py-2 gap-4">
-          <div className="flex overflow-x-auto hide-scrollbar">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 bg-gray-50 px-4 justify-between items-center">
+          <div className="flex">
              <button 
                onClick={() => { setCurrentTab('published'); setSelectedPostIds([]); }} 
-               className={`whitespace-nowrap p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'published' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+               className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'published' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
              >
-               Đã xuất bản ({counts.published})
+               Đã xuất bản ({posts.filter(p => p.status === 'published').length})
              </button>
              <button 
                onClick={() => { setCurrentTab('draft'); setSelectedPostIds([]); }} 
-               className={`whitespace-nowrap p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'draft' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+               className={`p-3 font-medium text-sm border-b-2 mr-4 ${currentTab === 'draft' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
              >
-               Bản nháp ({counts.draft})
+               Bản nháp ({posts.filter(p => p.status === 'draft').length})
              </button>
              <button 
                onClick={() => { setCurrentTab('trash'); setSelectedPostIds([]); }} 
-               className={`whitespace-nowrap p-3 font-medium text-sm border-b-2 mr-4 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+               className={`p-3 font-medium text-sm border-b-2 mr-4 flex items-center gap-1 ${currentTab === 'trash' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
              >
-               <Trash2 size={16} /> Thùng rác ({counts.trash})
+               <Trash2 size={16} /> Thùng rác ({posts.filter(p => p.status === 'trash').length})
              </button>
              <button 
                onClick={() => { setCurrentTab('categories'); setSelectedPostIds([]); }} 
-               className={`whitespace-nowrap p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'categories' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+               className={`p-3 font-medium text-sm border-b-2 flex items-center gap-1 ${currentTab === 'categories' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
              >
                Danh mục
              </button>
           </div>
-          <div className="flex items-center gap-3">
-            {currentTab !== 'categories' && (
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Tìm kiếm bài viết..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full md:w-64"
-                />
-              </div>
-            )}
-            {selectedPostIds.length > 0 && (
+          {selectedPostIds.length > 0 && (
+            <div className="flex items-center">
               <button 
                 onClick={handleBulkDelete} 
-                className="bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition flex items-center gap-1 shrink-0"
+                className="bg-red-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-600 transition flex items-center gap-1"
               >
                 <Trash2 size={14} /> {currentTab === 'trash' ? 'Xóa vĩnh viễn' : 'Xóa'} ({selectedPostIds.length})
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {currentTab === 'categories' ? (
@@ -488,7 +523,7 @@ export default function AdminBlogManager() {
                   <input 
                     type="checkbox" 
                     className="w-4 h-4 cursor-pointer" 
-                    checked={posts.length > 0 && selectedPostIds.length === posts.length} 
+                    checked={activePosts.length > 0 && selectedPostIds.length === activePosts.length} 
                     onChange={toggleSelectAll} 
                   />
                 </th>
@@ -499,7 +534,7 @@ export default function AdminBlogManager() {
               </tr>
             </thead>
             <tbody>
-              {posts.map(post => (
+              {activePosts.map(post => (
                 <tr key={post.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="p-4 text-center">
                     <input 
@@ -513,7 +548,7 @@ export default function AdminBlogManager() {
                     <div className="font-bold text-blue-600 hover:underline cursor-pointer" onClick={() => post.status !== 'trash' && handleEdit(post)}>{post.title}</div>
                     <div className="text-sm text-gray-500 mt-1">{post.slug}</div>
                     {post.status === 'trash' && post.deletedAt && (
-                      <div className="text-xs text-red-500 mt-1 italic">Đã xóa vào: {new Date(post.deletedAt).toLocaleDateString('vi-VN')}</div>
+                      <div className="text-xs text-red-500 mt-1 italic">Đã xóa vào: {new Date(post.deletedAt).toLocaleDateString('vi-VN')} (Sẽ bị xóa vĩnh viễn sau 7 ngày)</div>
                     )}
                   </td>
                   <td className="p-4">
@@ -522,7 +557,7 @@ export default function AdminBlogManager() {
                      </span>
                   </td>
                   <td className="p-4 text-sm text-gray-700">{post.category || '—'}</td>
-                  <td className="p-4 text-right whitespace-nowrap">
+                  <td className="p-4 text-right">
                     {post.status !== 'trash' ? (
                        <>
                          <button onClick={() => handleEdit(post)} className="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Chỉnh sửa</button>
@@ -539,33 +574,13 @@ export default function AdminBlogManager() {
                   </td>
                 </tr>
               ))}
-              {posts.length === 0 && (
+              {activePosts.length === 0 && (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-gray-500">Không có bài viết nào trong mục này.</td>
                 </tr>
               )}
             </tbody>
           </table>
-          
-          {totalPages > 1 && (
-             <div className="flex justify-between items-center p-4 border-t border-gray-200 bg-gray-50">
-                <button 
-                  disabled={page <= 1} 
-                  onClick={() => setPage(p => p - 1)}
-                  className="px-4 py-2 border border-gray-300 rounded text-sm disabled:opacity-50 bg-white"
-                >
-                  Trang trước
-                </button>
-                <span className="text-sm text-gray-600">Trang {page} / {totalPages}</span>
-                <button 
-                  disabled={page >= totalPages} 
-                  onClick={() => setPage(p => p + 1)}
-                  className="px-4 py-2 border border-gray-300 rounded text-sm disabled:opacity-50 bg-white"
-                >
-                  Trang tiếp
-                </button>
-             </div>
-          )}
         </div>
         )}
       </div>
@@ -598,17 +613,17 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
   useEffect(() => {
     async function fetchCats() {
        try {
-           const { data } = await supabase.from('blogCategories').select('*');
-           if (data && data.length > 0) {
-               setCategories(data);
-           } else {
-               setCategories([
+           const snap = await getDocs(collection(db, 'blogCategories'));
+           let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+           if (data.length === 0) {
+               data = [
                   { id: '1', name: 'Kiến thức bọc răng sứ' },
                   { id: '2', name: 'Kiến thức tổng quát' },
                   { id: '3', name: 'Kiến thức niềng răng' },
                   { id: '4', name: 'Kiến thức trồng răng' }
-               ]);
+               ];
            }
+           setCategories(data);
        } catch(e) {
            setCategories([
               { id: '1', name: 'Kiến thức bọc răng sứ' },

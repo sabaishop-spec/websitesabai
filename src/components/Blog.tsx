@@ -4,7 +4,9 @@ import { ArrowRight, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { db } from '../firebase';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 
 export default function Blog() {
   const { t, i18n } = useTranslation();
@@ -13,16 +15,16 @@ export default function Blog() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const { data: posts, error } = await supabase
-          .from('blogPosts')
-          .select('id, title, title_en, slug, category, category_en, image, date, date_en, excerpt, excerpt_en, seoDescription, seoDescription_en, createdAt, status')
-          .or('status.eq.published,status.is.null')
-          .is('deletedAt', null)
-          .order('createdAt', { ascending: false })
-          .limit(4);
-
-        if (error) throw error;
-        setBlogPosts(posts || []);
+        const q = collection(db, 'blogPosts');
+        const snapshot = await getDocs(q);
+        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        posts = posts.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt);
+        posts.sort((a: any, b: any) => {
+           const timeA = a.createdAt || 0;
+           const timeB = b.createdAt || 0;
+           return timeB - timeA;
+        });
+        setBlogPosts(posts);
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }
@@ -30,7 +32,7 @@ export default function Blog() {
     fetchPosts();
   }, []);
 
-  const latestPosts = blogPosts;
+  const latestPosts = blogPosts.slice(0, 4);
 
   const getLocalized = (post: any, field: string) => {
     if (i18n.language === 'en' && post[`${field}_en`]) {
@@ -57,7 +59,7 @@ export default function Blog() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {latestPosts.map((post, index) => (
-            <Link href={`/blog/${post.slug || post.id}`} key={post.id} className="block group cursor-pointer flex flex-col h-full h-full">
+            <Link href={`/blog/${post.id}`} key={post.id} className="block group cursor-pointer flex flex-col h-full h-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
