@@ -21,23 +21,25 @@ function BlogPageContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = collection(db, 'blogPosts');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-      posts = posts.filter((p: any) => p.status === 'published' || !p.status);
-      posts.sort((a: any, b: any) => {
-         const timeA = a.createdAt || 0;
-         const timeB = b.createdAt || 0;
-         return timeB - timeA;
-      });
-      setBlogPosts(posts);
-      setLoading(false);
-    }, (error) => {
-      console.error("Firebase fetch failed:", error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    const fetchPosts = async () => {
+      try {
+        const q = collection(db, 'blogPosts');
+        const snapshot = await getDocs(q);
+        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        posts = posts.filter((p: any) => p.status === 'published' || !p.status);
+        posts.sort((a: any, b: any) => {
+           const timeA = a.createdAt || 0;
+           const timeB = b.createdAt || 0;
+           return timeB - timeA;
+        });
+        setBlogPosts(posts);
+        setLoading(false);
+      } catch (error) {
+        console.error("Firebase fetch failed:", error);
+        setLoading(false);
+      }
+    };
+    fetchPosts();
   }, []);
 
   const loadMore = () => {

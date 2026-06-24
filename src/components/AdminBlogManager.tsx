@@ -204,9 +204,10 @@ export default function AdminBlogManager() {
     }
   };
 
-  useEffect(() => {
+  const fetchPosts = async () => {
     setLoading(true);
-    const unsubscribe = onSnapshot(collection(db, 'blogPosts'), async (snapshot) => {
+    try {
+      const snapshot = await getDocs(collection(db, 'blogPosts'));
       let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 
       // Clean up posts in trash older than 7 days
@@ -216,7 +217,9 @@ export default function AdminBlogManager() {
          if (p.status === 'trash' && p.deletedAt) {
             const deletedTime = new Date(p.deletedAt).getTime();
             if (now.getTime() - deletedTime > SEVEN_DAYS) {
-               await deleteDoc(doc(db, 'blogPosts', p.id));
+               try {
+                  await deleteDoc(doc(db, 'blogPosts', p.id));
+               } catch(e) {}
                return null;
             }
          }
@@ -230,13 +233,15 @@ export default function AdminBlogManager() {
       });
 
       setPosts(data);
-      setLoading(false);
-    }, (error) => {
+    } catch (error) {
       console.error(error);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
 
-    return () => unsubscribe();
+  useEffect(() => {
+    fetchPosts();
   }, []);
 
   const handleEdit = (post: any) => {
@@ -323,10 +328,12 @@ export default function AdminBlogManager() {
       if (!isBackgroundMode) {
          setEditingPost(null);
          setIsCreating(false);
+         fetchPosts();
          try { window.alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`); } catch(e) {}
       } else {
          setIsCreating(false);
          setEditingPost((prev: any) => ({...prev, id: postId}));
+         fetchPosts();
       }
     } catch (e: any) {
       console.error("Error saving post", e);
@@ -349,6 +356,7 @@ export default function AdminBlogManager() {
     if (confirmed) {
       try {
         await deleteDoc(doc(db, 'blogPosts', id));
+        fetchPosts();
       } catch (e: any) {
         console.error(e);
         alert("Có lỗi xảy ra: " + e.message);
@@ -365,6 +373,7 @@ export default function AdminBlogManager() {
      if (confirmed) {
        try {
           await setDoc(doc(db, 'blogPosts', post.id), { ...post, status: 'trash', deletedAt: new Date().toISOString() }, { merge: true });
+          fetchPosts();
        } catch (e: any) {
           console.error(e);
           alert("Có lỗi xảy ra: " + e.message);
@@ -377,6 +386,7 @@ export default function AdminBlogManager() {
         const updateData = { ...post, status: 'draft' };
         delete updateData.deletedAt;
         await setDoc(doc(db, 'blogPosts', post.id), updateData, { merge: true });
+        fetchPosts();
      } catch (e) {
         console.error(e);
      }
@@ -402,6 +412,7 @@ export default function AdminBlogManager() {
         }
       }
       setSelectedPostIds([]);
+      fetchPosts();
     } catch (e: any) {
       console.error(e);
       alert("Có lỗi xảy ra: " + e.message);
@@ -448,6 +459,12 @@ export default function AdminBlogManager() {
              title="Chuyển dữ liệu cũ từ máy tính này lên Database"
           >
             {isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ Dữ liệu cũ'}
+          </button>
+          <button 
+             onClick={() => fetchPosts()} 
+             className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-gray-200 transition"
+          >
+            <RotateCcw size={18} /> Tải lại
           </button>
           <button onClick={handleCreateNew} className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 hover:bg-blue-700 transition">
             <Plus size={18} /> Viết bài mới

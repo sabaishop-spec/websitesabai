@@ -13,21 +13,23 @@ export default function Blog() {
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    const q = collection(db, 'blogPosts');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-      posts = posts.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt);
-      posts.sort((a: any, b: any) => {
-         const timeA = a.createdAt || 0;
-         const timeB = b.createdAt || 0;
-         return timeB - timeA;
-      });
-      setBlogPosts(posts);
-    }, (error) => {
-      console.error("Error fetching blog posts:", error);
-    });
-
-    return () => unsubscribe();
+    const fetchPosts = async () => {
+      try {
+        const q = collection(db, 'blogPosts');
+        const snapshot = await getDocs(q);
+        let posts = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        posts = posts.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt);
+        posts.sort((a: any, b: any) => {
+           const timeA = a.createdAt || 0;
+           const timeB = b.createdAt || 0;
+           return timeB - timeA;
+        });
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error("Error fetching blog posts:", error);
+      }
+    };
+    fetchPosts();
   }, []);
 
   const latestPosts = blogPosts.slice(0, 4);
