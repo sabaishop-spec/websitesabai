@@ -18,7 +18,7 @@ export default function Blog() {
           .select('id, title, title_en, slug, category, category_en, image, date, date_en, excerpt, excerpt_en, seoDescription, seoDescription_en, createdAt, status')
           .or('status.eq.published,status.is.null')
           .is('deletedAt', null)
-          .order('createdAt', { ascending: false })
+          .order('createdAt', { ascending: false, nullsFirst: false })
           .limit(4);
 
         if (error) throw error;

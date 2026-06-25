@@ -211,7 +211,7 @@ export default function AdminBlogManager() {
       // Pagination
       const from = (page - 1) * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
-      query = query.order('createdAt', { ascending: false }).range(from, to);
+      query = query.order('createdAt', { ascending: false, nullsFirst: false }).range(from, to);
 
       const { data, count, error } = await query;
       if (error) throw error;
