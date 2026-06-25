@@ -4,6 +4,12 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('public_assets', 'public_assets', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- Xóa các policy cũ nếu có để tránh lỗi trùng lặp
+DROP POLICY IF EXISTS "Public read access" ON storage.objects;
+DROP POLICY IF EXISTS "Public insert access" ON storage.objects;
+DROP POLICY IF EXISTS "Public update access" ON storage.objects;
+DROP POLICY IF EXISTS "Public delete access" ON storage.objects;
+
 -- Cho phép đọc ảnh công khai
 CREATE POLICY "Public read access" 
 ON storage.objects FOR SELECT 
