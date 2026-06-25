@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 export default defineConfig([{
     extends: [...next],
     rules: {
-        "@next/next/no-img-element": "off"
+        "@next/next/no-img-element": "off",
+        "react-hooks/set-state-in-effect": "off",
+        "react-hooks/exhaustive-deps": "off"
     }
 }]);

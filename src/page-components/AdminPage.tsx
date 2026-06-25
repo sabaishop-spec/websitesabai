@@ -384,7 +384,6 @@ const GenericCollectionManager = ({ title, collectionName, fields, allowReorder 
 
   useEffect(() => {
     fetchItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionName]);
 
   async function fetchItems() {
