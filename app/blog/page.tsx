@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const { data: posts } = await supabase
     .from('blogPosts')
-    .select('id, title, title_en, slug, category, category_en, image, date, date_en, excerpt, excerpt_en, seoDescription, seoDescription_en, createdAt, status')
+    .select('id, title, title_en, slug, category, image, date, excerpt, excerpt_en, seoDescription, createdAt, status')
     .or('status.eq.published,status.is.null')
     .is('deletedAt', null)
     .order('createdAt', { ascending: false, nullsFirst: false });
