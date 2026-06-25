@@ -5,11 +5,28 @@ import { supabase } from '@/src/lib/supabase';
 
 export async function saveBlogPost(updateData: any, isCreating: boolean, oldId?: string) {
   try {
-    if (isCreating) {
-      const { data: existing } = await supabase.from('blogPosts').select('id').eq('id', updateData.id).single();
-      if (existing) {
-        return { success: false, error: 'Đường dẫn này đã tồn tại, vui lòng chọn đường dẫn khác.' };
+    let finalId = updateData.id;
+    let finalSlug = updateData.slug || finalId;
+    
+    // Auto-generate unique slug if it exists (for both creation and when changing slug)
+    if (isCreating || (oldId && finalId !== oldId)) {
+      let counter = 1;
+      let existing = true;
+      let currentIdToCheck = finalId;
+      
+      while (existing) {
+        const { data } = await supabase.from('blogPosts').select('id').eq('id', currentIdToCheck).single();
+        if (data) {
+          counter++;
+          currentIdToCheck = `${finalId}-${counter}`;
+        } else {
+          existing = false;
+        }
       }
+      finalId = currentIdToCheck;
+      finalSlug = finalId;
+      updateData.id = finalId;
+      updateData.slug = finalSlug;
     }
 
     const { error } = await supabase.from('blogPosts').upsert(updateData);
@@ -19,18 +36,19 @@ export async function saveBlogPost(updateData: any, isCreating: boolean, oldId?:
     }
 
     if (!isCreating && oldId && updateData.id !== oldId) {
-      const { error: trashError } = await supabase.from('blogPosts').update({ status: 'trash' }).eq('id', oldId);
-      if (trashError) {
-        console.error('Supabase trash error:', trashError);
-        return { success: false, error: 'Lỗi khi xóa bài cũ: ' + trashError.message };
+      // If we changed the ID, we should permanently delete the old one so it doesn't leave duplicates in trash
+      // unless that's intended, but deleting is cleaner when just renaming slug.
+      const { error: deleteError } = await supabase.from('blogPosts').delete().eq('id', oldId);
+      if (deleteError) {
+        console.error('Supabase delete old post error:', deleteError);
       }
     }
 
     // Revalidate paths so the frontend gets fresh data!
     revalidatePath('/blog');
-    revalidatePath(`/blog/${updateData.slug || updateData.id}`);
+    revalidatePath(`/blog/${finalSlug}`);
 
-    return { success: true };
+    return { success: true, newId: finalId };
   } catch (err: any) {
     console.error('Server Action saveBlogPost error:', err);
     return { success: false, error: err.message || 'Lỗi không xác định.' };

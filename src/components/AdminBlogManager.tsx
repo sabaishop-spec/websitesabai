@@ -295,7 +295,7 @@ export default function AdminBlogManager() {
     };
 
     try {
-      const { saveBlogPost, deleteBlogPost } = await import('@/app/actions/blog');
+      const { saveBlogPost } = await import('@/app/actions/blog');
       const res = await saveBlogPost(updateData, isCreating, editingPost.id);
       
       if (!res.success) {
@@ -310,7 +310,7 @@ export default function AdminBlogManager() {
          alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`);
       } else {
          setIsCreating(false);
-         setEditingPost((prev: any) => ({...prev, id: postId}));
+         setEditingPost((prev: any) => ({...prev, id: res.newId || postId, slug: res.newId || postId}));
          fetchPosts();
       }
     } catch (e: any) {
