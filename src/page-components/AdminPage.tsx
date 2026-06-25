@@ -219,10 +219,19 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                           const file = e.target.files?.[0];
                           if (file) {
                             try {
-                              const compressedDataUrl = await compressImage(file, 800);
-                              handleChange(field.name, compressedDataUrl);
+                              const fileExt = file.name.split('.').pop();
+                              const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                              const filePath = `products/${fileName}`;
+                              const { data, error } = await supabase.storage.from('public_assets').upload(filePath, file);
+                              if (error) {
+                                console.error("Storage upload error:", error);
+                                window.alert("Lỗi: Storage bucket 'public_assets' chưa được cấu hình. Vui lòng chạy storage_setup.sql trong Supabase.");
+                              } else {
+                                const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+                                handleChange(field.name, publicUrlData.publicUrl);
+                              }
                             } catch (err) {
-                              console.error('Lỗi khi nén ảnh', err);
+                              console.error('Lỗi xử lý ảnh', err);
                             }
                           }
                         }}
@@ -311,12 +320,22 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                                  const file = e.target.files?.[0];
                                  if (file) {
                                     try {
-                                        const compressedDataUrl = await compressImage(file, 400, 0.8);
-                                        const newVals = [...(val || [])];
-                                        newVals[idx] = { ...newVals[idx], image: compressedDataUrl };
-                                        handleChange(field.name, newVals);
+                                        const fileExt = file.name.split('.').pop();
+                                        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                                        const filePath = `reviews/${fileName}`;
+                                        const { data, error } = await supabase.storage.from('public_assets').upload(filePath, file);
+                                        
+                                        if (error) {
+                                            console.error("Storage upload error:", error);
+                                            window.alert("Lỗi: Storage bucket 'public_assets' chưa được cấu hình. Vui lòng chạy storage_setup.sql trong Supabase.");
+                                        } else {
+                                            const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+                                            const newVals = [...(val || [])];
+                                            newVals[idx] = { ...newVals[idx], image: publicUrlData.publicUrl };
+                                            handleChange(field.name, newVals);
+                                        }
                                     } catch (err) {
-                                        console.error('Lỗi khi nén ảnh', err);
+                                        console.error('Lỗi khi tải ảnh lên', err);
                                     }
                                  }
                                }} className="text-sm" />

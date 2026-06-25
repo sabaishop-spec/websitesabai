@@ -105,11 +105,22 @@ export default function AdminTestimonialsManager() {
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const compressed = await compressImage(file);
-        setFormData({ ...formData, image: compressed });
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `testimonials/${fileName}`;
+        
+        const { data, error } = await supabase.storage.from('public_assets').upload(filePath, file);
+        
+        if (error) {
+           console.error("Storage upload error:", error);
+           window.alert("Lỗi: Storage bucket 'public_assets' chưa được cấu hình. Vui lòng chạy storage_setup.sql trong Supabase.");
+        } else {
+           const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+           setFormData({ ...formData, image: publicUrlData.publicUrl });
+        }
       } catch (err) {
-        console.error("Error compressing image", err);
-        window.alert('Có lỗi xảy ra khi nén ảnh.');
+        console.error("Error processing image", err);
+        window.alert('Có lỗi xảy ra khi xử lý ảnh.');
       }
     }
   };

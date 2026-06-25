@@ -60,9 +60,7 @@ export default function SiteSettingsManager() {
         
         if (error) {
            console.error("Storage upload error:", error);
-           // Fallback to base64 if storage bucket is not available yet
-           const compressedDataUrl = await compressImage(file, 800, 0.8);
-           handleChange(key, compressedDataUrl);
+           window.alert("Lỗi: Storage bucket 'public_assets' chưa được cấu hình. Vui lòng chạy storage_setup.sql trong Supabase.");
         } else {
            const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
            handleChange(key, publicUrlData.publicUrl);

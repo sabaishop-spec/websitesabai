@@ -690,8 +690,26 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
   };
 
   const handleImageUpload = async (file: File) => {
-    const compressed = await compressImage(file, 1200);
-    return compressed;
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `blog/${fileName}`;
+      
+      const { data, error } = await supabase.storage.from('public_assets').upload(filePath, file);
+      
+      if (error) {
+         console.error("Storage upload error:", error);
+         alert("Vui lòng tạo Storage bucket tên là 'public_assets' trong Supabase (chạy file storage_setup.sql) để upload ảnh.");
+         return '';
+      } else {
+         const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+         return publicUrlData.publicUrl;
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Vui lòng tạo Storage bucket tên là 'public_assets' trong Supabase (chạy file storage_setup.sql) để upload ảnh.");
+      return '';
+    }
   };
 
   return (
