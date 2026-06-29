@@ -91,7 +91,33 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
+      <div 
+        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full"
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          const a = target.closest('a');
+          if (a) {
+            const href = a.getAttribute('href');
+            if (href && href.startsWith('#')) {
+              e.preventDefault();
+              const id = href.substring(1);
+              if (id) {
+                const el = document.getElementById(id) || document.getElementById(`block-${id}`);
+                if (el) {
+                  const headerOffset = 100;
+                  const elementPosition = el.getBoundingClientRect().top;
+                  const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                  window.history.replaceState(null, '', href);
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                  });
+                }
+              }
+            }
+          }
+        }}
+      >
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-12">
           {post.image && (
             <div className="w-full bg-gray-100 border-b border-gray-100">
@@ -173,6 +199,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
       const headerOffset = 100;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.history.replaceState(null, '', `#block-${id}`);
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth"

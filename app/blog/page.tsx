@@ -1,8 +1,14 @@
+import type { Metadata } from 'next';
 import MainLayout from '../MainLayout';
 import BlogPage from '@/src/page-components/BlogPage';
 import { supabase } from '@/src/lib/supabase';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Blog Kiến Thức Chỉnh Nha',
+  description: 'Khám phá các bài viết, chia sẻ kiến thức về chỉnh nha, niềng răng từ chuyên gia FURANO.',
+};
 
 export default async function Page() {
   const { data: posts } = await supabase
