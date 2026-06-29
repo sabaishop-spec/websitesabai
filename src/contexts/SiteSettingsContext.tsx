@@ -4,9 +4,9 @@ import { db, doc, getDoc } from '../localDB';
 
 const SiteSettingsContext = createContext<any>({});
 
-export const SiteSettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [settings, setSettings] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(true);
+export const SiteSettingsProvider = ({ children, initialSettings }: { children: React.ReactNode, initialSettings?: any }) => {
+  const [settings, setSettings] = useState<any>(initialSettings || {});
+  const [isLoading, setIsLoading] = useState(!initialSettings);
 
   useEffect(() => {
     let isMounted = true;

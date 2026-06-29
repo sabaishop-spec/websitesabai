@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: 'Khám phá các sản phẩm chăm sóc răng miệng chuyên biệt từ FURANO.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function Page() {
   return (
     <MainLayout>
