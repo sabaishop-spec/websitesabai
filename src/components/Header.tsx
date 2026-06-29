@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, ArrowRight, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { categories } from '../data/products';
 import FuranoLogo from './FuranoLogo';
 
 import 'firebase/firestore';
@@ -22,6 +21,7 @@ export default function Header() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language === 'en' ? 'EN' : 'VN');
   const [blogCategories, setBlogCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchCats() {
@@ -30,24 +30,42 @@ export default function Header() {
            let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
            if (data.length > 0) {
               setBlogCategories(data);
-           } else {
-              setBlogCategories([
-                  { id: '1', name: 'Kiến thức bọc răng sứ' },
-                  { id: '2', name: 'Kiến thức tổng quát' },
-                  { id: '3', name: 'Kiến thức niềng răng' },
-                  { id: '4', name: 'Kiến thức trồng răng' }
-               ]);
            }
-       } catch(e) {
-           setBlogCategories([
-              { id: '1', name: 'Kiến thức bọc răng sứ' },
-              { id: '2', name: 'Kiến thức tổng quát' },
-              { id: '3', name: 'Kiến thức niềng răng' },
-              { id: '4', name: 'Kiến thức trồng răng' }
-           ]);
-       }
+       } catch(e) { }
     }
     fetchCats();
+
+    async function fetchProducts() {
+        try {
+            const snap = await getDocs(collection(db, 'products'));
+            let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            data.sort((a, b) => {
+              const orderA = typeof a.order === 'number' ? a.order : 999;
+              const orderB = typeof b.order === 'number' ? b.order : 999;
+              if (orderA === orderB) return a.id.localeCompare(b.id);
+              return orderA - orderB;
+            });
+
+            if (data.length > 0) {
+               setCategories(data);
+            }
+        } catch(e) {}
+    }
+    fetchProducts();
+    
+    const handleUpdate = () => {
+      fetchCats();
+      fetchProducts();
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('localDB_updated', handleUpdate);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('localDB_updated', handleUpdate);
+      }
+    };
   }, []);
 
   useEffect(() => {

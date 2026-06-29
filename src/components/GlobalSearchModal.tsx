@@ -5,8 +5,8 @@ import { Search, X, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { categories } from '../data/products';
 import { supabase } from '../lib/supabase';
+import { db, collection, getDocs } from '../localDB';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   const [results, setResults] = useState<{ products: any[], posts: any[] }>({ products: [], posts: [] });
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const fetchAllPosts = useCallback(async () => {
@@ -30,6 +31,10 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
       if (!error && data) {
          setAllPosts(data.filter((p: any) => (p.status === 'published' || !p.status) && !p.deletedAt));
       }
+
+      const snap = await getDocs(collection(db, 'products'));
+      let catData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setCategories(catData);
     } catch (e) {
       console.error('Error fetching posts for search:', e);
     }

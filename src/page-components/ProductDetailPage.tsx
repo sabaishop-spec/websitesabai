@@ -5,7 +5,6 @@ import { useState, useEffect, useMemo } from 'react';
 import CTASection from '../components/CTASection';
 import { useTranslation } from 'react-i18next';
 import { db, collection, getDocs } from '../localDB';
-import { categories as defaultCategories } from '../data/products';
 import ProductReviews from '../components/ProductReviews';
 import SEO from '../components/SEO';
 
@@ -23,15 +22,11 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
         setLoading(true);
         const snap = await getDocs(collection(db, 'products'));
         let allCategories = snap.docs.map(doc => doc.data());
-        if (allCategories.length === 0) {
-          allCategories = defaultCategories;
-        }
         const found = allCategories.flatMap(cat => cat.products || []).find((p: any) => p.id === id);
         setProduct(found || null);
         setSelectedVariant(0);
       } catch (err) {
-        const found = defaultCategories.flatMap(cat => cat.products || []).find((p: any) => p.id === id);
-        setProduct(found || null);
+        setProduct(null);
         setSelectedVariant(0);
       } finally {
         setLoading(false);

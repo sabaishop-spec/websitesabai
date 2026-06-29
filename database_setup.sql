@@ -47,6 +47,11 @@ CREATE TABLE IF NOT EXISTS settings (
     "ctaSection" JSONB
 );
 
+CREATE TABLE IF NOT EXISTS "blogCategories" (
+    id TEXT PRIMARY KEY,
+    name TEXT
+);
+
 CREATE TABLE IF NOT EXISTS admins (
     id TEXT PRIMARY KEY,
     email TEXT

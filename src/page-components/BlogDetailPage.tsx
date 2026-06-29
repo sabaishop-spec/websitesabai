@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import DOMPurify from 'isomorphic-dompurify';
 import CTASection from '../components/CTASection';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
@@ -11,12 +12,12 @@ import SEO from '../components/SEO';
 export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
   const { t, i18n } = useTranslation();
 
-  const [post, setPost] = useState<any>(initialPost);
+  const post = initialPost;
 
   useEffect(() => {
-    setPost(initialPost);
+    // Scroll to top only on initial mount
     window.scrollTo(0, 0);
-  }, [initialPost]);
+  }, []);
 
   const getLocalized = (field: string) => {
     if (!post) return '';
@@ -139,12 +140,13 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
     let h2Counter = 0;
     let h3Counter = 0;
 
-    blocks.forEach(block => {
+    blocks.forEach((block, index) => {
+      const blockKey = block.id || `block-${index}`;
       if (block.type === 'h2') {
         h2Counter++;
         h3Counter = 0;
         toc.push({
-          id: block.id,
+          id: blockKey,
           title: block.data.text,
           level: 2,
           number: `${h2Counter}`,
@@ -154,7 +156,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
         const parentNumber = h2Counter > 0 ? h2Counter : 1;
         if(h2Counter === 0) h2Counter = 1; // Fallback if h3 comes before h2
         toc.push({
-          id: block.id,
+          id: blockKey,
           title: block.data.text,
           level: 3,
           number: `${parentNumber}.${h3Counter}`,
@@ -203,16 +205,17 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
        )}
 
        <div className="space-y-6 text-gray-800 text-lg leading-relaxed">
-         {blocks.map((block: any) => {
+         {blocks.map((block: any, index: number) => {
             const data = block.data || {};
+            const blockKey = block.id || `block-${index}`;
             // find matching TOC entry for numbering
-            const tocEntry = tocEntries.find(t => t.id === block.id);
+            const tocEntry = tocEntries.find(t => t.id === blockKey);
 
             switch(block.type) {
               case 'toc':
                   if (tocEntries.length === 0) return null;
                   return (
-                    <div key={block.id} className="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100 my-10 w-full">
+                    <div key={blockKey} className="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100 my-10 w-full">
                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
                          Mục lục bài viết
                        </h3>
@@ -234,29 +237,33 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                   );
               case 'h2':
                 return (
-                  <h2 id={`block-${block.id}`} key={block.id} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
+                  <h2 id={`block-${blockKey}`} key={blockKey} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
                     {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h2>
                 );
               case 'h3':
                 return (
-                  <h3 id={`block-${block.id}`} key={block.id} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
+                  <h3 id={`block-${blockKey}`} key={blockKey} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
                     {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h3>
                 );
               case 'p':
-                 return <div key={block.id} className="mb-4 prose prose-lg max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: data.text || '' }} />;
+                 const cleanHTML = DOMPurify.sanitize(data.text || '', {
+                   ADD_TAGS: ['iframe'],
+                   ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+                 });
+                 return <div key={blockKey} className="mb-4 prose prose-lg max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} />;
               case 'ul':
                  return (
-                   <ul key={block.id} className="list-disc pl-6 mb-4 space-y-2">
+                   <ul key={blockKey} className="list-disc pl-6 mb-4 space-y-2">
                      {data.items?.map((item: string, i: number) => <li key={i}>{item}</li>)}
                    </ul>
                  );
               case 'ol':
                  return (
-                   <ol key={block.id} className="list-decimal pl-6 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
+                   <ol key={blockKey} className="list-decimal pl-6 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
                      {data.items?.map((item: string, i: number) => <li key={i}>{item}</li>)}
                    </ol>
                  );
@@ -269,14 +276,14 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    advice: 'bg-green-50 border-green-500 text-green-900'
                  };
                  return (
-                   <div key={block.id} className={`p-6 rounded-xl border-l-4 ${styles[block.type as keyof typeof styles]} my-8`}>
+                   <div key={blockKey} className={`p-6 rounded-xl border-l-4 ${styles[block.type as keyof typeof styles]} my-8`}>
                      {data.title && <h4 className="font-bold text-lg mb-2">{data.title}</h4>}
                      <p className="whitespace-pre-wrap opacity-90">{data.content}</p>
                    </div>
                  );
               case 'table':
                  return (
-                   <div key={block.id} className="overflow-x-auto w-full my-8">
+                   <div key={blockKey} className="overflow-x-auto w-full my-8">
                      <table className="w-full text-left border-collapse min-w-max">
                        <thead>
                          <tr>{data.headers?.map((h: string, i: number) => <th key={i} className="border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900">{h}</th>)}</tr>
@@ -293,21 +300,21 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  );
               case 'image':
                  return (
-                   <div key={block.id} className="my-10 w-full flex flex-col items-center text-center">
+                   <div key={blockKey} className="my-10 w-full flex flex-col items-center text-center">
                      <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mx-auto" />
                      {data.alt && <p className="text-sm text-gray-500 italic mt-3 text-center text-balance">{data.alt}</p>}
                    </div>
                  );
               case 'figure':
                  return (
-                   <figure key={block.id} className="my-10 w-full flex flex-col items-center text-center">
+                   <figure key={blockKey} className="my-10 w-full flex flex-col items-center text-center">
                      <img src={data.url} alt={data.alt} loading="lazy" className="max-w-full h-auto rounded-2xl mb-3 mx-auto" />
                      {data.caption && <figcaption className="text-sm text-gray-500 italic text-center text-balance">{data.caption}</figcaption>}
                    </figure>
                  );
               case 'image-text':
                  return (
-                   <div key={block.id} className={`my-10 flex flex-col md:flex-row gap-8 items-center ${data.layout === 'img-right' ? 'md:flex-row-reverse' : ''}`}>
+                   <div key={blockKey} className={`my-10 flex flex-col md:flex-row gap-8 items-center ${data.layout === 'img-right' ? 'md:flex-row-reverse' : ''}`}>
                      <div className="w-full md:w-1/2">
                        <img src={data.url} alt={data.alt} loading="lazy" className="w-full rounded-2xl aspect-square md:aspect-auto object-cover" />
                      </div>
@@ -318,7 +325,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  );
               case 'images-2':
                  return (
-                   <div key={block.id} className="my-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <div key={blockKey} className="my-10 grid grid-cols-1 md:grid-cols-2 gap-4">
                      <img src={data.url1} alt={data.alt1} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
                      <img src={data.url2} alt={data.alt2} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl" />
                    </div>
@@ -328,7 +335,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  if (imgs.length === 0) return null;
                  const cols = imgs.length === 2 ? 'md:grid-cols-2' : imgs.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3';
                  return (
-                   <div key={block.id} className={`my-10 grid grid-cols-1 gap-4 ${cols}`}>
+                   <div key={blockKey} className={`my-10 grid grid-cols-1 gap-4 ${cols}`}>
                      {imgs.map((img: any, i: number) => (
                        <img key={i} src={img.url} alt={img.alt} loading="lazy" className="w-full aspect-square object-cover rounded-2xl" />
                      ))}

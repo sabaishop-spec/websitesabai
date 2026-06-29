@@ -101,8 +101,6 @@ function ProductCard({ product }: { product: ProductDetail }) {
   );
 }
 
-import { categories as defaultCategories } from '../data/products';
-
 export default function Products() {
   const { t } = useTranslation();
   const [categories, setCategories] = useState<any[]>([]);
@@ -112,12 +110,17 @@ export default function Products() {
       try {
         const snap = await getDocs(collection(db, 'products'));
         let fetchedCategories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (fetchedCategories.length === 0) {
-          fetchedCategories = defaultCategories;
-        }
+        
+        fetchedCategories.sort((a, b) => {
+          const orderA = typeof a.order === 'number' ? a.order : 999;
+          const orderB = typeof b.order === 'number' ? b.order : 999;
+          if (orderA === orderB) return a.id.localeCompare(b.id);
+          return orderA - orderB;
+        });
+
         setCategories(fetchedCategories);
       } catch (e) {
-        setCategories(defaultCategories);
+        setCategories([]);
       }
     };
     fetchCats();

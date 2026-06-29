@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Pencil, Trash2, Plus, Image as ImageIcon, X, Database, ArrowUp, ArrowDown } from 'lucide-react';
 import { db, auth, collection, getDocs, doc, setDoc, deleteDoc, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, onAuthStateChanged, User, writeBatch } from '../localDB';
-import { categories as defaultCategories } from '../data/products';
-import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
 import AdminUsersManager from '../components/AdminUsersManager';
 import AdminTestimonialsManager from '../components/AdminTestimonialsManager';
 import SiteSettingsManager from '../components/SiteSettingsManager';
@@ -602,12 +600,12 @@ const CategoriesProductsManager = () => {
       let data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       
       if (data.length === 0) {
-          data = defaultCategories;
+          // Do not fallback to defaultCategories
       }
       
       setCategories(data);
     } catch(e) {
-      setCategories(defaultCategories);
+      setCategories([]);
     } finally {
       setLoading(false);
     }

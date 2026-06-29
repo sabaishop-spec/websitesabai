@@ -3,6 +3,7 @@ ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE faqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "blogPosts" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "blogCategories" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 
@@ -11,6 +12,7 @@ DROP POLICY IF EXISTS "Enable all access for admins" ON admins;
 DROP POLICY IF EXISTS "Enable all access for products" ON products;
 DROP POLICY IF EXISTS "Enable all access for faqs" ON faqs;
 DROP POLICY IF EXISTS "Enable all access for blogPosts" ON "blogPosts";
+DROP POLICY IF EXISTS "Enable all access for blogCategories" ON "blogCategories";
 DROP POLICY IF EXISTS "Enable all access for testimonials" ON testimonials;
 DROP POLICY IF EXISTS "Enable all access for settings" ON settings;
 
@@ -20,5 +22,6 @@ CREATE POLICY "Enable all access for admins" ON admins FOR ALL USING (true) WITH
 CREATE POLICY "Enable all access for products" ON products FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for faqs" ON faqs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for blogPosts" ON "blogPosts" FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Enable all access for blogCategories" ON "blogCategories" FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for testimonials" ON testimonials FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for settings" ON settings FOR ALL USING (true) WITH CHECK (true);

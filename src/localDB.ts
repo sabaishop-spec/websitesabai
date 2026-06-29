@@ -8,17 +8,7 @@ export const auth = {
 };
 
 import { supabase } from './lib/supabase';
-import { blogPosts as defaultBlogPosts } from './data/blogPosts';
-import { faqs as defaultFaqs } from './data/faqs';
-import { categories as defaultCategories } from './data/products';
-import { testimonials as defaultTestimonials } from './data/testimonials';
-
-const DEFAULTS_MAP: Record<string, any[]> = {
-  blogPosts: defaultBlogPosts,
-  faqs: defaultFaqs,
-  products: defaultCategories,
-  testimonials: defaultTestimonials,
-};
+import { revalidateAll } from '@/app/actions/revalidate';
 
 // Set up cross-tab synchronization for local events
 if (typeof window !== 'undefined') {
@@ -76,7 +66,7 @@ const getMemData = (path: string) => {
     const raw = localStorage.getItem('localDB_data_' + path);
     if (raw) return JSON.parse(raw);
   }
-  return DEFAULTS_MAP[path] || [];
+  return [];
 };
 
 const setMemData = (path: string, data: any[]) => {
@@ -93,18 +83,14 @@ export const getDocs = async (collectionRef: any) => {
         .from(collectionRef.path)
         .select('*');
       data = errorData || [];
-      if (error) console.error("Supabase Error fetch:", error);
+      if (error && error.code !== '42P01' && !error.message.includes('Could not find the table') && !error.message.includes('relation') && !error.message.includes('does not exist')) {
+        console.error(`Supabase Error fetch for table ${collectionRef.path}:`, error);
+      }
     } catch (e) {
       console.error(e);
     }
   } else {
     data = getMemData(collectionRef.path);
-    // Only merge defaults for localDB if it's completely empty
-    const defaults = DEFAULTS_MAP[collectionRef.path] || [];
-    if (data.length === 0) {
-      data = [...defaults];
-      setMemData(collectionRef.path, data);
-    }
   }
 
   const mergedData = data.filter(d => !d._deleted);
@@ -133,14 +119,6 @@ export const getDoc = async (docRef: any) => {
   } else {
     const localDocs = getMemData(docRef.path);
     data = localDocs.find((d: any) => d.id === docRef.id) || null;
-    
-    // Only fall back to defaults if in local mode and memory is completely empty
-    if (!data) {
-      const defaults = DEFAULTS_MAP[docRef.path] || [];
-      if (localDocs.length === 0) {
-        data = defaults.find((d: any) => d.id === docRef.id) || null;
-      }
-    }
   }
 
   return {
@@ -187,6 +165,13 @@ export const setDoc = async (docRef: any, data: any, options?: any) => {
     window.dispatchEvent(new Event('localDB_updated'));
     localStorage.setItem('localDB_updated_event', Date.now().toString());
   }
+  
+  // Xóa cache của Next.js khi upload ảnh / lưu thay đổi để CDN + server cập nhật data mới.
+  try {
+    await revalidateAll();
+  } catch (e) {
+    console.error("Revalidation failed:", e);
+  }
 };
 
 export const deleteDoc = async (docRef: any) => {
@@ -217,6 +202,12 @@ export const deleteDoc = async (docRef: any) => {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('localDB_updated'));
     localStorage.setItem('localDB_updated_event', Date.now().toString());
+  }
+  
+  try {
+    await revalidateAll();
+  } catch (e) {
+    console.error("Revalidation failed:", e);
   }
 };
 

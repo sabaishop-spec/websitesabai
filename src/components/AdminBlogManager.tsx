@@ -139,8 +139,6 @@ function QuillEditor({ value, onChange, placeholder }: any) {
   );
 }
 
-import { blogPosts as defaultBlogPosts } from '../data/blogPosts';
-
 export default function AdminBlogManager() {
   const [posts, setPosts] = useState<any[]>([]);
   const [editingPost, setEditingPost] = useState<any>(null);
@@ -295,7 +293,7 @@ export default function AdminBlogManager() {
     };
 
     try {
-      const { saveBlogPost } = await import('@/app/actions/blog');
+      const { saveBlogPost, deleteBlogPost } = await import('@/app/actions/blog');
       const res = await saveBlogPost(updateData, isCreating, editingPost.id);
       
       if (!res.success) {
@@ -310,7 +308,7 @@ export default function AdminBlogManager() {
          alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`);
       } else {
          setIsCreating(false);
-         setEditingPost((prev: any) => ({...prev, id: res.newId || postId, slug: res.newId || postId}));
+         setEditingPost((prev: any) => ({...prev, id: postId}));
          fetchPosts();
       }
     } catch (e: any) {

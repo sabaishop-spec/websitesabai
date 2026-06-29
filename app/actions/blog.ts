@@ -36,17 +36,14 @@ export async function saveBlogPost(updateData: any, isCreating: boolean, oldId?:
     }
 
     if (!isCreating && oldId && updateData.id !== oldId) {
-      // If we changed the ID, we should permanently delete the old one so it doesn't leave duplicates in trash
-      // unless that's intended, but deleting is cleaner when just renaming slug.
-      const { error: deleteError } = await supabase.from('blogPosts').delete().eq('id', oldId);
-      if (deleteError) {
-        console.error('Supabase delete old post error:', deleteError);
+      const { error: trashError } = await supabase.from('blogPosts').delete().eq('id', oldId);
+      if (trashError) {
+        console.error('Supabase trash error:', trashError);
       }
     }
 
     // Revalidate paths so the frontend gets fresh data!
-    revalidatePath('/blog');
-    revalidatePath(`/blog/${finalSlug}`);
+    revalidatePath('/', 'layout');
 
     return { success: true, newId: finalId };
   } catch (err: any) {
@@ -61,8 +58,7 @@ export async function deleteBlogPost(postId: string) {
     if (error) {
       return { success: false, error: 'Lỗi khi xóa bài viết: ' + error.message };
     }
-    revalidatePath('/blog');
-    revalidatePath(`/blog/${postId}`);
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Lỗi không xác định.' };
@@ -75,8 +71,7 @@ export async function permanentlyDeleteBlogPost(postId: string) {
     if (error) {
       return { success: false, error: 'Lỗi khi xóa vĩnh viễn: ' + error.message };
     }
-    revalidatePath('/blog');
-    revalidatePath(`/blog/${postId}`);
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Lỗi không xác định.' };
@@ -89,7 +84,7 @@ export async function bulkDeleteBlogPosts(postIds: string[]) {
     if (error) {
       return { success: false, error: 'Lỗi khi xóa vĩnh viễn: ' + error.message };
     }
-    revalidatePath('/blog');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Lỗi không xác định.' };
@@ -102,10 +97,11 @@ export async function bulkTrashBlogPosts(postIds: string[]) {
     if (error) {
       return { success: false, error: 'Lỗi khi chuyển vào thùng rác: ' + error.message };
     }
-    revalidatePath('/blog');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Lỗi không xác định.' };
   }
 }
+
 
