@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import MainLayout from '../../MainLayout';
 import BlogDetailPage from '@/src/page-components/BlogDetailPage';
 import { supabase } from '@/src/lib/supabase';
+import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,19 +24,26 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const title = post.seoTitle || post.title || 'Bài viết';
   const description = post.seoDescription || post.excerpt || '';
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/blog/${post.slug || post.id}`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${post.slug || post.id}`;
   const images = post.coverImage ? [post.coverImage] : [];
 
   return {
     title,
     description,
+    keywords: post.seoKeywords || post.tags?.join(', ') || 'nha khoa, chăm sóc răng miệng, furano, chỉnh nha, răng niềng',
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title,
       description,
       type: 'article',
       url,
       images,
+      siteName: 'FURANO',
+      locale: 'vi_VN',
       publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
+      authors: [post.author || 'FURANO'],
     },
     twitter: {
       card: 'summary_large_image',
@@ -58,8 +66,44 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const validPost = post && !post.deletedAt && post.status === 'published' ? post : null;
 
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${validPost?.slug || validPost?.id}`;
+
+  const jsonLd = validPost ? {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: validPost.seoTitle || validPost.title,
+    description: validPost.seoDescription || validPost.excerpt,
+    image: validPost.coverImage ? [validPost.coverImage] : [],
+    datePublished: validPost.date ? new Date(validPost.date).toISOString() : undefined,
+    dateModified: validPost.updatedAt ? new Date(validPost.updatedAt).toISOString() : (validPost.date ? new Date(validPost.date).toISOString() : undefined),
+    author: {
+      '@type': 'Organization',
+      name: validPost.author || 'FURANO',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'FURANO',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`
+      }
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url
+    }
+  } : null;
+
   return (
     <MainLayout>
+      {jsonLd && (
+        <Script
+          id={`json-ld-article-${validPost.id}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <BlogDetailPage initialPost={validPost} />
     </MainLayout>
   );
