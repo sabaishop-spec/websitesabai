@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       images,
       siteName: 'FURANO',
       locale: 'vi_VN',
-      publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
+      publishedTime: post.date ? (() => { try { return new Date(post.date.includes('/') ? post.date.split('/').reverse().join('-') : post.date).toISOString() } catch (e) { return undefined } })() : undefined,
       authors: [post.author || 'FURANO'],
     },
     twitter: {
@@ -80,8 +80,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     headline: validPost.seoTitle || validPost.title,
     description: validPost.seoDescription || validPost.excerpt,
     image: validPost.coverImage ? [validPost.coverImage] : [],
-    datePublished: validPost.date ? new Date(validPost.date).toISOString() : undefined,
-    dateModified: validPost.updatedAt ? new Date(validPost.updatedAt).toISOString() : (validPost.date ? new Date(validPost.date).toISOString() : undefined),
+    datePublished: validPost.date ? (() => { try { return new Date(validPost.date.includes('/') ? validPost.date.split('/').reverse().join('-') : validPost.date).toISOString() } catch (e) { return undefined } })() : undefined,
+    dateModified: validPost.updatedAt ? (() => { try { return new Date(validPost.updatedAt).toISOString() } catch(e) { return undefined } })() : (validPost.date ? (() => { try { return new Date(validPost.date.includes('/') ? validPost.date.split('/').reverse().join('-') : validPost.date).toISOString() } catch(e) { return undefined } })() : undefined),
     author: {
       '@type': 'Organization',
       name: validPost.author || 'FURANO',
