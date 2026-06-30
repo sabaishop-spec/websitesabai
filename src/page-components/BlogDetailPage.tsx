@@ -74,7 +74,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
             </span>
             <span className="flex items-center text-gray-500 text-sm">
               <CalendarDays className="w-4 h-4 mr-1.5" />
-              {mounted ? (getLocalized('date') || (post.created_at ? new Date(post.created_at).toLocaleDateString('vi-VN') : '')) : ''}
+              {mounted ? (getLocalized('date') || (post.created_at ? (() => { try { const d = new Date(post.created_at); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN'); } catch(e) { return ''; } })() : '')) : ''}
             </span>
             <span className="flex items-center text-gray-500 text-sm ml-2">
               <Clock className="w-4 h-4 mr-1.5" />
@@ -224,7 +224,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                  >
                    <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
-                   <span>{entry.title.replace(/^(\d+\.)+\s*/, '')}</span>
+                   <span>{String(entry.title || '').replace(/^(\d+\.)+\s*/, '')}</span>
                  </a>
                </li>
              ))}
@@ -256,7 +256,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                                className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
                              >
                                <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
-                               <span>{entry.title.replace(/^(\d+\.)+\s*/, '')}</span>
+                               <span>{String(entry.title || '').replace(/^(\d+\.)+\s*/, '')}</span>
                              </a>
                            </li>
                          ))}
@@ -267,18 +267,18 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                 return (
                   <h2 id={`block-${blockKey}`} key={blockKey} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
-                    {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
+                    {String(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h2>
                 );
               case 'h3':
                 return (
                   <h3 id={`block-${blockKey}`} key={blockKey} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
-                    {(data.text || '').replace(/^(\d+\.)+\s*/, '')}
+                    {String(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h3>
                 );
               case 'p':
-                 const cleanHTML = DOMPurify.sanitize(data.text || '', {
+                 const cleanHTML = DOMPurify.sanitize(String(data.text || ''), {
                    ADD_TAGS: ['iframe'],
                    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
                  });
@@ -286,13 +286,13 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
               case 'ul':
                  return (
                    <ul key={blockKey} className="list-disc pl-6 mb-4 space-y-2">
-                     {data.items?.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
+                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ul>
                  );
               case 'ol':
                  return (
                    <ol key={blockKey} className="list-decimal pl-6 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
-                     {data.items?.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
+                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ol>
                  );
               case 'note':
@@ -314,12 +314,12 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    <div key={blockKey} className="overflow-x-auto w-full my-8">
                      <table className="w-full text-left border-collapse min-w-max">
                        <thead>
-                         <tr>{data.headers?.map((h: string, i: number) => <th key={i} className="border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900">{h}</th>)}</tr>
+                         <tr>{Array.isArray(data.headers) && data.headers.map((h: string, i: number) => <th key={i} className="border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900">{String(h || '')}</th>)}</tr>
                        </thead>
                        <tbody>
-                         {data.rows?.map((row: any[], i: number) => (
+                         {Array.isArray(data.rows) && data.rows.map((row: any[], i: number) => (
                            <tr key={i} className="hover:bg-gray-50/50">
-                             {row.map((cell: string, ci: number) => <td key={ci} className="border border-gray-200 p-3 text-gray-700 whitespace-pre-wrap">{cell}</td>)}
+                             {Array.isArray(row) && row.map((cell: any, ci: number) => <td key={ci} className="border border-gray-200 p-3 text-gray-700 whitespace-pre-wrap">{String(cell || '')}</td>)}
                            </tr>
                          ))}
                        </tbody>
@@ -359,7 +359,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    </div>
                  );
               case 'gallery':
-                 const imgs = data.images || [];
+                 const imgs = Array.isArray(data.images) ? data.images : [];
                  if (imgs.length === 0) return null;
                  const cols = imgs.length === 2 ? 'md:grid-cols-2' : imgs.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3';
                  return (
