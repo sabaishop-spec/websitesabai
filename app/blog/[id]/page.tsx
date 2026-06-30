@@ -10,11 +10,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  const { data: post } = await supabase
-    .from('blogPosts')
-    .select('*')
-    .or(`id.eq.${id},slug.eq.${id}`)
-    .single();
+  let query = supabase.from('blogPosts').select('*');
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(id)) {
+    query = query.or(`id.eq.${id},slug.eq.${id}`);
+  } else {
+    query = query.eq('slug', id);
+  }
+  const { data: post } = await query.single();
 
   if (!post || post.deletedAt || post.status !== 'published') {
     return {
@@ -58,11 +61,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  const { data: post } = await supabase
-    .from('blogPosts')
-    .select('*')
-    .or(`id.eq.${id},slug.eq.${id}`)
-    .single();
+  let query = supabase.from('blogPosts').select('*');
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(id)) {
+    query = query.or(`id.eq.${id},slug.eq.${id}`);
+  } else {
+    query = query.eq('slug', id);
+  }
+  const { data: post } = await query.single();
 
   const validPost = post && !post.deletedAt && post.status === 'published' ? post : null;
 

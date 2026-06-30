@@ -10,11 +10,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  const { data: product } = await supabase
-    .from('products')
-    .select('*')
-    .or(`id.eq.${id},slug.eq.${id}`)
-    .single();
+  let query = supabase.from('products').select('*');
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(id)) {
+    query = query.or(`id.eq.${id},slug.eq.${id}`);
+  } else {
+    query = query.eq('slug', id);
+  }
+  const { data: product } = await query.single();
 
   if (!product || product.deletedAt || product.status !== 'published') {
     return {
@@ -56,11 +59,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  const { data: product } = await supabase
-    .from('products')
-    .select('*')
-    .or(`id.eq.${id},slug.eq.${id}`)
-    .single();
+  let query = supabase.from('products').select('*');
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(id)) {
+    query = query.or(`id.eq.${id},slug.eq.${id}`);
+  } else {
+    query = query.eq('slug', id);
+  }
+  const { data: product } = await query.single();
 
   const validProduct = product && !product.deletedAt && product.status === 'published' ? product : null;
 
