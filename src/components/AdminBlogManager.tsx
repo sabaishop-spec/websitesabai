@@ -143,6 +143,7 @@ export default function AdminBlogManager() {
   const [posts, setPosts] = useState<any[]>([]);
   const [editingPost, setEditingPost] = useState<any>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const isSavingRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState<'published' | 'draft' | 'trash' | 'categories'>('published');
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
@@ -186,9 +187,9 @@ export default function AdminBlogManager() {
     }
   };
 
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(async (showLoading = true) => {
     if (currentTab === 'categories') return;
-    setLoading(true);
+    if (showLoading) setLoading(true);
     try {
       let query = supabase
         .from('blogPosts')
@@ -223,7 +224,7 @@ export default function AdminBlogManager() {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }, [currentTab, page, debouncedSearch]);
 
@@ -280,6 +281,14 @@ export default function AdminBlogManager() {
        return;
     }
 
+    if (isSavingRef.current) {
+        if (!isBackgroundMode) {
+           alert("Hệ thống đang lưu, vui lòng thử lại sau giây lát.");
+        }
+        return;
+    }
+    isSavingRef.current = true;
+
     const postId = editingPost.slug.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const currentDate = new Date().toLocaleDateString('vi-VN');
     
@@ -298,22 +307,28 @@ export default function AdminBlogManager() {
       
       if (!res.success) {
         if (!isBackgroundMode) alert(res.error || "Đã xảy ra lỗi khi lưu.");
+        isSavingRef.current = false;
         return;
       }
 
       if (!isBackgroundMode) {
          setEditingPost(null);
          setIsCreating(false);
-         fetchPosts();
+         fetchPosts(false);
          alert(`Bài viết đã được ${isPublishing ? 'xuất bản' : 'lưu nháp'} thành công!`);
       } else {
          setIsCreating(false);
-         setEditingPost((prev: any) => ({...prev, id: postId}));
-         fetchPosts();
+         setEditingPost((prev: any) => {
+            if (!prev) return null; // If unmounted or cancelled, keep it null
+            return {...prev, id: res.newId || postId};
+         });
+         fetchPosts(false);
       }
     } catch (e: any) {
       console.error("Error saving post", e);
       if (!isBackgroundMode) alert("Đã xảy ra lỗi khi lưu.");
+    } finally {
+      isSavingRef.current = false;
     }
   };
 

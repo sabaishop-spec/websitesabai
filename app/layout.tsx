@@ -49,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: 'website',
-      siteName: title,
+      siteName: 'FURANO',
       locale: 'vi_VN',
       url: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn',
     },
