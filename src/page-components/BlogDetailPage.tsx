@@ -14,9 +14,11 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
 
   const post = initialPost;
 
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     // Scroll to top only on initial mount
     window.scrollTo(0, 0);
+    setMounted(true);
   }, []);
 
   const getLocalized = (field: string) => {
@@ -55,7 +57,6 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
         title={post.seoTitle || getLocalized('title')}
         description={post.seoDescription || getLocalized('excerpt')}
         image={post.image}
-        url={typeof window !== 'undefined' ? window.location.href : ''}
         type="article"
         schema={articleSchema}
       />
@@ -73,7 +74,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
             </span>
             <span className="flex items-center text-gray-500 text-sm">
               <CalendarDays className="w-4 h-4 mr-1.5" />
-              {getLocalized('date') || new Date().toLocaleDateString('vi-VN')}
+              {mounted ? (getLocalized('date') || (post.created_at ? new Date(post.created_at).toLocaleDateString('vi-VN') : '')) : ''}
             </span>
             <span className="flex items-center text-gray-500 text-sm ml-2">
               <Clock className="w-4 h-4 mr-1.5" />
@@ -173,7 +174,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
         h3Counter = 0;
         toc.push({
           id: blockKey,
-          title: block.data.text,
+          title: block.data?.text || '',
           level: 2,
           number: `${h2Counter}`,
         });
@@ -183,7 +184,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
         if(h2Counter === 0) h2Counter = 1; // Fallback if h3 comes before h2
         toc.push({
           id: blockKey,
-          title: block.data.text,
+          title: block.data?.text || '',
           level: 3,
           number: `${parentNumber}.${h3Counter}`,
         });
@@ -281,17 +282,17 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    ADD_TAGS: ['iframe'],
                    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
                  });
-                 return <div key={blockKey} className="mb-4 prose prose-lg max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} />;
+                 return <div key={blockKey} className="mb-4 prose prose-lg max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} suppressHydrationWarning />;
               case 'ul':
                  return (
                    <ul key={blockKey} className="list-disc pl-6 mb-4 space-y-2">
-                     {data.items?.map((item: string, i: number) => <li key={i}>{item}</li>)}
+                     {data.items?.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ul>
                  );
               case 'ol':
                  return (
                    <ol key={blockKey} className="list-decimal pl-6 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
-                     {data.items?.map((item: string, i: number) => <li key={i}>{item}</li>)}
+                     {data.items?.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ol>
                  );
               case 'note':
