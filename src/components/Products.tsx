@@ -111,6 +111,11 @@ export default function Products() {
         const snap = await getDocs(collection(db, 'products'));
         let fetchedCategories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
+        if (!fetchedCategories || fetchedCategories.length === 0 || !fetchedCategories[0].products) {
+          const { categories: staticCats } = await import('../data/products');
+          fetchedCategories = staticCats;
+        }
+
         fetchedCategories.sort((a, b) => {
           const orderA = typeof a.order === 'number' ? a.order : 999;
           const orderB = typeof b.order === 'number' ? b.order : 999;

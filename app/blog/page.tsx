@@ -32,6 +32,18 @@ export default async function Page() {
 
   const { data: categories } = await supabase.from('blogCategories').select('name');
 
+  let fetchedPosts = posts || [];
+  let fetchedCategories = categories?.map(c => c.name) || [];
+
+  if (fetchedPosts.length === 0) {
+    const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
+    fetchedPosts = staticPosts as any[];
+  }
+
+  if (fetchedCategories.length === 0) {
+    fetchedCategories = Array.from(new Set(fetchedPosts.map((p: any) => p.category)));
+  }
+
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog`;
 
   const jsonLd = {
@@ -57,8 +69,8 @@ export default async function Page() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <BlogPage 
-        initialPosts={posts || []} 
-        initialCategories={categories?.map(c => c.name) || []} 
+        initialPosts={fetchedPosts} 
+        initialCategories={fetchedCategories} 
       />
     </MainLayout>
   );

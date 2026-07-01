@@ -22,7 +22,13 @@ export default function Blog() {
           .limit(4);
 
         if (error) throw error;
-        setBlogPosts(posts || []);
+        
+        if (!posts || posts.length === 0) {
+           const { blogPosts: staticPosts } = await import('../data/blogPosts');
+           setBlogPosts(staticPosts.slice(0, 4) as any[]);
+        } else {
+           setBlogPosts(posts);
+        }
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }

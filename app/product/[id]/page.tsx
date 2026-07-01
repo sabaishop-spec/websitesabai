@@ -16,13 +16,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   } else {
     query = query.eq('slug', id);
   }
-  const { data: product, error } = await query.limit(1).maybeSingle();
+  let { data: product, error } = await query.limit(1).maybeSingle();
 
   if (error) {
     console.error('Error fetching product metadata:', error);
   }
 
-  if (!product || product.deletedAt || product.status !== 'published') {
+  if (!product) {
+    const { categories: staticCats } = await import('@/src/data/products');
+    product = staticCats.flatMap(cat => cat.products || []).find((p: any) => p.id === id) as any;
+  }
+
+  if (!product || (product.status && product.status !== 'published') || product.deletedAt) {
     return {
       title: 'Sản phẩm không tồn tại',
     };
@@ -69,13 +74,18 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   } else {
     query = query.eq('slug', id);
   }
-  const { data: product, error } = await query.limit(1).maybeSingle();
+  let { data: product, error } = await query.limit(1).maybeSingle();
 
   if (error) {
     console.error('Error fetching product:', error);
   }
 
-  const validProduct = product && !product.deletedAt && product.status === 'published' ? product : null;
+  if (!product) {
+    const { categories: staticCats } = await import('@/src/data/products');
+    product = staticCats.flatMap(cat => cat.products || []).find((p: any) => p.id === id) as any;
+  }
+
+  const validProduct = product && (!product.deletedAt) && (!product.status || product.status === 'published') ? product : null;
 
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/product/${validProduct?.slug || validProduct?.id}`;
 

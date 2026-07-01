@@ -30,6 +30,10 @@ export default function Header() {
            let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
            if (data.length > 0) {
               setBlogCategories(data);
+           } else {
+              const { blogPosts } = await import('../data/blogPosts');
+              const cats = Array.from(new Set(blogPosts.map((p: any) => p.category)));
+              setBlogCategories(cats.map((c, i) => ({ id: i.toString(), name: c })));
            }
        } catch(e) { }
     }
@@ -40,6 +44,11 @@ export default function Header() {
             const snap = await getDocs(collection(db, 'products'));
             let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             
+            if (!data || data.length === 0 || !data[0].products) {
+              const { categories: staticCats } = await import('../data/products');
+              data = staticCats;
+            }
+
             data.sort((a, b) => {
               const orderA = typeof a.order === 'number' ? a.order : 999;
               const orderB = typeof b.order === 'number' ? b.order : 999;

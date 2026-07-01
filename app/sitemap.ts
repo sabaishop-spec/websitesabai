@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { supabase } from '@/src/lib/supabase';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://furanocare.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn';
 
   const defaultPages = [
     {

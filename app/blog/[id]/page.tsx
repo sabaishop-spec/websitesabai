@@ -16,10 +16,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   } else {
     query = query.eq('slug', id);
   }
-  const { data: post, error } = await query.limit(1).maybeSingle();
+  let { data: post, error } = await query.limit(1).maybeSingle();
 
   if (error) {
     console.error('Error fetching blog post metadata:', error);
+  }
+
+  if (!post) {
+    const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
+    post = staticPosts.find(p => p.id === id) as any;
   }
 
   if (!post) {
@@ -71,10 +76,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   } else {
     query = query.eq('slug', id);
   }
-  const { data: post, error } = await query.limit(1).maybeSingle();
+  let { data: post, error } = await query.limit(1).maybeSingle();
 
   if (error) {
     console.error('Error fetching blog post:', error);
+  }
+
+  if (!post) {
+    const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
+    post = staticPosts.find(p => p.id === id) as any;
   }
 
   const validPost = post ? post : null;

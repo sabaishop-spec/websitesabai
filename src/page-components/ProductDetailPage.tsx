@@ -22,6 +22,12 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
         setLoading(true);
         const snap = await getDocs(collection(db, 'products'));
         let allCategories = snap.docs.map(doc => doc.data());
+        
+        if (!allCategories || allCategories.length === 0 || !allCategories[0].products) {
+          const { categories: staticCats } = await import('../data/products');
+          allCategories = staticCats;
+        }
+
         const found = allCategories.flatMap(cat => cat.products || []).find((p: any) => p.id === id);
         setProduct(found || null);
         setSelectedVariant(0);
