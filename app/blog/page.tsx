@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import MainLayout from '../MainLayout';
 import BlogPage from '@/src/page-components/BlogPage';
 import { supabase } from '@/src/lib/supabase';
-import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,8 +52,7 @@ export default async function Page() {
 
   return (
     <MainLayout>
-      <Script
-        id="json-ld-blog"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

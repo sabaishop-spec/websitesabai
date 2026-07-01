@@ -131,13 +131,25 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
           )}
 
           <div className="p-8 md:p-12 lg:p-16">
-            {post.blocks && post.blocks.length > 0 ? (
-               <BlockRenderer blocks={post.blocks} showTOC={post.showTOC} />
-            ) : (
-               <div className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown">
-                 <ReactMarkdown>{getLocalized('content') || ''}</ReactMarkdown>
-               </div>
-            )}
+            {(() => {
+              let parsedBlocks = post.blocks;
+              if (typeof parsedBlocks === 'string') {
+                try {
+                  parsedBlocks = JSON.parse(parsedBlocks);
+                } catch (e) {
+                  parsedBlocks = [];
+                }
+              }
+              const validBlocks = Array.isArray(parsedBlocks) ? parsedBlocks : [];
+              
+              return validBlocks.length > 0 ? (
+                 <BlockRenderer blocks={validBlocks} showTOC={post.showTOC} />
+              ) : (
+                 <div className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown">
+                   <ReactMarkdown>{getLocalized('content') || ''}</ReactMarkdown>
+                 </div>
+              );
+            })()}
 
             <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">

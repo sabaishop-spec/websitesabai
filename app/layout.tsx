@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import './globals.css'; // Global styles
 import Providers from './providers';
 import { supabase } from '@/src/lib/supabase';
-import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 
@@ -119,8 +118,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <Script
-          id="json-ld-local-business"
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />

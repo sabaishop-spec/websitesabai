@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import MainLayout from '../MainLayout';
 import ProductsPage from '@/src/page-components/ProductsPage';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Sản Phẩm Chăm Sóc Răng Miệng Chuyên Biệt - FURANO',
@@ -43,8 +42,7 @@ export default function Page() {
 
   return (
     <MainLayout>
-      <Script
-        id="json-ld-products"
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

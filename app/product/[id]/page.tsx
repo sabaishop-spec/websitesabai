@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import MainLayout from '../../MainLayout';
 import ProductDetailPage from '@/src/page-components/ProductDetailPage';
 import { supabase } from '@/src/lib/supabase';
-import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,8 +98,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <MainLayout>
       {jsonLd && (
-        <Script
-          id={`json-ld-product-${validProduct.id}`}
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
