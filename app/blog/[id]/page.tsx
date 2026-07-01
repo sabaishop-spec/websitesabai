@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const title = post.seoTitle || post.title || 'Bài viết';
   const description = post.seoDescription || post.excerpt || '';
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${post.slug || post.id}`;
-  const images = post.image ? [post.image] : [];
+  const images = post.image ? [{ url: post.image, alt: title, width: 1200, height: 630 }] : [];
 
   return {
     title,

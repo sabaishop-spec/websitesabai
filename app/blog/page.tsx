@@ -19,6 +19,20 @@ export const metadata: Metadata = {
     siteName: 'FURANO',
     locale: 'vi_VN',
     type: 'website',
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Blog Kiến Thức Chỉnh Nha - FURANO',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog Kiến Thức Chỉnh Nha - FURANO',
+    description: 'Khám phá các bài viết, chia sẻ kiến thức về chỉnh nha, chăm sóc răng niềng từ chuyên gia nha khoa FURANO.',
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`],
   },
 };
 
