@@ -74,7 +74,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
             </span>
             <span className="flex items-center text-gray-500 text-sm">
               <CalendarDays className="w-4 h-4 mr-1.5" />
-              {mounted ? (getLocalized('date') || (post.created_at ? (() => { try { const d = new Date(post.created_at); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN'); } catch(e) { return ''; } })() : '')) : ''}
+              {mounted ? (getLocalized('date') || (post.createdAt ? (() => { try { const d = new Date(Number(post.createdAt)); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('vi-VN'); } catch(e) { return ''; } })() : '')) : ''}
             </span>
             <span className="flex items-center text-gray-500 text-sm ml-2">
               <Clock className="w-4 h-4 mr-1.5" />

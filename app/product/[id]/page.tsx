@@ -16,7 +16,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   } else {
     query = query.eq('slug', id);
   }
-  const { data: product } = await query.single();
+  const { data: product, error } = await query.limit(1).maybeSingle();
+
+  if (error) {
+    console.error('Error fetching product metadata:', error);
+  }
 
   if (!product || product.deletedAt || product.status !== 'published') {
     return {
@@ -65,7 +69,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   } else {
     query = query.eq('slug', id);
   }
-  const { data: product } = await query.single();
+  const { data: product, error } = await query.limit(1).maybeSingle();
+
+  if (error) {
+    console.error('Error fetching product:', error);
+  }
 
   const validProduct = product && !product.deletedAt && product.status === 'published' ? product : null;
 

@@ -16,9 +16,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   } else {
     query = query.eq('slug', id);
   }
-  const { data: post } = await query.single();
+  const { data: post, error } = await query.limit(1).maybeSingle();
 
-  if (!post || post.deletedAt || post.status !== 'published') {
+  if (error) {
+    console.error('Error fetching blog post metadata:', error);
+  }
+
+  if (!post) {
     return {
       title: 'Bài viết không tồn tại',
     };
@@ -27,12 +31,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const title = post.seoTitle || post.title || 'Bài viết';
   const description = post.seoDescription || post.excerpt || '';
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${post.slug || post.id}`;
-  const images = post.coverImage ? [post.coverImage] : [];
+  const images = post.image ? [post.image] : [];
 
   return {
     title,
     description,
-    keywords: post.seoKeywords || post.tags?.join(', ') || 'nha khoa, chăm sóc răng miệng, furano, chỉnh nha, răng niềng',
+    keywords: 'nha khoa, chăm sóc răng miệng, furano, chỉnh nha, răng niềng',
     alternates: {
       canonical: url,
     },
@@ -45,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       siteName: 'FURANO',
       locale: 'vi_VN',
       publishedTime: post.date ? (() => { try { return new Date(post.date.includes('/') ? post.date.split('/').reverse().join('-') : post.date).toISOString() } catch (e) { return undefined } })() : undefined,
-      authors: [post.author || 'FURANO'],
+      authors: ['FURANO'],
     },
     twitter: {
       card: 'summary_large_image',
@@ -67,9 +71,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   } else {
     query = query.eq('slug', id);
   }
-  const { data: post } = await query.single();
+  const { data: post, error } = await query.limit(1).maybeSingle();
 
-  const validPost = post && !post.deletedAt && post.status === 'published' ? post : null;
+  if (error) {
+    console.error('Error fetching blog post:', error);
+  }
+
+  const validPost = post ? post : null;
 
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${validPost?.slug || validPost?.id}`;
 
@@ -78,12 +86,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     '@type': 'BlogPosting',
     headline: validPost.seoTitle || validPost.title,
     description: validPost.seoDescription || validPost.excerpt,
-    image: validPost.coverImage ? [validPost.coverImage] : [],
+    image: validPost.image ? [validPost.image] : [],
     datePublished: validPost.date ? (() => { try { return new Date(validPost.date.includes('/') ? validPost.date.split('/').reverse().join('-') : validPost.date).toISOString() } catch (e) { return undefined } })() : undefined,
-    dateModified: validPost.updatedAt ? (() => { try { return new Date(validPost.updatedAt).toISOString() } catch(e) { return undefined } })() : (validPost.date ? (() => { try { return new Date(validPost.date.includes('/') ? validPost.date.split('/').reverse().join('-') : validPost.date).toISOString() } catch(e) { return undefined } })() : undefined),
+    dateModified: validPost.date ? (() => { try { return new Date(validPost.date.includes('/') ? validPost.date.split('/').reverse().join('-') : validPost.date).toISOString() } catch(e) { return undefined } })() : undefined,
     author: {
       '@type': 'Organization',
-      name: validPost.author || 'FURANO',
+      name: 'FURANO',
       url: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'
     },
     publisher: {
