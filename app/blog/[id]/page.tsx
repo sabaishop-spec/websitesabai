@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import MainLayout from '../../MainLayout';
 import BlogDetailPage from '@/src/page-components/BlogDetailPage';
 import { supabase } from '@/src/lib/supabase';
@@ -88,6 +89,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
 
   const validPost = post ? post : null;
+  if (!validPost) {
+    notFound();
+  }
 
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog/${validPost?.slug || validPost?.id}`;
 

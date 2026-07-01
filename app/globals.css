@@ -64,14 +64,18 @@ body {
   margin-bottom: 1.25rem;
   padding-left: 1.5rem;
 }
-.prose-brand li {
+.prose-brand li, .ql-editor li {
   margin-bottom: 0.5rem;
 }
-.prose-brand ul {
+.prose-brand ul, .ql-editor ul {
   list-style-type: disc;
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
 }
-.prose-brand ol {
+.prose-brand ol, .ql-editor ol {
   list-style-type: decimal;
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
 }
 .prose-brand hr {
   margin-top: 3rem;

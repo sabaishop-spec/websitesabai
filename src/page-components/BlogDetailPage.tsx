@@ -294,16 +294,16 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    ADD_TAGS: ['iframe'],
                    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
                  });
-                 return <div key={blockKey} className="mb-4 prose prose-lg max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} suppressHydrationWarning />;
+                 return <div key={blockKey} className="mb-4 prose-brand max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} suppressHydrationWarning />;
               case 'ul':
                  return (
-                   <ul key={blockKey} className="list-disc pl-6 mb-4 space-y-2">
+                   <ul key={blockKey} className="list-disc list-outside ml-6 pl-2 mb-4 space-y-2">
                      {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ul>
                  );
               case 'ol':
                  return (
-                   <ol key={blockKey} className="list-decimal pl-6 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
+                   <ol key={blockKey} className="list-decimal list-outside ml-6 pl-2 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
                      {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
                    </ol>
                  );
