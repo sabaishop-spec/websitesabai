@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, CalendarDays, Share2, ChevronRight, Facebook, Instagram, MessageCircle, Link as LinkIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'isomorphic-dompurify';
 import CTASection from '../components/CTASection';
@@ -154,9 +154,45 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
             <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <span className="text-gray-900 font-medium">{t("Chia sẻ bài viết:")}</span>
-                <button className="p-2 bg-gray-50 text-gray-600 rounded-full hover:bg-brand-50 hover:text-brand-800 transition-colors" title={t("Chia sẻ")}>
-                  <Share2 className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`, '_blank', 'width=600,height=400')}
+                    className="p-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 hover:text-blue-800 transition-colors" 
+                    title="Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => window.open(`https://zalo.me/share?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`, '_blank', 'width=600,height=400')}
+                    className="p-2 bg-blue-50 text-blue-500 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors" 
+                    title="Zalo"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(typeof window !== 'undefined' ? window.location.href : '').then(() => {
+                        alert(t("Đã sao chép liên kết để chia sẻ lên Instagram!"));
+                        window.open('https://instagram.com', '_blank');
+                      });
+                    }}
+                    className="p-2 bg-pink-50 text-pink-600 rounded-full hover:bg-pink-100 hover:text-pink-800 transition-colors" 
+                    title="Instagram"
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(typeof window !== 'undefined' ? window.location.href : '').then(() => {
+                        alert(t("Đã sao chép liên kết!"));
+                      });
+                    }}
+                    className="p-2 bg-gray-50 text-gray-600 rounded-full hover:bg-gray-100 hover:text-gray-800 transition-colors" 
+                    title={t("Sao chép liên kết")}
+                  >
+                    <LinkIcon className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
               <Link href="/blog" className="px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center gap-2">
                 {t("Đọc thêm bài khác")}
