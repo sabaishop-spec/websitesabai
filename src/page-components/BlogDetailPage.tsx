@@ -8,6 +8,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import CTASection from '../components/CTASection';
 import { supabase } from '../lib/supabase';
 import SEO from '../components/SEO';
+import { autoLinkKeywords } from '../utils/autoLink';
 
 export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
   const { t, i18n } = useTranslation();
@@ -330,17 +331,17 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    ADD_TAGS: ['iframe'],
                    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
                  });
-                 return <div key={blockKey} className="mb-4 prose-brand max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: cleanHTML }} suppressHydrationWarning />;
+                 return <div key={blockKey} className="mb-4 prose-brand max-w-none text-gray-800 ql-editor" dangerouslySetInnerHTML={{ __html: autoLinkKeywords(cleanHTML) }} suppressHydrationWarning />;
               case 'ul':
                  return (
                    <ul key={blockKey} className="list-disc list-outside ml-6 pl-2 mb-4 space-y-2">
-                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
+                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: autoLinkKeywords(DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || ''))) }} suppressHydrationWarning />)}
                    </ul>
                  );
               case 'ol':
                  return (
                    <ol key={blockKey} className="list-decimal list-outside ml-6 pl-2 mb-4 space-y-2 marker:text-brand-600 marker:font-bold">
-                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || '')) }} suppressHydrationWarning />)}
+                     {Array.isArray(data.items) && data.items.map((item: any, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: autoLinkKeywords(DOMPurify.sanitize(typeof item === 'string' ? item : (item.content || ''))) }} suppressHydrationWarning />)}
                    </ol>
                  );
               case 'note':

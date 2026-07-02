@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { db, collection, getDocs } from '../localDB';
 import ProductReviews from '../components/ProductReviews';
 import SEO from '../components/SEO';
+import { autoLinkKeywords } from '../utils/autoLink';
 
 export default function ProductDetailPage({ params }: { params?: { id?: string } }) {
   const id = params?.id;
@@ -172,7 +173,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
                     {product.mainUses.map((use: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed">
                         <CheckCircle2 className="w-5 h-5 text-brand-500 mr-3 shrink-0 mt-0.5" />
-                        <span>{t(use)}</span>
+                        <span dangerouslySetInnerHTML={{ __html: autoLinkKeywords(t(use)) }} suppressHydrationWarning />
                       </li>
                     ))}
                   </ul>
@@ -186,7 +187,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
                     {product.ingredients.map((ing: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed items-start">
                         <div className="w-1.5 h-1.5 rounded-full bg-brand-400 mr-3 mt-2 shrink-0"></div>
-                        <span>{t(ing)}</span>
+                        <span dangerouslySetInnerHTML={{ __html: autoLinkKeywords(t(ing)) }} suppressHydrationWarning />
                       </li>
                     ))}
                   </ul>
@@ -200,7 +201,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
                     {product.materials.map((mat: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed items-start">
                         <div className="w-1.5 h-1.5 rounded-full bg-brand-400 mr-3 mt-2 shrink-0"></div>
-                        <span>{t(mat)}</span>
+                        <span dangerouslySetInnerHTML={{ __html: autoLinkKeywords(t(mat)) }} suppressHydrationWarning />
                       </li>
                     ))}
                   </ul>

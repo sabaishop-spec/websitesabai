@@ -116,7 +116,7 @@ export default function AdminTestimonialsManager() {
            window.alert("Lỗi: Storage bucket 'public_assets' chưa được cấu hình. Vui lòng chạy storage_setup.sql trong Supabase.");
         } else {
            const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
-           setFormData({ ...formData, image: publicUrlData.publicUrl });
+           setFormData({ ...formData, avatar: publicUrlData.publicUrl });
         }
       } catch (err) {
         console.error("Error processing image", err);
@@ -200,8 +200,8 @@ export default function AdminTestimonialsManager() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh Khách hàng</label>
                 <div className="flex flex-col md:flex-row gap-4 items-start">
-                  {formData.image ? (
-                    <img src={formData.image || undefined} alt="Preview" className="w-32 h-32 object-cover rounded-lg border shadow-sm flex-shrink-0" />
+                  {formData.avatar ? (
+                    <img src={formData.avatar || undefined} alt="Preview" className="w-32 h-32 object-cover rounded-lg border shadow-sm flex-shrink-0" />
                   ) : (
                     <div className="w-32 h-32 bg-gray-50 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-xs text-gray-400 flex-shrink-0">
                       <ImageIcon className="w-6 h-6 mb-2 opacity-50" />
@@ -217,8 +217,8 @@ export default function AdminTestimonialsManager() {
                     />
                     <input 
                       type="text" 
-                      value={formData.image || ''} 
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })} 
+                      value={formData.avatar || ''} 
+                      onChange={(e) => setFormData({ ...formData, avatar: e.target.value })} 
                       className="w-full border p-2 rounded focus:ring-2 focus:ring-brand-500 text-xs bg-gray-50" 
                       placeholder="Hoặc nhập URL ảnh trực tiếp..." 
                     />
@@ -255,8 +255,8 @@ export default function AdminTestimonialsManager() {
               testimonials.map((item) => (
                 <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition">
                   <div className="aspect-[4/3] w-full bg-gray-100 relative group">
-                    {item.image ? (
-                      <img src={item.image || undefined} alt="Avatar" className="w-full h-full object-cover" />
+                    {item.avatar || item.image ? (
+                      <img src={item.avatar || item.image || undefined} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300">
                         <ImageIcon className="w-12 h-12" />

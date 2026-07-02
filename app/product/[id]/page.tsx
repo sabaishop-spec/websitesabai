@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title,
     description,
-    keywords: product.seoKeywords || product.tags?.join(', ') || 'nha khoa, chăm sóc răng miệng, furano, chỉnh nha, sản phẩm nha khoa',
+    keywords: product.seoKeywords || product.tags?.join(', ') || 'bàn chải kẽ, fluocaril, nha khoa, chăm sóc răng miệng, furano, chỉnh nha, sản phẩm nha khoa',
     alternates: {
       canonical: url,
     },

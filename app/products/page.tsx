@@ -5,7 +5,7 @@ import ProductsPage from '@/src/page-components/ProductsPage';
 export const metadata: Metadata = {
   title: 'Sản Phẩm Chăm Sóc Răng Miệng Chuyên Biệt - FURANO',
   description: 'Khám phá các sản phẩm chăm sóc răng miệng chuyên biệt từ chuyên gia nha khoa FURANO.',
-  keywords: 'sản phẩm nha khoa, bàn chải kẽ, sáp nha khoa, chăm sóc răng niềng, furano',
+  keywords: 'bàn chải kẽ, fluocaril, sản phẩm nha khoa, sáp nha khoa, chăm sóc răng niềng, furano',
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/products`,
   },

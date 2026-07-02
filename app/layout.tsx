@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   let title = 'FURANO - Chuyên gia chăm sóc răng niềng';
   let description = 'FURANO - Chuyên gia chăm sóc răng niềng';
   let icon = '/favicon.svg';
-  let keywords = 'furano, nha khoa, răng niềng, chăm sóc răng miệng, chỉnh nha';
+  let keywords = 'bàn chải kẽ, fluocaril, furano, nha khoa, răng niềng, chăm sóc răng miệng, chỉnh nha';
 
   try {
     const { data } = await supabase
@@ -32,7 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'),
     title: {
       default: title,
       template: `%s | ${title}`
@@ -52,20 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'FURANO',
       locale: 'vi_VN',
       url: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn',
-      images: [
-        {
-          url: icon || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`,
-          width: 1200,
-          height: 630,
-          alt: title,
-        }
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [icon || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`],
     },
     other: {
       // Geo Tags for Vietnam
