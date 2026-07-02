@@ -238,16 +238,16 @@ export default function SiteSettingsManager() {
                  <h3 className="font-bold text-xl text-gray-800">Ảnh Cửa sổ đầu trang (Hero Banner)</h3>
                  <p className="text-gray-500 text-sm mt-1">Hình ảnh xuất hiện đầu tiên khi khách vào trang web.</p>
               </div>
-              {renderImageField('Ảnh Nền Hero (Banner chính)', 'homeHeroImage', 'Kích thước khuyên dùng: 1920x1080px. Chọn ảnh sáng, có khoảng trống cho chữ.')}
+              {renderImageField('Ảnh Nền Hero (Banner chính)', 'homeHeroImage', 'Kích thước khuyên dùng: 1920x1080px (Tỷ lệ ngang 16:9).')}
               
               <div className="border-l-4 border-brand-500 pl-4 py-1 mb-4 mt-8">
                  <h3 className="font-bold text-xl text-gray-800">Ảnh Chu trình chăm sóc 3 bước</h3>
                  <p className="text-gray-500 text-sm mt-1">Các ảnh miêu tả phương pháp hoặc các bước sử dụng sản phẩm.</p>
               </div>
               <div className="grid grid-cols-1 gap-6">
-                {renderImageField('Ảnh Bước 1 (Gắn bó)', 'routineStep1Image', 'Ảnh minh họa cho bước 1. Khuyên dùng: 600x800px.')}
-                {renderImageField('Ảnh Bước 2 (Chăm sóc)', 'routineStep2Image', 'Ảnh minh họa cho bước 2. Khuyên dùng: 600x800px.')}
-                {renderImageField('Ảnh Bước 3 (Tỏa sáng)', 'routineStep3Image', 'Ảnh minh họa cho bước 3. Khuyên dùng: 600x800px.')}
+                {renderImageField('Ảnh Bước 1 (Gắn bó)', 'routineStep1Image', 'Khuyên dùng: 600x800px hoặc 800x800px (Tỷ lệ 3:4 hoặc 1:1 vuông).')}
+                {renderImageField('Ảnh Bước 2 (Chăm sóc)', 'routineStep2Image', 'Khuyên dùng: 600x800px hoặc 800x800px (Tỷ lệ 3:4 hoặc 1:1 vuông).')}
+                {renderImageField('Ảnh Bước 3 (Tỏa sáng)', 'routineStep3Image', 'Khuyên dùng: 600x800px hoặc 800x800px (Tỷ lệ 3:4 hoặc 1:1 vuông).')}
               </div>
             </div>
           )}
@@ -260,10 +260,10 @@ export default function SiteSettingsManager() {
               </div>
               
               <div className="grid grid-cols-1 gap-6">
-                {renderImageField('Banner Trang Sản Phẩm', 'productsCoverImage', 'Ảnh hiển thị đầu trang "Sản Phẩm". Kích thước khuyên dùng: 1920x600px.')}
-                {renderImageField('Banner Trang Blog/Tin tức', 'blogCoverImage', 'Ảnh hiển thị đầu trang "Cẩm nang Niềng răng". Kích thước khuyên dùng: 1920x600px.')}
-                {renderImageField('Banner Trang "Về FURANO"', 'aboutCoverImage', 'Ảnh hiển thị đầu trang Thông tin thương hiệu. Kích thước khuyên dùng: 1920x600px.')}
-                {renderImageField('Banner Trang "Hệ thống cửa hàng"', 'storesCoverImage', 'Kích thước khuyên dùng: 1920x600px.')}
+                {renderImageField('Banner Trang Sản Phẩm', 'productsCoverImage', 'Ảnh hiển thị đầu trang "Sản Phẩm". Kích thước khuyên dùng: 1920x600px (Tỷ lệ ngang rộng).')}
+                {renderImageField('Banner Trang Blog/Tin tức', 'blogCoverImage', 'Ảnh hiển thị đầu trang "Cẩm nang Niềng răng". Kích thước khuyên dùng: 1920x600px (Tỷ lệ ngang rộng).')}
+                {renderImageField('Banner Trang "Về FURANO"', 'aboutCoverImage', 'Ảnh hiển thị đầu trang Thông tin thương hiệu. Kích thước khuyên dùng: 1920x600px (Tỷ lệ ngang rộng).')}
+                {renderImageField('Banner Trang "Hệ thống cửa hàng"', 'storesCoverImage', 'Kích thước khuyên dùng: 1920x600px (Tỷ lệ ngang rộng).')}
               </div>
             </div>
           )}

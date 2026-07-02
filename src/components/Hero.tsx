@@ -34,9 +34,9 @@ export default function Hero() {
             </motion.div>
             
             <h1 className="text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-bold tracking-tight text-brand-950 mb-6 leading-[1.15]">
-              {t('Nụ Cười Hoàn Mỹ')} <br />
-              <span className="text-[#3DCAA0] font-serif italic pr-2">{t('Dành Riêng Cho')}</span><br />
-              {t('Team Niềng Răng')}
+              {t('Nụ cười hoàn mỹ')} <br />
+              <span className="text-[#3DCAA0] font-serif italic pr-2">{t('dành riêng cho')}</span><br />
+              {t('team niềng răng')}
             </h1>
             
             <p className="text-base md:text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">

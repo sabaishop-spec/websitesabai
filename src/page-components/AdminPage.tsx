@@ -686,14 +686,14 @@ const CategoriesProductsManager = () => {
     { name: 'id', label: 'ID Danh mục (slug)', type: 'text' },
     { name: 'title', label: 'Tên danh mục', type: 'text' },
     { name: 'description', label: 'Mô tả ngắn', type: 'textarea' },
-    { name: 'heroImage', label: 'Ảnh bìa (Hero Image URL)', type: 'image' }
+    { name: 'heroImage', label: 'Ảnh bìa (Hero Image URL) (Khuyên dùng: 1920x600px tỷ lệ ngang rộng)', type: 'image' }
   ];
 
   const prodFields = [
     { name: 'id', label: 'ID Sản phẩm (slug)', type: 'text' },
     { name: 'name', label: 'Tên Sản phẩm', type: 'text' },
     { name: 'tag', label: 'Thẻ nổi bật (VD: Bán chạy)', type: 'text' },
-    { name: 'image', label: 'Ảnh Chính (URL)', type: 'image' },
+    { name: 'image', label: 'Ảnh Chính (URL) (Khuyên dùng: Tỷ lệ 1:1 vuông, 600x600px)', type: 'image' },
     { name: 'features', label: 'Đặc điểm nổi bật (Mỗi dòng 1 cái)', type: 'array' },
     { name: 'mainUses', label: 'Công dụng chính (Mỗi dòng 1 cái)', type: 'array' },
     { name: 'ingredients', label: 'Thành phần (Mỗi dòng 1 cái)', type: 'array' },

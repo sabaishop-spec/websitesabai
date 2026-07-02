@@ -911,7 +911,7 @@ function BlogEditor({ post, onChange, onSave, onAutoSave, onCancel }: any) {
              {/* Featured Image Box */}
              <div className="bg-white shadow-sm border border-gray-200">
                 <div className="bg-gray-50 border-b border-gray-200 p-3 font-bold text-gray-800">
-                  Ảnh đại diện
+                  Ảnh đại diện <span className="font-normal text-gray-500 text-xs ml-1">(Tỷ lệ 16:9 ngang)</span>
                 </div>
                 <div className="p-4">
                    {post.image ? (

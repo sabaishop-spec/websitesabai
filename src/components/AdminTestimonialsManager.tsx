@@ -198,7 +198,7 @@ export default function AdminTestimonialsManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh Khách hàng</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh Khách hàng <span className="font-normal text-gray-500 text-xs ml-2">(Khuyên dùng: Tỷ lệ 3:4 hoặc 4:5 dọc)</span></label>
                 <div className="flex flex-col md:flex-row gap-4 items-start">
                   {formData.avatar ? (
                     <img src={formData.avatar || undefined} alt="Preview" className="w-32 h-32 object-cover rounded-lg border shadow-sm flex-shrink-0" />
