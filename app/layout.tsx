@@ -40,10 +40,15 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords,
     icons: {
       icon,
+      apple: '/favicon.svg',
     },
     alternates: {
       canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn',
+      languages: {
+        'vi-VN': process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn',
+      },
     },
+    manifest: '/manifest.webmanifest',
     openGraph: {
       title,
       description,
@@ -57,6 +62,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
     },
+    appleWebApp: {
+      title: 'FURANO',
+      statusBarStyle: 'default',
+      capable: true,
+    },
+    formatDetection: {
+      telephone: false,
+    },
     other: {
       // Geo Tags for Vietnam
       'geo.region': 'VN',
@@ -69,7 +82,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   let initialSettings = {};
-  let localBusinessSchema = {
+  let localBusinessSchema: any = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'FURANO',
@@ -77,6 +90,15 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     '@id': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}`,
     url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}`,
     telephone: '',
+    priceRange: 'VND',
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '08:00',
+        closes: '22:00'
+      }
+    ],
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'VN'
@@ -85,7 +107,10 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       '@type': 'GeoCoordinates',
       latitude: 14.058324,
       longitude: 108.277199
-    }
+    },
+    sameAs: [
+      'https://www.facebook.com/furano.vn'
+    ]
   };
 
   try {
