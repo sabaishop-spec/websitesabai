@@ -52,7 +52,7 @@ export default function Blog() {
           <div className="max-w-2xl">
             <h2 className="text-brand-800 font-semibold tracking-wider uppercase text-sm mb-3">{t("Góc Kiến Thức")}</h2>
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-              {t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm Sóc Nụ Cười")}</span>
+              {t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm sóc nụ cười")}</span>
             </h3>
           </div>
           <Link href="/blog" className="hidden md:inline-flex items-center text-brand-800 font-medium hover:text-brand-900 group">

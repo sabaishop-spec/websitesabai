@@ -48,7 +48,7 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {!settings?.blogCoverImage && (
           <div className="text-center max-w-2xl mx-auto mb-16 pt-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm Sóc Nụ Cười")}</span></>}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm sóc nụ cười")}</span></>}</h1>
             <p className="text-lg text-gray-600">
               {t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
             </p>

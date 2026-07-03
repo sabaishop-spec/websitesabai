@@ -76,9 +76,9 @@ export default function Footer() {
           <div>
             <h4 className="text-gray-900 font-bold mb-6 text-lg">{t("Sản Phẩm")}</h4>
             <ul className="space-y-3 text-sm flex flex-col">
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm Sóc Khi Niềng")}</Link></li>
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm Sóc Sau Niềng (Duy Trì)")}</Link></li>
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Trắng Răng & Khử Mùi")}</Link></li>
+              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc khi niềng")}</Link></li>
+              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc sau niềng (duy trì)")}</Link></li>
+              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Trắng răng & khử mùi")}</Link></li>
             </ul>
           </div>
 

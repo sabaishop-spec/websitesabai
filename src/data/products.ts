@@ -29,7 +29,7 @@ export type Category = {
 export const categories: Category[] = [
   {
     id: 'khi-nieng',
-    title: 'Chăm Sóc Khi Niềng',
+    title: 'Chăm sóc khi niềng',
     description: 'Chuyên dụng cho người đang mắc cài, bảo vệ toàn diện nướu và men răng.',
     heroImage: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=1600',
     products: [
@@ -129,7 +129,7 @@ export const categories: Category[] = [
   },
   {
     id: 'sau-nieng',
-    title: 'Chăm Sóc Sau Niềng (Duy Trì)',
+    title: 'Chăm sóc sau niềng (duy trì)',
     description: 'Hỗ trợ tháo niềng, vệ sinh hàm duy trì và tăng cường độ vững chắc cho răng.',
     heroImage: 'https://images.unsplash.com/photo-1596755490226-d62f6b8c9fd6?auto=format&fit=crop&q=80&w=1600',
     products: [
@@ -172,7 +172,7 @@ export const categories: Category[] = [
   },
   {
     id: 'trang-rang-khu-mui',
-    title: 'Trắng Răng & Khử Mùi',
+    title: 'Trắng răng & khử mùi',
     description: 'Giữ hơi thở thơm mát tức thì, nuôi dưỡng men răng trắng sáng.',
     heroImage: 'https://images.unsplash.com/photo-1559598467-f8b76c8105d0?auto=format&fit=crop&q=80&w=1600',
     products: [
