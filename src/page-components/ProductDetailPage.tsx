@@ -6,7 +6,6 @@ import CTASection from '../components/CTASection';
 import { useTranslation } from 'react-i18next';
 import { db, collection, getDocs } from '../localDB';
 import ProductReviews from '../components/ProductReviews';
-import SEO from '../components/SEO';
 import { autoLinkKeywords } from '../utils/autoLink';
 
 export default function ProductDetailPage({ params }: { params?: { id?: string } }) {
@@ -105,12 +104,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
 
   return (
     <main className="pt-24 min-h-screen bg-gray-50 flex flex-col">
-      <SEO
-        title={t(product.name)}
-        description={t(product.mainUses?.[0] || '')}
-        image={currentImage}
-        schema={productSchema}
-      />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
         <Link href="/products" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-800 mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />

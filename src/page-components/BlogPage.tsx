@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
-import SEO from '../components/SEO';
 
 function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: any[], initialCategories: string[] }) {
   const { t, i18n } = useTranslation();
@@ -33,10 +32,7 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
 
   return (
     <main className="pt-24 pb-24 min-h-screen bg-gray-50">
-      <SEO 
-        title={categoryQuery ? `${t("Cẩm Nang")} - ${categoryQuery}` : t("Cẩm Nang Chăm Sóc Nụ Cười")}
-        description={t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
-      />
+      
       {settings?.blogCoverImage && (
         <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto">
            <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-auto max-h-[50vh] object-contain" />

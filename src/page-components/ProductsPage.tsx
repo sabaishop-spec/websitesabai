@@ -3,7 +3,6 @@ import Products from '../components/Products';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import SEO from '../components/SEO';
 
 export default function ProductsPage() {
   const settings = useSiteSettings();
@@ -26,10 +25,7 @@ export default function ProductsPage() {
 
   return (
     <main className="pt-24 min-h-screen">
-      <SEO 
-        title={t("Sản phẩm chăm sóc răng miệng chuyên biệt")}
-        description={t("Khám phá các dòng sản phẩm chăm sóc răng miệng chuyên biệt từ Furano dành cho người chỉnh nha.")}
-      />
+      
       {settings?.productsCoverImage && (
         <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto max-h-[60vh] lg:max-h-[50vh]">
            <img src={settings.productsCoverImage} alt={t("Sản phẩm")} className="w-full h-full object-cover" />

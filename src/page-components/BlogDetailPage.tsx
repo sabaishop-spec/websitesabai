@@ -7,7 +7,6 @@ import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'isomorphic-dompurify';
 import CTASection from '../components/CTASection';
 import { supabase } from '../lib/supabase';
-import SEO from '../components/SEO';
 import { autoLinkKeywords } from '../utils/autoLink';
 
 export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
@@ -54,13 +53,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col pt-[72px]">
-      <SEO
-        title={post.seoTitle || getLocalized('title')}
-        description={post.seoDescription || getLocalized('excerpt')}
-        image={post.image}
-        type="article"
-        schema={articleSchema}
-      />
+      
       {/* Hero Header */}
       <div className="bg-white border-b border-gray-100 pt-16 pb-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
