@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'motion/react';
-import { ArrowRight, CircleCheck as CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CircleCheck as CheckCircle2, Package } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -23,13 +23,17 @@ export interface ProductDetail {
   }[];
 }
 
-function ProductCard({ product }: { product: ProductDetail }) {
+function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: number }) {
   const { t } = useTranslation();
   const hasVariants = product.variants && product.variants.length > 0;
-  // Always initialize to 0 to prevent out of bounds when component is reused with different props
   const [selectedVariant, setSelectedVariant] = useState(0);
-  
-  // Safe bounded index for variant access
+  const [imgError, setImgError] = useState(false);
+
+  // Reset image error state when variant changes
+  useEffect(() => {
+    setImgError(false);
+  }, [selectedVariant]);
+
   const safeVariantIndex = useMemo(() => {
     if (!hasVariants || !product.variants) return 0;
     return selectedVariant >= 0 && selectedVariant < product.variants.length ? selectedVariant : 0;
@@ -39,28 +43,40 @@ function ProductCard({ product }: { product: ProductDetail }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="bg-white rounded-[1.5rem] p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full cursor-pointer h-[28rem]"
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className="bg-white rounded-2xl p-3 pb-5 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-brand-300 transition-all duration-300 group flex flex-col h-auto cursor-pointer"
     >
-      <Link href={`/product/${product.id}`} className="block flex-grow flex flex-col h-full relative">
+      <Link href={`/product/${product.id}`} className="block flex-grow flex flex-col relative">
+        {/* Tag badge */}
         {product.tag && (
-          <div className="absolute top-2 right-2 z-20 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+          <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-red-500 to-red-600 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/20">
             {t(product.tag)}
           </div>
         )}
-        <div className="relative aspect-square rounded-[1rem] overflow-hidden bg-gray-50 mb-4 mix-blend-multiply flex-shrink-0">
-          <img
-            src={currentImage || undefined}
-            alt={t(product.name)}
-            className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
-          />
+
+        {/* Product image */}
+        <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 mb-3 flex-shrink-0">
+          {!imgError && currentImage ? (
+            <img
+              src={currentImage}
+              alt={t(product.name)}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+              <Package className="w-12 h-12 mb-2" strokeWidth={1} />
+              <span className="text-xs text-gray-400">{t(product.name)}</span>
+            </div>
+          )}
         </div>
-        
+
+        {/* Variant selector */}
         {hasVariants && product.variants && (
-          <div className="flex items-center gap-2 mb-4 px-1 flex-shrink-0 z-10" onClick={(e) => e.preventDefault()}>
+          <div className="flex items-center gap-2 mb-3 px-1 flex-shrink-0 z-10" onClick={(e) => e.preventDefault()}>
             {product.variants.map((variant, idx) => (
               <button
                 key={idx}
@@ -69,31 +85,40 @@ function ProductCard({ product }: { product: ProductDetail }) {
                   e.stopPropagation();
                   setSelectedVariant(idx);
                 }}
-                className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  safeVariantIndex === idx ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-110'
-                } flex items-center justify-center`}
+                className={`w-7 h-7 rounded-full transition-all duration-200 flex items-center justify-center ${
+                  safeVariantIndex === idx
+                    ? 'ring-2 ring-brand-600 ring-offset-2 scale-110'
+                    : 'border-2 border-gray-200 hover:scale-110 hover:border-gray-300'
+                }`}
                 title={t(variant?.name)}
               >
-                <span className={`w-full h-full rounded-full ${variant.colorClass} shadow-inner`}></span>
+                <span className={`w-full h-full rounded-full ${variant.colorClass}`}></span>
               </button>
             ))}
-            <span className="text-xs text-gray-500 ml-2 truncate">{t(product.variants[safeVariantIndex]?.name)}</span>
+            <span className="text-xs text-gray-500 ml-1 truncate font-medium">
+              {t(product.variants[safeVariantIndex]?.name)}
+            </span>
           </div>
         )}
-        
-        <div className="flex-grow flex flex-col justify-end">
-          <h5 className="text-lg font-bold text-gray-900 mb-2 truncate">{t(product?.name)}</h5>
-          <ul className="space-y-1 mb-4">
+
+        {/* Product info */}
+        <div className="flex-grow flex flex-col px-1">
+          <h5 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 leading-snug">{t(product?.name)}</h5>
+          <ul className="space-y-1.5 mb-4">
             {product.features?.slice(0, 2).map((feature, fIndex) => (
-              <li key={fIndex} className="flex items-start text-sm text-gray-600">
+              <li key={fIndex} className="flex items-start text-sm text-gray-500">
                 <CheckCircle2 className="w-4 h-4 text-brand-500 mr-2 shrink-0 mt-0.5" />
                 <span className="leading-tight line-clamp-1">{t(feature)}</span>
               </li>
             ))}
           </ul>
-          
-          <div className="mt-auto pt-3 border-t border-gray-100 font-medium text-brand-800 text-sm flex items-center group-hover:text-brand-900">
-            {t("Xem thêm")} <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+
+          {/* CTA button */}
+          <div className="mt-auto pt-3">
+            <span className="inline-flex items-center px-4 py-2 rounded-full bg-brand-50 text-brand-800 text-sm font-semibold group-hover:bg-brand-800 group-hover:text-white transition-colors duration-300">
+              {t("Xem chi tiết")}
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
+            </span>
           </div>
         </div>
       </Link>
@@ -142,6 +167,7 @@ export default function Products() {
       }
     };
   }, []);
+
   return (
     <section className="py-24 bg-gray-50" id="products">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,32 +181,53 @@ export default function Products() {
           </p>
         </div>
 
-        <div className="space-y-24">
+        <div className="space-y-20">
           {categories.map((category, catIndex) => (
             <div key={category.id} id={category.id} className="scroll-mt-32">
-              <div className="mb-10 text-center md:text-left flex flex-col md:flex-row items-center md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
-                <div>
-                  <h4 className="text-2xl font-bold text-gray-900">{t(category.title)}</h4>
-                  <p className="text-gray-500 mt-2">{t(category.description)}</p>
-                </div>
-                <Link href={`/products`} className="flex items-center text-brand-800 font-medium hover:text-brand-900 group whitespace-nowrap">
-                  {t("Xem tất cả")} {t(category.title)} <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-
+              {/* Category hero image with gradient overlay */}
               {category.heroImage && (
-                <div className="w-full h-48 md:h-64 lg:h-80 rounded-[2rem] overflow-hidden mb-12 shadow-sm block group">
+                <div className="w-full h-40 md:h-56 rounded-2xl overflow-hidden mb-8 relative group">
                   <img 
                     src={category.heroImage || undefined} 
                     alt={t(category.title)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                    <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-sm">{t(category.title)}</h4>
+                    {category.description && (
+                      <p className="text-white/80 mt-1 text-sm md:text-base max-w-xl">{t(category.description)}</p>
+                    )}
+                  </div>
                 </div>
               )}
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {/* Category header (only when no hero image) */}
+              {!category.heroImage && (
+                <div className="mb-8 text-center md:text-left flex flex-col md:flex-row items-center md:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+                  <div>
+                    <h4 className="text-2xl font-bold text-gray-900">{t(category.title)}</h4>
+                    <p className="text-gray-500 mt-2">{t(category.description)}</p>
+                  </div>
+                  <Link href={`/products`} className="flex items-center text-brand-800 font-medium hover:text-brand-900 group whitespace-nowrap">
+                    {t("Xem tất cả")} {t(category.title)} <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              )}
+
+              {/* "View all" link when hero is present */}
+              {category.heroImage && (
+                <div className="flex justify-end mb-6">
+                  <Link href={`/products`} className="flex items-center text-brand-800 font-medium hover:text-brand-900 group whitespace-nowrap text-sm">
+                    {t("Xem tất cả")} {t(category.title)} <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              )}
+
+              {/* Product grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {category.products?.map((product: any, pIndex: number) => (
-                  <ProductCard key={product?.id || pIndex} product={product} />
+                  <ProductCard key={product?.id || pIndex} product={product} index={pIndex} />
                 ))}
               </div>
             </div>
