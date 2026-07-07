@@ -1,86 +1,17 @@
-'use client';
-import { motion, AnimatePresence } from 'motion/react';
-import { Star, Quote, ArrowRight, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { db, collection, getDocs } from '../localDB';
+import re
 
-export default function Testimonials() {
-  const { t } = useTranslation();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+with open("src/components/Testimonials.tsx", "r") as f:
+    content = f.read()
 
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'testimonials'));
-        const items: any[] = [];
-        if (querySnapshot.docs) {
-          querySnapshot.docs.forEach((doc: any) => {
-            items.push({ id: doc.id, ...doc.data() });
-          });
-        }
-        
-        // Sort by order/createdAt
-        items.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        
-        if (items.length > 0) {
-          setTestimonials(items);
-        } else {
-           setTestimonials([]);
-        }
-      } catch (err) {
-        console.error('Error fetching testimonials:', err);
-        setTestimonials([]);
-      }
-      setLoading(false);
-    };
-
-    fetchTestimonials();
-
-    const handleUpdate = () => {
-      fetchTestimonials();
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('localDB_updated', handleUpdate);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('localDB_updated', handleUpdate);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (testimonials.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [testimonials]);
-
-  if (loading || testimonials.length === 0) {
-    return null; // or a loading skeleton
-  }
-
-  return (
-    <>
-    <section className="py-12 md:py-16 lg:py-20 bg-brand-900 text-white overflow-hidden relative" id="testimonials">
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')] opacity-10"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        {/* Tiêu đề nằm trên cùng */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-brand-300 font-semibold tracking-wider uppercase text-sm mb-3">{t("Hơn cả sự hài lòng")}</h2>
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-            {t("Lời tâm tình từ")} <br className="hidden md:block" /> <span className="font-serif italic font-normal text-brand-100">{t("Đồng Niềng")}</span>
-          </h3>
-        </div>
-
-                {/* Layout with Side Navigation */}
+start_marker = r'\{\/\* Bố cục 5\/5 -> 1\/2 và 1\/2 \*\/\}'
+# Find the start
+match = re.search(start_marker, content)
+if match:
+    start_idx = match.start()
+    # Find the end of that main section, which is just before "</section>"
+    end_idx = content.find("      </div>\n    </section>", start_idx)
+    if end_idx != -1:
+        new_content = content[:start_idx] + """        {/* Layout with Side Navigation */}
         <div className="relative w-full max-w-6xl mx-auto px-12 md:px-16">
           {/* Nút điều hướng - Trái */}
           <button 
@@ -178,18 +109,11 @@ export default function Testimonials() {
             </div>
             
           </div>
-      </div>
-      </div>
-    </section>
-    <div className="py-12 bg-white flex justify-center w-full relative z-10">
-      <Link
-        href="/products"
-        className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-900 bg-amber-400 hover:bg-amber-300 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-200 uppercase tracking-wide gap-2"
-      >
-        {t('Khám phá thêm')}
-        <ArrowRight className="w-5 h-5" />
-      </Link>
-    </div>
-    </>
-  );
-}
+""" + content[end_idx:]
+        with open("src/components/Testimonials.tsx", "w") as f:
+            f.write(new_content)
+        print("Success")
+    else:
+        print("End not found")
+else:
+    print("Start not found")
