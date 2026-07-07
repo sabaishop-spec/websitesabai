@@ -19,19 +19,8 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Set up Supabase Realtime for automatic data updates
-if (typeof window !== 'undefined') {
-  try {
-    supabase
-      .channel('public-tables')
-      .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-        window.dispatchEvent(new Event('localDB_updated'));
-      })
-      .subscribe();
-  } catch (e) {
-    console.warn("Could not subscribe to Supabase Realtime", e);
-  }
-}
+// Removed unconditional Supabase Realtime subscription to prevent excessive Egress
+// Client apps will now fetch once and cache the result.
 
 export const db = {};
 
@@ -76,18 +65,43 @@ const setMemData = (path: string, data: any[]) => {
 };
 
 export const getDocs = async (collectionRef: any) => {
+  const CACHE_KEY = 'supabase_cache_' + collectionRef.path;
+  const CACHE_TIME_KEY = 'supabase_cache_time_' + collectionRef.path;
+  const CACHE_TTL = 1000 * 60 * 60; // 1 hour
+
   let data: any[] = [];
   if (HAS_SUPABASE) {
-    try {
-      const { data: errorData, error } = await supabase
-        .from(collectionRef.path)
-        .select('*');
-      data = errorData || [];
-      if (error && error.code !== '42P01' && !error.message.includes('Could not find the table') && !error.message.includes('relation') && !error.message.includes('does not exist')) {
-        console.error(`Supabase Error fetch for table ${collectionRef.path}:`, error);
+    let shouldFetch = true;
+    if (typeof window !== 'undefined') {
+      const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+      // Skip cache if admin is logged in, to always see fresh data
+      const isAdmin = localStorage.getItem('auth_user') !== null;
+      if (!isAdmin && cachedTime && Date.now() - parseInt(cachedTime) < CACHE_TTL) {
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+          data = JSON.parse(cachedData);
+          shouldFetch = false;
+        }
       }
-    } catch (e) {
-      console.error(e);
+    }
+
+    if (shouldFetch) {
+      try {
+        const { data: errorData, error } = await supabase
+          .from(collectionRef.path)
+          .select('*');
+        data = errorData || [];
+        if (error && error.code !== '42P01' && !error.message.includes('Could not find the table') && !error.message.includes('relation') && !error.message.includes('does not exist')) {
+          console.error(`Supabase Error fetch for table ${collectionRef.path}:`, error);
+        } else if (!error && typeof window !== 'undefined') {
+          try {
+             localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+             localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+          } catch(e) { /* ignore quota errors */ }
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   } else {
     data = getMemData(collectionRef.path);
@@ -162,6 +176,8 @@ export const setDoc = async (docRef: any, data: any, options?: any) => {
   }
   
   if (typeof window !== 'undefined') {
+    localStorage.removeItem('supabase_cache_' + docRef.path);
+    localStorage.removeItem('supabase_cache_time_' + docRef.path);
     window.dispatchEvent(new Event('localDB_updated'));
     localStorage.setItem('localDB_updated_event', Date.now().toString());
   }
@@ -200,6 +216,8 @@ export const deleteDoc = async (docRef: any) => {
   }
   
   if (typeof window !== 'undefined') {
+    localStorage.removeItem('supabase_cache_' + docRef.path);
+    localStorage.removeItem('supabase_cache_time_' + docRef.path);
     window.dispatchEvent(new Event('localDB_updated'));
     localStorage.setItem('localDB_updated_event', Date.now().toString());
   }
