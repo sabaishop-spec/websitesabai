@@ -57,6 +57,14 @@ CREATE TABLE IF NOT EXISTS admins (
     email TEXT
 );
 
+CREATE TABLE IF NOT EXISTS subscribers (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    source TEXT DEFAULT 'cta',
+    "subscribedAt" BIGINT,
+    status TEXT DEFAULT 'active'
+);
+
 -- =======================================================
 -- MÃ LỆNH THÊM CÁC CỘT (ĐỂ SỬA LỖI LƯU & CẤP NHẬT DỊCH THUẬT)
 -- =======================================================

@@ -6,6 +6,7 @@ import AdminUsersManager from '../components/AdminUsersManager';
 import AdminTestimonialsManager from '../components/AdminTestimonialsManager';
 import SiteSettingsManager from '../components/SiteSettingsManager';
 import AdminBlogManager from '../components/AdminBlogManager';
+import AdminSubscribersManager from '../components/AdminSubscribersManager';
 import Link from 'next/link';
 import { compressImage } from '../lib/imageUtils';
 
@@ -52,7 +53,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab, user, onLogout }: any)
             <h2 className="text-2xl font-bold text-brand-400">Furano Admin</h2>
           </div>
           <nav className="mt-4">
-            {['Dashboard', 'Site Settings', 'Categories & Products', 'Testimonials', 'Blog Posts', 'FAQs', 'Admin Users'].map((tab) => (
+            {['Dashboard', 'Site Settings', 'Categories & Products', 'Testimonials', 'Blog Posts', 'FAQs', 'Subscribers', 'Admin Users'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -64,6 +65,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab, user, onLogout }: any)
                 {tab === 'Testimonials' && 'Lời tâm sự'}
                 {tab === 'Blog Posts' && 'Góc kiến thức'}
                 {tab === 'FAQs' && 'Hỏi Đáp (FAQs)'}
+                {tab === 'Subscribers' && 'Email Đăng Ký'}
                 {tab === 'Admin Users' && 'Thành viên Quản trị'}
               </button>
             ))}
@@ -961,6 +963,10 @@ export default function AdminPage() {
 
       <TabPanel active={activeTab === 'Admin Users'}>
         <AdminUsersManager />
+      </TabPanel>
+
+      <TabPanel active={activeTab === 'Subscribers'}>
+        <AdminSubscribersManager />
       </TabPanel>
       
       <TabPanel active={activeTab === 'Site Settings'}>
