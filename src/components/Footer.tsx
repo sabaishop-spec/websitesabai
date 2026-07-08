@@ -43,7 +43,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-gray-900 font-bold mb-6 text-lg">{t("Liên Hệ")}</h4>
+            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Liên Hệ")}</h4>
             <ul className="space-y-4 text-sm">
               <li className="flex gap-3">
                 <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
@@ -62,7 +62,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-gray-900 font-bold mb-6 text-lg">{t("Hỗ Trợ Khách Hàng")}</h4>
+            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Hỗ Trợ Khách Hàng")}</h4>
             <ul className="space-y-3 text-sm flex flex-col">
               <li><Link href="/shipping-policy" className="hover:text-brand-800 transition-colors">{t("Chính sách vận chuyển")}</Link></li>
               <li><Link href="/return-policy" className="hover:text-brand-800 transition-colors">{t("Chính sách đổi trả & hoàn tiền")}</Link></li>
@@ -74,7 +74,7 @@ export default function Footer() {
 
           {/* Products */}
           <div>
-            <h4 className="text-gray-900 font-bold mb-6 text-lg">{t("Sản Phẩm")}</h4>
+            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Sản Phẩm")}</h4>
             <ul className="space-y-3 text-sm flex flex-col">
               <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc khi niềng")}</Link></li>
               <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc sau niềng (duy trì)")}</Link></li>

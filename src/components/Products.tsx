@@ -103,7 +103,7 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
 
         {/* Product info */}
         <div className="flex-grow flex flex-col px-1">
-          <h5 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 leading-snug">{t(product?.name)}</h5>
+          <h5 className="text-base font-bold text-brand-950 mb-2 line-clamp-2 leading-snug">{t(product?.name)}</h5>
           <ul className="space-y-1.5 mb-4">
             {product.features?.slice(0, 2).map((feature, fIndex) => (
               <li key={fIndex} className="flex items-start text-sm text-gray-500">
@@ -169,12 +169,16 @@ export default function Products() {
   }, []);
 
   return (
-    <section className="py-24 bg-gray-50" id="products">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-brand-50 relative" id="products">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 -translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-brand-200/40 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-0 right-0 translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-brand-300/30 rounded-full blur-3xl opacity-50" />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-brand-800 font-semibold tracking-wider uppercase text-sm mb-3">{t("Danh Mục Sản Phẩm")}</h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            {t("Thiết kế chuyên biệt cho")} <br className="hidden md:block" /> <span className="font-serif italic text-brand-800">{t("Từng giai đoạn chỉnh nha")}</span>
+          <h3 className="text-3xl md:text-4xl font-bold text-brand-950 mb-6">
+            {t("Thiết kế chuyên biệt cho")} <br className="hidden md:block" /> <span className="font-serif italic text-[#3DCAA0]">{t("Từng giai đoạn chỉnh nha")}</span>
           </h3>
           <p className="text-gray-600 text-lg">
             {t("Sự kết hợp hoàn hảo giữa y khoa và dược liệu tự nhiên. Khám phá các dòng sản phẩm của FURANO giúp bảo vệ nụ cười của bạn.")}
@@ -192,7 +196,7 @@ export default function Products() {
                     alt={t(category.title)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-brand-900/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-sm">{t(category.title)}</h4>
                     {category.description && (

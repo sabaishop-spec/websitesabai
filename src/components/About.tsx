@@ -25,7 +25,7 @@ export default function About() {
   ];
 
   return (
-    <section className="py-24 bg-white" id="about">
+    <section className="py-24 bg-brand-50" id="about">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -35,9 +35,9 @@ export default function About() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-brand-800 font-semibold tracking-wider uppercase text-sm mb-3">{t("Về FURANO")}</h2>
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            <h3 className="text-3xl md:text-4xl font-bold text-brand-950 mb-6 leading-tight">
               {t("Thấu hiểu hành trình")} <br className="hidden sm:block" />
-              <span className="font-serif italic text-brand-800">{t("kiến tạo nụ cười")}</span> {t("của bạn.")}
+              <span className="font-serif italic text-[#3DCAA0]">{t("kiến tạo nụ cười")}</span> {t("của bạn.")}
             </h3>
             <div className="space-y-4 text-gray-600 text-lg">
               <p>
@@ -48,11 +48,11 @@ export default function About() {
 
             <div className="mt-10 grid sm:grid-cols-2 gap-6">
               <div className="border-l-2 border-brand-200 pl-4">
-                <p className="text-3xl font-bold text-gray-900 mb-1">98%</p>
+                <p className="text-3xl font-bold text-brand-950 mb-1">98%</p>
                 <p className="text-sm text-gray-500">{t("Khách hàng giảm hẳn tình trạng sưng nướu")}</p>
               </div>
               <div className="border-l-2 border-brand-200 pl-4">
-                <p className="text-3xl font-bold text-gray-900 mb-1">7x</p>
+                <p className="text-3xl font-bold text-brand-950 mb-1">7x</p>
                 <p className="text-sm text-gray-500">{t("Làm sạch sâu hơn so với sản phẩm thông thường")}</p>
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function About() {
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">{feature.title}</h4>
+                  <h4 className="text-lg font-bold text-brand-950 mb-2">{feature.title}</h4>
                   <p className="text-gray-600 leading-relaxed text-sm">{feature.description}</p>
                 </div>
               </div>

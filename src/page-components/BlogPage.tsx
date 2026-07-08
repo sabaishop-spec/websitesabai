@@ -31,10 +31,14 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
   };
 
   return (
-    <main className="pt-24 pb-24 min-h-screen bg-gray-50">
+    <main className="pt-24 pb-24 min-h-screen bg-brand-50 relative">
+      <div className="absolute top-0 left-0 w-full h-[800px] overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-brand-200/40 rounded-full blur-3xl opacity-50" />
+        <div className="absolute top-80 left-0 -translate-x-1/4 w-[500px] h-[500px] bg-brand-300/30 rounded-full blur-3xl opacity-50" />
+      </div>
       
       {settings?.blogCoverImage && (
-        <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto">
+        <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-brand-950 mx-auto z-10">
            <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-auto max-h-[50vh] object-contain" />
            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{categoryQuery || t("Blog")}</h1>
@@ -44,7 +48,7 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {!settings?.blogCoverImage && (
           <div className="text-center max-w-2xl mx-auto mb-16 pt-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-brand-800">{t("Chăm sóc nụ cười")}</span></>}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-950 mb-4 relative z-10">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-[#3DCAA0]">{t("Chăm sóc nụ cười")}</span></>}</h1>
             <p className="text-lg text-gray-600">
               {t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
             </p>
@@ -91,7 +95,7 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
                     <Clock className="w-3.5 h-3.5 mr-1" />
                     {getLocalized(post, 'date')}
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-brand-800 transition-colors line-clamp-2">
+                  <h4 className="text-lg font-bold text-brand-950 mb-3 group-hover:text-brand-800 transition-colors line-clamp-2">
                     {getLocalized(post, 'title')}
                   </h4>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">

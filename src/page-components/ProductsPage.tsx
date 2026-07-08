@@ -27,9 +27,9 @@ export default function ProductsPage() {
     <main className="pt-24 min-h-screen">
       
       {settings?.productsCoverImage && (
-        <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-gray-900 mx-auto max-h-[60vh] lg:max-h-[50vh]">
+        <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-brand-950 mx-auto max-h-[60vh] lg:max-h-[50vh]">
            <img src={settings.productsCoverImage} alt={t("Sản phẩm")} className="w-full h-full object-cover" />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end justify-center pb-12 lg:pb-16">
+           <div className="absolute inset-0 bg-gradient-to-t from-brand-950/90 via-brand-900/40 to-transparent flex items-end justify-center pb-12 lg:pb-16">
              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-widest uppercase drop-shadow-md">{t("Sản Phẩm")}</h1>
            </div>
         </div>

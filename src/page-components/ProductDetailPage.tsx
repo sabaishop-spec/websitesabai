@@ -103,7 +103,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
   };
 
   return (
-    <main className="pt-24 min-h-screen bg-gray-50 flex flex-col">
+    <main className="pt-24 min-h-screen bg-brand-50 flex flex-col">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
         <Link href="/products" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-800 mb-8 transition-colors">
@@ -114,7 +114,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 bg-white p-6 md:p-12 rounded-[2rem] shadow-sm border border-gray-100 items-start">
           {/* Image Gallery */}
           <div className="space-y-6 sticky top-24">
-            <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden mix-blend-multiply flex items-center justify-center border border-gray-100">
+            <div className="aspect-square bg-brand-50/50 rounded-2xl overflow-hidden mix-blend-multiply flex items-center justify-center border border-gray-100">
               <img
                 src={currentImage || undefined}
                 alt={product.name}
@@ -131,7 +131,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
                       key={idx}
                       onClick={() => setSelectedVariant(idx)}
                       className={`relative w-8 h-8 rounded-full border-2 transition-all ${
-                        selectedVariant === idx ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-110'
+                        selectedVariant === idx ? 'border-brand-950 scale-110' : 'border-transparent hover:scale-110'
                       } flex items-center justify-center`}
                       title={t(variant?.name)}
                     >
@@ -151,7 +151,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
 
           {/* Product Info */}
           <div className="flex flex-col">
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">{t(product?.name)}</h1>
+            <h1 className="text-3xl lg:text-4xl font-bold text-brand-950 mb-6">{t(product?.name)}</h1>
 
             {product.specs && (
               <div className="inline-block px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 mb-6 w-fit">
@@ -162,7 +162,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
             <div className="space-y-10">
               {product.mainUses && (
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">{t("Ưu Điểm Nổi Bật")}</h3>
+                  <h3 className="text-xl font-bold text-brand-950 mb-4 border-b border-gray-100 pb-2">{t("Ưu Điểm Nổi Bật")}</h3>
                   <ul className="space-y-3">
                     {product.mainUses.map((use: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed">
@@ -176,7 +176,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
 
               {product.ingredients && (
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">{t("Thành Phần & Công Thức")}</h3>
+                  <h3 className="text-xl font-bold text-brand-950 mb-4 border-b border-gray-100 pb-2">{t("Thành Phần & Công Thức")}</h3>
                   <ul className="space-y-3">
                     {product.ingredients.map((ing: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed items-start">
@@ -190,7 +190,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
 
               {product.materials && (
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">{t("Cấu Tạo Bàn Chải")}</h3>
+                  <h3 className="text-xl font-bold text-brand-950 mb-4 border-b border-gray-100 pb-2">{t("Cấu Tạo Bàn Chải")}</h3>
                   <ul className="space-y-3">
                     {product.materials.map((mat: string, i: number) => (
                       <li key={i} className="flex text-gray-600 leading-relaxed items-start">

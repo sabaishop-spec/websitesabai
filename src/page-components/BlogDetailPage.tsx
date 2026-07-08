@@ -52,7 +52,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-[72px]">
+    <div className="min-h-screen bg-brand-50 flex flex-col pt-[72px]">
       
       {/* Hero Header */}
       <div className="bg-white border-b border-gray-100 pt-16 pb-12">
@@ -76,7 +76,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
             </span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
+          <h1 className="text-3xl md:text-5xl font-bold text-brand-950 leading-tight mb-6">
             {getLocalized('title')}
           </h1>
 
@@ -148,7 +148,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
 
             <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <span className="text-gray-900 font-medium">{t("Chia sẻ bài viết:")}</span>
+                <span className="text-brand-950 font-medium">{t("Chia sẻ bài viết:")}</span>
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`, '_blank', 'width=600,height=400')}
@@ -189,7 +189,7 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
                   </button>
                 </div>
               </div>
-              <Link href="/blog" className="px-6 py-3 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center gap-2">
+              <Link href="/blog" className="px-6 py-3 bg-brand-950 text-white font-medium rounded-xl hover:bg-brand-900 transition-colors inline-flex items-center gap-2 shadow-md hover:shadow-lg">
                 {t("Đọc thêm bài khác")}
                 <ChevronRight className="w-4 h-4" />
               </Link>
@@ -264,7 +264,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                  <a 
                    href={`#block-${entry.id}`}
                    onClick={(e) => scrollToElement(e, entry.id)}
-                   className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
+                   className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-brand-950 font-medium' : 'text-gray-600'}`}
                  >
                    <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
                    <span>{String(entry.title || '').replace(/^(\d+\.)+\s*/, '')}</span>
@@ -287,7 +287,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                   if (tocEntries.length === 0) return null;
                   return (
                     <div key={blockKey} className="bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100 my-10 w-full">
-                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
+                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-brand-950">
                          Mục lục bài viết
                        </h3>
                        <ul className="space-y-3">
@@ -296,7 +296,7 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                              <a 
                                href={`#block-${entry.id}`}
                                onClick={(e) => scrollToElement(e, entry.id)}
-                               className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
+                               className={`flex hover:text-brand-700 transition-colors ${entry.level === 2 ? 'text-brand-950 font-medium' : 'text-gray-600'}`}
                              >
                                <span className="mr-2 min-w-[24px] shrink-0 font-medium">{entry.number}.</span>
                                <span>{String(entry.title || '').replace(/^(\d+\.)+\s*/, '')}</span>
@@ -308,14 +308,14 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                   );
               case 'h2':
                 return (
-                  <h2 id={`block-${blockKey}`} key={blockKey} className="text-3xl font-bold text-gray-900 mt-12 mb-6 scroll-mt-24">
+                  <h2 id={`block-${blockKey}`} key={blockKey} className="text-3xl font-bold text-brand-950 mt-12 mb-6 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
                     {String(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h2>
                 );
               case 'h3':
                 return (
-                  <h3 id={`block-${blockKey}`} key={blockKey} className="text-2xl font-bold text-gray-900 mt-8 mb-4 scroll-mt-24">
+                  <h3 id={`block-${blockKey}`} key={blockKey} className="text-2xl font-bold text-brand-950 mt-8 mb-4 scroll-mt-24">
                     {tocEntry && <span className="mr-2 select-none">{tocEntry.number}.</span>}
                     {String(data.text || '').replace(/^(\d+\.)+\s*/, '')}
                   </h3>
@@ -357,12 +357,12 @@ function BlockRenderer({ blocks, showTOC }: { blocks: any[], showTOC?: boolean }
                    <div key={blockKey} className="overflow-x-auto w-full my-8">
                      <table className="w-full text-left border-collapse min-w-max">
                        <thead>
-                         <tr>{Array.isArray(data.headers) && data.headers.map((h: string, i: number) => <th key={i} className="border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900">{String(h || '')}</th>)}</tr>
+                         <tr>{Array.isArray(data.headers) && data.headers.map((h: string, i: number) => <th key={i} className="border border-brand-200 bg-brand-50 p-3 font-semibold text-brand-950">{String(h || '')}</th>)}</tr>
                        </thead>
                        <tbody>
                          {Array.isArray(data.rows) && data.rows.map((row: any[], i: number) => (
-                           <tr key={i} className="hover:bg-gray-50/50">
-                             {Array.isArray(row) && row.map((cell: any, ci: number) => <td key={ci} className="border border-gray-200 p-3 text-gray-700 whitespace-pre-wrap">{String(cell || '')}</td>)}
+                           <tr key={i} className="hover:bg-brand-50/50">
+                             {Array.isArray(row) && row.map((cell: any, ci: number) => <td key={ci} className="border border-brand-200 p-3 text-gray-700 whitespace-pre-wrap">{String(cell || '')}</td>)}
                            </tr>
                          ))}
                        </tbody>

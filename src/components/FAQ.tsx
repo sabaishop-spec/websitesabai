@@ -65,10 +65,10 @@ export default function FAQ() {
   ];
 
   return (
-    <section className="py-24 bg-gray-50" id="faq">
+    <section className="py-24 bg-brand-50" id="faq">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("Câu hỏi thường gặp")}</h2>
+          <h2 className="text-3xl font-bold text-brand-950 mb-4">{t("Câu hỏi thường gặp")}</h2>
           <p className="text-gray-600">{t("Những thắc mắc phổ biến nhất của các Đồng Niềng.")}</p>
         </div>
 
@@ -82,7 +82,7 @@ export default function FAQ() {
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
               >
-                <span className="font-semibold text-gray-900 text-lg">{faq.question}</span>
+                <span className="font-semibold text-brand-950 text-lg">{faq.question}</span>
                 <ChevronDown 
                   className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-brand-800' : ''}`} 
                 />
