@@ -139,9 +139,10 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
               return validBlocks.length > 0 ? (
                  <BlockRenderer blocks={validBlocks} showTOC={post.showTOC} />
               ) : (
-                 <div className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown">
-                   <ReactMarkdown>{getLocalized('content') || ''}</ReactMarkdown>
-                 </div>
+                 <div 
+                   className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown"
+                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getLocalized('content') || '', { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling'] }) }}
+                 />
               );
             })()}
 
