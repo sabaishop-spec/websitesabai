@@ -12,12 +12,22 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
   const { t, i18n } = useTranslation();
   const settings = useSiteSettings();
   const searchParams = useSearchParams();
-  const categoryQuery = searchParams?.get('category');
+  const initialCategoryQuery = searchParams?.get('category');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategoryQuery || null);
   const [visibleCount, setVisibleCount] = useState(12);
 
-  const filteredPosts = categoryQuery
-    ? initialPosts.filter(p => p.category === categoryQuery)
+  const filteredPosts = selectedCategory
+    ? initialPosts.filter(p => p.category === selectedCategory)
     : initialPosts;
+
+  const handleCategoryChange = (cat: string | null) => {
+    setSelectedCategory(cat);
+    setVisibleCount(12);
+    if (typeof window !== 'undefined') {
+      const url = cat ? `/blog?category=${encodeURIComponent(cat)}` : '/blog';
+      window.history.pushState({}, '', url);
+    }
+  };
 
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 12, filteredPosts.length));
@@ -41,14 +51,14 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
         <div className="w-full relative overflow-hidden mb-12 flex justify-center bg-brand-950 mx-auto z-10">
            <img src={settings.blogCoverImage} alt={t("Blog")} className="w-full h-auto max-h-[50vh] object-contain" />
            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
-             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{categoryQuery || t("Blog")}</h1>
+             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">{selectedCategory || t("Blog")}</h1>
            </div>
         </div>
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {!settings?.blogCoverImage && (
           <div className="text-center max-w-2xl mx-auto mb-16 pt-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-brand-950 mb-4 relative z-10">{categoryQuery || <>{t("Cẩm Nang")} <span className="font-serif italic text-[#3DCAA0]">{t("Chăm sóc nụ cười")}</span></>}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-950 mb-4 relative z-10">{selectedCategory || <>{t("Cẩm Nang")} <span className="font-serif italic text-[#3DCAA0]">{t("Chăm sóc nụ cười")}</span></>}</h1>
             <p className="text-lg text-gray-600">
               {t("Kiến thức chuyên sâu và hướng dẫn chi tiết giúp bạn tự tin hơn trong suốt quá trình niềng răng.")}
             </p>
@@ -56,11 +66,11 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
         )}
 
         <div className="flex flex-wrap gap-4 mb-10 items-center">
-             <Link href="/blog" className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${!categoryQuery ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>Tất cả</Link>
+             <button onClick={() => handleCategoryChange(null)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${!selectedCategory ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>Tất cả</button>
              {initialCategories.map((cat: string) => (
-                 <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${categoryQuery === cat ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
+                 <button key={cat} onClick={() => handleCategoryChange(cat)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm ${selectedCategory === cat ? 'bg-brand-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
                     {cat}
-                 </Link>
+                 </button>
              ))}
         </div>
 
