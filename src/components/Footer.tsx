@@ -18,8 +18,8 @@ const ZaloIcon = ({ className }: { className?: string }) => (
 );
 
 const ShopeeIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15.4 6h-6.8c-.3 0-.6.2-.7.5l-2.6 7.5c-.1.4 0 .9.3 1.1l5.9 5.3c.3.3.7.3 1 0l5.9-5.3c.3-.3.4-.8.3-1.1L16.1 6.5c-.1-.3-.4-.5-.7-.5zm-6.2 1.5h5.6l2 5.5H7.2l2-5.5z" />
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M16.2 5.5l1.2-2.3c.1-.2.4-.3.6-.2l.1.1.6 1.1h-4.8L16.2 5.5zM12 2C10.3 2 9 3.3 9 5h6c0-1.7-1.3-3-3-3zM3 7l2 14h14l2-14H3zm8 9c-2.8 0-5-2.2-5-5h2c0 1.7 1.3 3 3 3s3-1.3 3-3h2c0 2.8-2.2 5-5 5z"/>
   </svg>
 );
 
