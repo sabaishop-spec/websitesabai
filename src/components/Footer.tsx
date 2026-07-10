@@ -11,6 +11,18 @@ const TiktokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const ZaloIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M21.2 12.3c0-4.8-4.1-8.7-9.2-8.7-5.1 0-9.2 3.9-9.2 8.7 0 2.5 1.1 4.8 3 6.3l-.9 3c-.1.3.3.6.6.4l3.5-2.2c1 .3 2 .4 3 .4 5.1 0 9.2-3.9 9.2-8.7zm-14 1.2h-.5c-.3 0-.5-.2-.5-.5v-1c0-.3.2-.5.5-.5h.5c.3 0 .5.2.5.5v1c0 .3-.2.5-.5.5zm2.8 0h-1.5c-.3 0-.5-.2-.5-.5v-1c0-.3.2-.5.5-.5h1.5c.3 0 .5.2.5.5v1c0 .3-.2.5-.5.5zm4 0h-.5c-.3 0-.5-.2-.5-.5v-1c0-.3.2-.5.5-.5h.5c.3 0 .5.2.5.5v1c0 .3-.2.5-.5.5zm2.8 0h-1.5c-.3 0-.5-.2-.5-.5v-1c0-.3.2-.5.5-.5h1.5c.3 0 .5.2.5.5v1c0 .3-.2.5-.5.5z"/>
+  </svg>
+);
+
+const ShopeeIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.4 6h-6.8c-.3 0-.6.2-.7.5l-2.6 7.5c-.1.4 0 .9.3 1.1l5.9 5.3c.3.3.7.3 1 0l5.9-5.3c.3-.3.4-.8.3-1.1L16.1 6.5c-.1-.3-.4-.5-.7-.5zm-6.2 1.5h5.6l2 5.5H7.2l2-5.5z" />
+  </svg>
+);
+
 export default function Footer() {
   const { t } = useTranslation();
   const settings = useSiteSettings();
@@ -38,6 +50,12 @@ export default function Footer() {
               <a href={settings.tiktokLink || "https://tiktok.com"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
                 <TiktokIcon className="w-5 h-5" />
               </a>
+              <a href={settings.zaloLink || "https://zalo.me/0869857395"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
+                <ZaloIcon className="w-5 h-5" />
+              </a>
+              <a href={settings.shopeeLink || "https://shopee.vn/sabaicare"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-[#EE4D2D] hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
+                <ShopeeIcon className="w-6 h-6" />
+              </a>
             </div>
           </div>
 
@@ -51,7 +69,7 @@ export default function Footer() {
               </li>
               <li className="flex gap-3 items-center">
                 <Phone className="w-5 h-5 text-gray-400 shrink-0" />
-                <span>{settings.phone || "1900 6868 (8:00 - 22:00)"}</span>
+                <span>{settings.phone || "0869857395"}</span>
               </li>
               <li className="flex gap-3 items-center">
                 <Mail className="w-5 h-5 text-gray-400 shrink-0" />

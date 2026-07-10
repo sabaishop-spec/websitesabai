@@ -219,6 +219,14 @@ export default function SiteSettingsManager() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">TikTok Link</label>
                     <input type="text" value={settings.tiktokLink || ''} onChange={(e) => handleChange('tiktokLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://tiktok.com/..." />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Zalo Link</label>
+                    <input type="text" value={settings.zaloLink || ''} onChange={(e) => handleChange('zaloLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://zalo.me/..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Shopee Link</label>
+                    <input type="text" value={settings.shopeeLink || ''} onChange={(e) => handleChange('shopeeLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://shopee.vn/..." />
+                  </div>
                 </div>
               </div>
             </div>

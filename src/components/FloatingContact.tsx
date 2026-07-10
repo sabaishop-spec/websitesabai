@@ -17,7 +17,7 @@ export default function FloatingContact() {
         }`}
       >
         <a 
-          href="https://zalo.me" 
+          href={typeof window !== 'undefined' ? localStorage.getItem('zaloLink') || "https://zalo.me/0869857395" : "https://zalo.me/0869857395"} 
           target="_blank" 
           rel="noopener noreferrer"
           className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-50 transition-colors group relative border border-gray-100"
@@ -30,7 +30,7 @@ export default function FloatingContact() {
 
         
         <a 
-          href="tel:0909090909" 
+          href="tel:0869857395" 
           className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-green-600 transition-colors group relative"
         >
           <span className="absolute right-full mr-4 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
