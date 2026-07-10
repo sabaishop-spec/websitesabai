@@ -74,9 +74,10 @@ export default function Testimonials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Tiêu đề nằm trên cùng */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-brand-600 font-bold tracking-widest uppercase text-sm mb-4">{t("Hơn cả sự hài lòng")}</h2>
-          <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-brand-950">
-            {t("Lời tâm tình từ")} <br className="hidden md:block" /> <span className="font-serif italic font-normal text-[#3DCAA0]">{t("Đồng Niềng")}</span>
+          <h2 className="text-[#3DCAA0] font-semibold tracking-wider uppercase text-sm mb-4">{t("Hơn cả sự hài lòng")}</h2>
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif text-brand-950 leading-tight">
+            {t("Lời tâm tình từ")} <br className="hidden md:block" />
+            <span className="text-[#3DCAA0] italic">{t("Đồng Niềng")}</span>
           </h3>
         </div>
 
