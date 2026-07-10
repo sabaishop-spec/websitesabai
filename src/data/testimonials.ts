@@ -14,7 +14,7 @@ export const testimonials = [
     "name": "Khách hàng 6",
     "role": "Đã mua hàng",
     "content": "Đóng gói cẩn thận, giao hàng nhanh, nước súc miệng thơm, sạch miệng, dùng thích, rất hài lòng.",
-    "productName": "Nước súc miệng Ortho Sabai",
+    "productName": "Nước súc miệng Ortho FURANO",
     "productId": "nuoc-suc-mieng-ortho-sabai",
     "stars": 5,
     "image": "/images/testimonials/6.jpg"

@@ -6,8 +6,8 @@ import { Image as ImageIcon, Save, Plus, Trash2 } from 'lucide-react';
 
 export default function AdminAboutManager() {
   const [data, setData] = useState<any>({
-    heroTitle: 'Câu chuyện FURANO',
-    heroSubtitle: 'Từ một ý tưởng nhỏ để giúp mọi người có nụ cười tự tin...',
+    heroTitle: 'Chăm sóc nụ cười, từ những ngày còn mắc cài.',
+    heroSubtitle: 'FURANO phát triển các giải pháp chăm sóc răng miệng dành riêng cho những nhu cầu xuất hiện trong và sau quá trình chỉnh nha.',
     missionText: '',
     visionText: '',
     philosophyText: '',

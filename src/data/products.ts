@@ -35,7 +35,7 @@ export const categories: Category[] = [
     products: [
       {
         id: 'kem-danh-rang-ortho-sabai',
-        name: 'Kem đánh răng Ortho Sabai',
+        name: 'Kem đánh răng Ortho FURANO',
         tag: 'Bán chạy',
         features: ['Tái khoáng hóa men răng', 'Kháng khuẩn CPC & Fluoride'],
         variants: [
@@ -60,7 +60,7 @@ export const categories: Category[] = [
       },
       {
         id: 'nuoc-suc-mieng-ortho-sabai',
-        name: 'Nước súc miệng Ortho Sabai',
+        name: 'Nước súc miệng Ortho FURANO',
         features: ['Không cồn', 'Dịu nhẹ nướu', 'Làm sạch sâu khoang miệng'],
         variants: [
           { name: 'Nha Đam', colorClass: 'bg-pink-400', image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=600&color=pink' },

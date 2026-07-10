@@ -1,6 +1,6 @@
 {
-  "name": "Sabai Shop",
-  "description": "Web application for Sabai Shop built from github.com/sabaishop-spec/web",
+  "name": "FURANO",
+  "description": "Web application for FURANO built from github.com/sabaishop-spec/websitesabai",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
