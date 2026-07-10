@@ -212,10 +212,6 @@ export default function SiteSettingsManager() {
                     <input type="text" value={settings.facebookLink || ''} onChange={(e) => handleChange('facebookLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://facebook.com/..." />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Instagram Link</label>
-                    <input type="text" value={settings.instagramLink || ''} onChange={(e) => handleChange('instagramLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://instagram.com/..." />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">TikTok Link</label>
                     <input type="text" value={settings.tiktokLink || ''} onChange={(e) => handleChange('tiktokLink', e.target.value)} className="w-full border p-2.5 rounded focus:ring-2 focus:ring-brand-500 text-sm bg-gray-50" placeholder="https://tiktok.com/..." />
                   </div>
