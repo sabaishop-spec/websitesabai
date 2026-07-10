@@ -15,7 +15,13 @@ export default function AdminAboutManager() {
     teamText2: '',
     teamImage: '',
     coreValues: [],
-    timeline: [],
+    timeline: [
+      { year: "2018", text: "FURANO được thành lập", side: "left" },
+      { year: "2019", text: "Ra mắt dòng sản phẩm Ortho chuyên biệt", side: "right" },
+      { year: "2021", text: "Giành được giải thưởng Oral-Care New-Star Brand từ Shopee", side: "left" },
+      { year: "2023", text: "Mở rộng sang 3 nước Đông Nam Á", side: "right" },
+      { year: "2024", text: "Nhận danh hiệu 5 star Health-care shop từ Tiktok shop", side: "left" }
+    ],
     scienceChecks: [],
     labImage: ''
   });

@@ -165,7 +165,14 @@ export default function About() {
     cta: {
       title: "Trở thành một phần của cộng đồng FURANO",
       desc: "Khám phá sản phẩm và bắt đầu xây dựng quy trình chăm sóc răng niềng phù hợp với bạn."
-    }
+    },
+    timelineFallback: [
+      { year: "2018", text: "FURANO được thành lập", side: "left" },
+      { year: "2019", text: "Ra mắt dòng sản phẩm Ortho chuyên biệt", side: "right" },
+      { year: "2021", text: "Giành được giải thưởng Oral-Care New-Star Brand từ Shopee", side: "left" },
+      { year: "2023", text: "Mở rộng sang 3 nước Đông Nam Á", side: "right" },
+      { year: "2024", text: "Nhận danh hiệu 5 star Health-care shop từ Tiktok shop", side: "left" }
+    ]
   };
 
   if (loading) {
@@ -512,7 +519,7 @@ export default function About() {
       </section>
 
       {/* 9. Hành trình của FURANO (Timeline) */}
-      {data?.timeline && data.timeline.length > 0 && (
+      {(data?.timeline?.length > 0 ? data.timeline : content.timelineFallback)?.length > 0 && (
         <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-50 border-b border-gray-100">
           <div className="max-w-[1000px] mx-auto">
             <motion.div
@@ -531,7 +538,7 @@ export default function About() {
               <div className="absolute top-0 bottom-0 left-6 md:left-1/2 w-[1px] bg-brand-200 transform md:-translate-x-1/2"></div>
               
               <div className="space-y-12">
-                {data.timeline.map((item: any, idx: number) => {
+                {(data?.timeline?.length > 0 ? data.timeline : content.timelineFallback).map((item: any, idx: number) => {
                    const isLeft = item.side === 'left';
                    return (
                      <div key={idx} className={`relative flex flex-col md:flex-row items-start md:items-center ${isLeft ? 'md:flex-row-reverse' : ''}`}>
