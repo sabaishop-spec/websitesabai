@@ -165,12 +165,12 @@ export default function Testimonials() {
 
                     <Link
                       href={testimonials[currentIndex].productId ? `/product/${testimonials[currentIndex].productId}` : `/products`}
-                      className="group flex flex-row items-center gap-2 text-brand-700 hover:text-brand-900 transition-colors font-medium text-base bg-brand-50 hover:bg-brand-100 px-6 py-3 rounded-full border border-brand-100 flex-shrink min-w-0"
+                      className="group flex flex-row items-center gap-3 text-brand-700 hover:text-brand-900 transition-colors font-medium text-base bg-brand-50 hover:bg-brand-100 px-6 py-3.5 rounded-2xl border border-brand-100 flex-shrink min-w-0"
                     >
-                      <span className="truncate block">
+                      <span className="line-clamp-3">
                         {t('Xem thêm về')} <span className="font-bold text-[#3DCAA0]">{testimonials[currentIndex].productName || testimonials[currentIndex].product || 'Sản phẩm'}</span>
                       </span>
-                      <ArrowRight className="w-4 h-4 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 </motion.div>
