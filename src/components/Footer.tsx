@@ -41,7 +41,7 @@ export default function Footer() {
               {t(settings.footerDescription || "Thương hiệu dược mỹ phẩm hàng đầu cung cấp giải pháp chăm sóc toàn diện chuẩn y khoa thiết kế riêng cho người niềng răng tại Việt Nam.")}
             </p>
             <div className="flex gap-4">
-              <a href={settings.facebookLink && settings.facebookLink !== "" ? settings.facebookLink : "https://www.facebook.com/profile.php?id=61556094200424"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
+              <a href={settings.facebookLink && settings.facebookLink !== "" ? settings.facebookLink : "https://www.facebook.com/SabaiCare79"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href={settings.tiktokLink || "https://tiktok.com"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
