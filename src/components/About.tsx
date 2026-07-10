@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { db, doc, getDoc } from '../localDB';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, ArrowDown } from 'lucide-react';
 
 export default function About() {
   const { t } = useTranslation();
@@ -12,6 +12,7 @@ export default function About() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Giữ nguyên logic fetch để không phá vỡ chức năng backend
     const fetchData = async () => {
       try {
         const snap = await getDoc(doc(db, 'settings', 'about'));
@@ -27,334 +28,465 @@ export default function About() {
     fetchData();
   }, []);
 
-  const defaultValues = {
-    heroTitle: t("Câu chuyện FURANO"),
-    heroSubtitle: t("Từ một ý tưởng nhỏ để giúp mọi người có nụ cười tự tin, chúng tôi đã trở thành thương hiệu chăm sóc răng miệng đồng hành cùng cộng đồng."),
-    missionText: t("Cung cấp các sản phẩm chăm sóc hàm răng chất lượng cao, khoa học, an toàn cho mọi người, đặc biệt là những người niềng răng."),
-    visionText: t("Trở thành thương hiệu chăm sóc hàm răng được tin tưởng nhất ở Đông Nam Á, đồng hành cùng mọi người trên hành trình tìm kiếm nụ cười tự tin."),
-    philosophyText: t("Không chỉ bán sản phẩm, chúng tôi đồng hành. Mỗi khách hàng là một phần của gia đình FURANO."),
-    teamText1: t("FURANO được xây dựng bởi một nhóm chuyên gia nha khoa. Chúng tôi hiểu rõ nỗi lo, khó khăn của những người niềng răng vì chính bản thân chúng tôi cũng từng trải qua."),
-    teamText2: t("Tâm huyết với việc phát triển các sản phẩm tốt nhất để giúp bạn có nụ cười tự tin trong suốt hành trình chỉnh nha."),
-    teamImage: '/images/team-furano.jpeg',
-    timeline: [
-      { year: 2018, text: t("FURANO được thành lập"), side: 'left' },
-      { year: 2019, text: t("Ra mắt dòng sản phẩm Ortho chuyên biệt"), side: 'right' },
-      { year: 2021, text: t("Giải thưởng Oral-Care New-Star Brand"), side: 'left' },
-      { year: 2023, text: t("Mở rộng sang 3 nước Đông Nam Á"), side: 'right' }
+  // Nội dung editorial mới hoàn toàn, hardcode theo yêu cầu
+  const content = {
+    hero: {
+      eyebrow: "VỀ FURANO",
+      title: "Chăm sóc nụ cười, từ những ngày còn mắc cài.",
+      desc: "FURANO phát triển các giải pháp chăm sóc răng miệng dành riêng cho những nhu cầu xuất hiện trong và sau quá trình chỉnh nha.",
+      image: "/images/team-furano.jpeg" // Sử dụng ảnh hiện có trong public/images
+    },
+    story: {
+      title: "FURANO bắt đầu từ một vấn đề rất nhỏ",
+      desc1: "Người niềng thường phải dành nhiều thời gian hơn cho việc vệ sinh răng miệng, nhưng phần lớn sản phẩm trên thị trường lại được thiết kế cho nhu cầu chăm sóc thông thường.",
+      desc2: "FURANO được xây dựng từ mong muốn tạo ra những giải pháp dễ sử dụng hơn cho từng vấn đề cụ thể: làm sạch quanh mắc cài, chăm sóc nướu, hỗ trợ hơi thở và vệ sinh hàm duy trì.",
+      quote: "Không phải một quy trình phức tạp hơn, mà là một quy trình phù hợp hơn.",
+      image: "/images/furano-lab.png" // Sử dụng ảnh hiện có trong public/images
+    },
+    struggles: [
+      {
+        title: "Những vị trí khó làm sạch",
+        desc: "Thức ăn và mảng bám dễ lưu lại ở khu vực quanh dây cung và mắc cài."
+      },
+      {
+        title: "Sự tự tin trong giao tiếp",
+        desc: "Cảm giác hơi thở không thơm mát có thể khiến người niềng thiếu tự tin trong ngày dài."
+      },
+      {
+        title: "Chăm sóc không kết thúc khi tháo niềng",
+        desc: "Hàm duy trì vẫn cần được làm sạch đúng cách để hạn chế cặn bám và mùi khó chịu."
+      }
     ],
-    scienceChecks: [
-      t("Kiểm duyệt bởi Bộ Y tế Việt Nam"),
-      t("Công thức dermatologically tested"),
-      t("Không chứa hóa chất độc hại"),
-      t("Thành phần tự nhiên, an toàn")
+    principles: [
+      {
+        num: "01",
+        title: "Đúng với nhu cầu của người niềng",
+        desc: "Không chỉ thêm chữ “Ortho” lên bao bì, mỗi sản phẩm cần hướng tới một nhu cầu cụ thể trong hành trình chỉnh nha."
+      },
+      {
+        num: "02",
+        title: "Dễ duy trì mỗi ngày",
+        desc: "Sản phẩm cần dễ sử dụng, tạo cảm giác dễ chịu và phù hợp với một quy trình chăm sóc có thể thực hiện lâu dài."
+      },
+      {
+        num: "03",
+        title: "Thông tin rõ ràng",
+        desc: "FURANO ưu tiên giải thích công dụng, cách sử dụng và giới hạn của sản phẩm bằng ngôn ngữ dễ hiểu."
+      }
     ],
-    labImage: '/images/furano-lab.png',
+    journey: [
+      {
+        phase: "Đang niềng",
+        desc: "Làm sạch quanh mắc cài, chăm sóc nướu và duy trì cảm giác hơi thở thơm mát."
+      },
+      {
+        phase: "Vừa tháo niềng",
+        desc: "Chăm sóc men răng, làm sạch kỹ và quan sát những khu vực có màu sắc chưa đồng đều."
+      },
+      {
+        phase: "Đeo hàm duy trì",
+        desc: "Làm sạch hàm hằng ngày, hạn chế cặn bám và mùi khó chịu."
+      }
+    ],
+    lifestyle: {
+      title: "Một quy trình chăm sóc dễ duy trì mỗi ngày",
+      desc: "Từ kem đánh răng, sản phẩm hỗ trợ hơi thở đến giải pháp làm sạch hàm duy trì, FURANO hướng tới việc giúp quá trình chăm sóc răng niềng trở nên đơn giản và dễ thực hiện hơn.",
+      imgLarge: "/images/team-furano.jpeg",
+      imgSmall: "/images/furano-lab.png"
+    },
+    cta: {
+      title: "Bạn đang ở giai đoạn nào của hành trình niềng răng?",
+      desc: "Khám phá những sản phẩm và hướng dẫn chăm sóc phù hợp với nhu cầu của bạn."
+    }
   };
-
-  const pageData = { ...defaultValues, ...data };
 
   if (loading) {
     return <div className="min-h-screen bg-brand-50 flex items-center justify-center animate-pulse"><div className="w-12 h-12 rounded-full border-4 border-brand-900 border-t-transparent animate-spin"></div></div>;
   }
 
   return (
-    <div className="bg-brand-50 selection:bg-brand-900 selection:text-white">
-      {/* 1. Hero Section - Organic Split */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Subtle decorative blob */}
-        <div className="absolute top-0 right-0 w-full md:w-2/3 h-full bg-[#3DCAA0]/5 rounded-bl-[120px] -z-10 transform translate-x-1/4 -translate-y-1/4" />
-        
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 md:gap-24">
-          <div className="flex-1">
+    <div className="bg-white selection:bg-brand-100 selection:text-brand-950 font-sans">
+      
+      {/* 1. Hero Section */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+          <div className="flex-1 w-full md:w-1/2 order-2 md:order-1">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <span className="text-[#3DCAA0] font-medium tracking-widest uppercase text-sm mb-6 block">Giới thiệu</span>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-brand-950 leading-tight mb-8">
-                {pageData.heroTitle}
+              <span className="text-gray-500 font-medium tracking-[0.2em] uppercase text-xs mb-8 block">
+                {content.hero.eyebrow}
+              </span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-brand-950 leading-[1.15] mb-8">
+                {content.hero.title}
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg border-l-2 border-[#3DCAA0] pl-6">
-                {pageData.heroSubtitle}
+              <p className="text-lg text-gray-600 leading-relaxed max-w-md mb-12 font-light">
+                {content.hero.desc}
               </p>
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-950 text-white font-medium hover:bg-brand-900 transition-colors"
+                >
+                  Khám phá sản phẩm
+                </Link>
+                <a
+                  href="#brand-story"
+                  className="inline-flex items-center gap-2 text-brand-900 font-medium hover:text-[#3DCAA0] transition-colors group"
+                >
+                  Hiểu hơn về FURANO
+                  <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                </a>
+              </div>
             </motion.div>
           </div>
-          <div className="flex-1 w-full relative">
+          
+          <div className="flex-1 w-full md:w-1/2 order-1 md:order-2">
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="aspect-[4/5] md:aspect-square rounded-[2rem] md:rounded-[4rem] overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-brand-50 rounded-tl-[80px] rounded-br-[80px]"
             >
-               <img src="/images/routine-step-1.jpeg" alt="Hero" className="w-full h-full object-cover" />
+               <img src={content.hero.image} alt="Nụ cười tự tin" className="w-full h-full object-cover object-center" />
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 2. Mission & Vision - Elegant Typography layout */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
+      {/* 2. Câu chuyện bắt đầu */}
+      <section id="brand-story" className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-50">
+        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center gap-16 lg:gap-24">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="flex-1 w-full"
+          >
+            <div className="aspect-square md:aspect-[4/5] overflow-hidden bg-gray-200">
+               <img src={content.story.image} alt="Khởi nguồn của FURANO" className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+          
+          <div className="flex-1 w-full">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.7 }}
-            >
-              <h3 className="text-3xl font-bold text-brand-950 mb-6 flex items-baseline gap-4">
-                <span className="text-sm font-normal text-gray-400">01</span>
-                {t("Sứ mệnh")}
-              </h3>
-              <p className="text-gray-600 leading-loose text-lg font-light">
-                {pageData.missionText}
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-            >
-              <h3 className="text-3xl font-bold text-brand-950 mb-6 flex items-baseline gap-4">
-                <span className="text-sm font-normal text-gray-400">02</span>
-                {t("Tầm nhìn")}
-              </h3>
-              <p className="text-gray-600 leading-loose text-lg font-light">
-                {pageData.visionText}
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="md:col-span-2 mt-8 p-10 md:p-16 bg-brand-950 rounded-[2rem] text-center"
-            >
-              <h3 className="text-2xl font-bold text-white mb-6">
-                {t("Triết lý")}
-              </h3>
-              <p className="text-[#3DCAA0] leading-relaxed text-xl md:text-2xl font-light italic max-w-3xl mx-auto">
-                &quot;{pageData.philosophyText}&quot;
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Team - Overlapping Layout */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 bg-brand-50 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-0">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="lg:w-3/5 w-full z-10"
-            >
-              <div className="aspect-[16/10] overflow-hidden rounded-[2rem] shadow-2xl">
-                <img
-                  src={pageData.teamImage}
-                  alt="Đội ngũ FURANO"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:w-2/5 w-full lg:-ml-20 mt-12 lg:mt-0 z-20"
             >
-              <div className="bg-white p-10 md:p-14 rounded-[2rem] shadow-xl">
-                <h2 className="text-3xl font-bold text-brand-950 mb-8">{t("Đội ngũ FURANO")}</h2>
-                <p className="text-gray-600 leading-relaxed mb-6 font-light">
-                  {pageData.teamText1}
+              <h2 className="text-3xl md:text-4xl font-serif text-brand-950 mb-8 leading-tight">
+                {content.story.title}
+              </h2>
+              <div className="space-y-6 text-gray-600 font-light text-lg leading-relaxed">
+                <p>{content.story.desc1}</p>
+                <p>{content.story.desc2}</p>
+              </div>
+              
+              <div className="mt-12 pt-8 border-t border-gray-200">
+                <p className="text-2xl font-serif text-brand-900 italic leading-snug">
+                  "{content.story.quote}"
                 </p>
-                <p className="text-gray-600 leading-relaxed font-light pb-6 border-b border-gray-100">
-                  {pageData.teamText2}
-                </p>
-                <div className="flex gap-8 mt-6">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[#3DCAA0] font-bold text-2xl">100%</span>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Tâm huyết</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[#3DCAA0] font-bold text-2xl">5+</span>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Năm kinh nghiệm</span>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 4. Core Values - Minimalist List */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
+      {/* 3. Những ngày niềng răng không phải lúc nào cũng dễ dàng */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="mb-16 md:mb-24"
+          >
+             <h2 className="text-3xl md:text-4xl font-serif text-brand-950 max-w-2xl leading-tight">
+               Những ngày niềng răng không phải lúc nào cũng dễ dàng
+             </h2>
+          </motion.div>
+
+          {/* Asymmetric layout */}
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="md:w-5/12 flex flex-col justify-end pb-8 border-b border-brand-100"
+            >
+               <h3 className="text-xl font-medium text-brand-950 mb-4">{content.struggles[0].title}</h3>
+               <p className="text-gray-600 font-light leading-relaxed">{content.struggles[0].desc}</p>
+            </motion.div>
+            
+            <div className="md:w-7/12 flex flex-col sm:flex-row gap-8 md:gap-12">
+               <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="flex-1 pb-8 border-b border-brand-100"
+               >
+                 <h3 className="text-xl font-medium text-brand-950 mb-4">{content.struggles[1].title}</h3>
+                 <p className="text-gray-600 font-light leading-relaxed">{content.struggles[1].desc}</p>
+               </motion.div>
+               
+               <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex-1 pb-8 border-b border-brand-100"
+               >
+                 <h3 className="text-xl font-medium text-brand-950 mb-4">{content.struggles[2].title}</h3>
+                 <p className="text-gray-600 font-light leading-relaxed">{content.struggles[2].desc}</p>
+               </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Ba nguyên tắc của FURANO */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-950 text-white">
+        <div className="max-w-[1000px] mx-auto">
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="mb-20"
+          >
+             <h2 className="text-3xl md:text-4xl font-serif leading-tight">
+               Ba nguyên tắc của FURANO
+             </h2>
+          </motion.div>
+
+          <div className="flex flex-col">
+            {content.principles.map((p, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="flex flex-col md:flex-row gap-6 md:gap-16 py-12 border-t border-white/20 first:border-t-0"
+              >
+                <div className="w-full md:w-1/4">
+                  <span className="text-5xl md:text-6xl font-light text-[#3DCAA0]">{p.num}</span>
+                </div>
+                <div className="w-full md:w-3/4">
+                  <h3 className="text-2xl font-serif mb-4">{p.title}</h3>
+                  <p className="text-gray-300 font-light text-lg leading-relaxed max-w-2xl">{p.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Hành trình chăm sóc răng niềng */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="mb-20 text-center"
+          >
+             <h2 className="text-3xl md:text-4xl font-serif text-brand-950 mb-6">
+               Hành trình chăm sóc răng niềng
+             </h2>
+          </motion.div>
+
+          {/* Desktop Timeline: Horizontal */}
+          <div className="hidden md:flex relative justify-between pt-8 pb-12">
+             <div className="absolute top-10 left-0 w-full h-[1px] bg-brand-100 z-0"></div>
+             
+             {content.journey.map((item, idx) => (
+               <motion.div 
+                 key={idx}
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.6, delay: idx * 0.1 }}
+                 className="relative z-10 w-1/3 px-6 flex flex-col items-center text-center group"
+               >
+                 <div className="w-5 h-5 rounded-full bg-white border border-brand-200 group-hover:border-[#3DCAA0] transition-colors flex items-center justify-center mb-8">
+                   <div className="w-1.5 h-1.5 rounded-full bg-brand-900 group-hover:bg-[#3DCAA0] transition-colors"></div>
+                 </div>
+                 <span className="text-sm text-gray-400 font-medium tracking-widest uppercase mb-4 block">Giai đoạn 0{idx + 1}</span>
+                 <h3 className="text-xl font-serif text-brand-950 mb-3">{item.phase}</h3>
+                 <p className="text-gray-600 font-light leading-relaxed text-sm lg:text-base">{item.desc}</p>
+               </motion.div>
+             ))}
+          </div>
+
+          {/* Mobile Timeline: Vertical */}
+          <div className="md:hidden flex flex-col relative pl-6 space-y-12">
+             <div className="absolute top-2 bottom-2 left-[11px] w-[1px] bg-brand-100 z-0"></div>
+             
+             {content.journey.map((item, idx) => (
+               <motion.div 
+                 key={idx}
+                 initial={{ opacity: 0, x: -20 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.6, delay: idx * 0.1 }}
+                 className="relative z-10 pl-8 group"
+               >
+                 <div className="absolute top-1 -left-[14px] w-5 h-5 rounded-full bg-white border border-brand-200 flex items-center justify-center">
+                   <div className="w-1.5 h-1.5 rounded-full bg-brand-900"></div>
+                 </div>
+                 <span className="text-xs text-gray-400 font-medium tracking-widest uppercase mb-2 block">Giai đoạn 0{idx + 1}</span>
+                 <h3 className="text-lg font-serif text-brand-950 mb-2">{item.phase}</h3>
+                 <p className="text-gray-600 font-light leading-relaxed text-sm">{item.desc}</p>
+               </motion.div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Sản phẩm trong đời sống hằng ngày */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-50">
+        <div className="max-w-[1200px] mx-auto">
+           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+              
+              <div className="w-full lg:w-7/12">
+                 <motion.div 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="aspect-[4/3] bg-gray-200 overflow-hidden"
+                 >
+                   <img src={content.lifestyle.imgLarge} alt="FURANO in daily life" className="w-full h-full object-cover object-center" />
+                 </motion.div>
+              </div>
+
+              <div className="w-full lg:w-5/12 flex flex-col justify-center">
+                 <motion.div
+                   initial={{ opacity: 0, y: 20 }}
+                   whileInView={{ opacity: 1, y: 0 }}
+                   viewport={{ once: true }}
+                   transition={{ duration: 0.8, delay: 0.2 }}
+                 >
+                   <h2 className="text-3xl md:text-4xl font-serif text-brand-950 mb-6 leading-tight">
+                     {content.lifestyle.title}
+                   </h2>
+                   <p className="text-gray-600 font-light text-lg leading-relaxed mb-12">
+                     {content.lifestyle.desc}
+                   </p>
+                 </motion.div>
+
+                 <motion.div 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="aspect-[3/2] bg-gray-200 overflow-hidden ml-auto w-4/5"
+                 >
+                   <img src={content.lifestyle.imgSmall} alt="FURANO products" className="w-full h-full object-cover object-center" />
+                 </motion.div>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* 7. Cộng đồng FURANO */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             className="mb-16 md:mb-24 text-center"
+          >
+             <h2 className="text-3xl md:text-4xl font-serif text-brand-950">
+               Những nụ cười FURANO đang đồng hành
+             </h2>
+          </motion.div>
+
+          {/* Asymmetrical Collage Placeholder */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.5 }}
+               className="col-span-2 md:col-span-2 row-span-2 bg-brand-50 aspect-square flex flex-col items-center justify-center p-8 text-center"
+             >
+                <div className="w-12 h-12 rounded-full bg-brand-100 mb-4 opacity-50"></div>
+                <p className="text-brand-900/40 italic font-serif">"Placeholder cho nội dung chia sẻ của khách hàng hoặc hình ảnh lifestyle"</p>
+             </motion.div>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.5, delay: 0.1 }}
+               className="col-span-1 bg-gray-50 aspect-square flex items-center justify-center p-4 text-center"
+             >
+                <span className="text-gray-300 text-xs uppercase tracking-widest">Ảnh cộng đồng 1</span>
+             </motion.div>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.5, delay: 0.2 }}
+               className="col-span-1 bg-brand-50 aspect-[3/4] md:aspect-square flex flex-col justify-end p-6"
+             >
+                <div className="w-8 h-2 bg-brand-200 mb-2 opacity-50"></div>
+                <div className="w-16 h-2 bg-brand-100 opacity-50"></div>
+             </motion.div>
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.5, delay: 0.3 }}
+               className="col-span-2 bg-gray-50 aspect-[2/1] md:aspect-[2/1] flex items-center justify-center p-4 text-center"
+             >
+                <span className="text-gray-300 text-xs uppercase tracking-widest">Hình ảnh review ngang</span>
+             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. CTA cuối trang */}
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-950 text-white text-center">
+        <div className="max-w-[800px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            transition={{ duration: 0.8 }}
           >
-             <h2 className="text-4xl font-bold text-brand-950 mb-6">{t("Giá trị Cốt lõi")}</h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
-            {[
-              { t: "An toàn", d: "Tất cả sản phẩm được kiểm duyệt bởi Bộ Y tế Việt Nam và đạt tiêu chuẩn quốc tế về an toàn. Không chứa hóa chất độc hại." },
-              { t: "Lành tính", d: "Công thức lành tính với chiết xuất tự nhiên, phù hợp cho cả gia đình. Kiểm duyệt da học, an toàn cho nướu nhạy cảm." },
-              { t: "Minh bạch", d: "Tất cả thành phần được công khai rõ ràng. Không chứa chất gây dị ứng, không có thành phần ẩn kín." },
-              { t: "Chăm sóc", d: "Chúng tôi quan tâm đến sức khỏe răng miệng của mỗi khách hàng như chăm sóc gia đình chính mình." }
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex gap-6 items-start group"
+            <h2 className="text-3xl md:text-5xl font-serif mb-6 leading-tight">
+              {content.cta.title}
+            </h2>
+            <p className="text-gray-300 mb-12 text-lg font-light max-w-2xl mx-auto">
+              {content.cta.desc}
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+              <Link
+                href="/products"
+                className="w-full sm:w-auto px-8 py-4 bg-white text-brand-950 font-medium hover:bg-brand-50 transition-colors"
               >
-                <div className="text-4xl font-light text-gray-200 group-hover:text-[#3DCAA0] transition-colors">
-                  0{idx + 1}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-brand-950 mb-3">{item.t}</h3>
-                  <p className="text-gray-500 font-light leading-relaxed">{item.d}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Timeline - Sleek vertical design */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 bg-brand-950 text-white relative overflow-hidden">
-        {/* Minimal grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-        
-        <div className="max-w-4xl mx-auto relative z-10">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold mb-20 text-center"
-          >
-            {t("Hành trình của FURANO")}
-          </motion.h2>
-
-          <div className="space-y-16 pl-8 md:pl-0">
-            {pageData.timeline.map((item: any, idx: number) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative flex flex-col md:flex-row items-start md:items-center gap-8 group"
-              >
-                {/* Desktop layout: Year - Line - Content */}
-                <div className="hidden md:flex w-1/3 justify-end text-right">
-                  <span className="text-3xl font-light text-[#3DCAA0] group-hover:scale-110 transition-transform">{item.year}</span>
-                </div>
-                
-                {/* Timeline node */}
-                <div className="absolute left-0 md:static w-px h-full md:h-24 bg-white/20 ml-[3.5px] md:ml-0 flex flex-col items-center">
-                  <div className="absolute top-0 md:top-1/2 md:-translate-y-1/2 -left-[3.5px] md:-left-1 w-2 h-2 rounded-full bg-[#3DCAA0] shadow-[0_0_15px_rgba(61,202,160,0.8)]" />
-                </div>
-                
-                <div className="w-full md:w-1/2 pl-6 md:pl-0">
-                  <span className="md:hidden text-2xl font-light text-[#3DCAA0] block mb-2">{item.year}</span>
-                  <p className="text-gray-300 font-light text-lg">{item.text}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Science - Elegant Split */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col-reverse lg:flex-row items-center gap-16">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="lg:w-1/2"
-            >
-              <span className="text-gray-400 font-semibold tracking-widest uppercase text-xs mb-4 block">Nghiên cứu & Phát triển</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-brand-950 mb-8 leading-tight">{t("Phát triển dựa trên khoa học")}</h2>
-              <ul className="space-y-6 mb-10">
-                {(pageData.scienceChecks || []).map((check: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-4">
-                    <div className="mt-1 flex-shrink-0">
-                      <Check className="w-5 h-5 text-[#3DCAA0]" />
-                    </div>
-                    <span className="text-gray-600 font-light text-lg">{check}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/products" className="inline-flex items-center gap-2 text-brand-900 font-bold hover:text-[#3DCAA0] transition-colors pb-1 border-b-2 border-brand-900 hover:border-[#3DCAA0]">
-                {t("Xem báo cáo kiểm nghiệm")} <ArrowRight className="w-4 h-4" />
+                Tìm sản phẩm phù hợp
               </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="lg:w-1/2 w-full"
-            >
-              <div className="aspect-square rounded-full overflow-hidden p-4 border border-gray-100">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  <img
-                    src={pageData.labImage}
-                    alt="Phòng lab FURANO"
-                    className="w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-700"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Contact / CTA - Soft block */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-brand-50">
-        <div className="max-w-4xl mx-auto bg-white rounded-[3rem] p-12 md:p-20 text-center shadow-sm border border-gray-100">
-          <h2 className="text-3xl md:text-5xl font-bold text-brand-950 mb-6">
-            {t("Khởi đầu nụ cười mới")}
-          </h2>
-          <p className="text-gray-500 mb-10 text-lg font-light max-w-2xl mx-auto">
-            {t("Khám phá các sản phẩm chuyên biệt của FURANO và bắt đầu hành trình chăm sóc hàm răng ngay hôm nay.")}
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Link
-              href="/products"
-              className="w-full sm:w-auto px-8 py-4 bg-brand-950 text-white font-bold rounded-full hover:bg-brand-900 transition-all hover:scale-105 shadow-xl shadow-brand-950/20"
-            >
-              {t("Khám phá sản phẩm")}
-            </Link>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto px-8 py-4 bg-white text-brand-950 font-bold rounded-full border border-gray-200 hover:border-brand-900 hover:bg-gray-50 transition-all"
-            >
-              {t("Liên hệ với chúng tôi")}
-            </Link>
-          </div>
+              <Link
+                href="/blog"
+                className="w-full sm:w-auto px-8 py-4 border border-white/30 text-white font-medium hover:bg-white/10 transition-colors"
+              >
+                Xem cẩm nang chăm sóc
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
   );
 }
+
