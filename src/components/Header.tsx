@@ -118,7 +118,7 @@ export default function Header() {
               <div key={link.name} className="relative group/prod">
                 <Link
                   href={link.href}
-                  className={`flex items-center gap-1 text-sm font-semibold transition-colors hover:text-brand-800 ${
+                  className={`flex items-center gap-1 text-sm font-semibold uppercase transition-colors hover:text-brand-800 ${
                     pathname === link.href ? 'text-brand-800' : 'text-gray-600'
                   }`}
                 >
@@ -156,7 +156,7 @@ export default function Header() {
               <div key={link.name} className="relative group/blog">
                 <Link
                   href={link.href}
-                  className={`flex items-center gap-1 text-sm font-semibold transition-colors hover:text-brand-800 ${
+                  className={`flex items-center gap-1 text-sm font-semibold uppercase transition-colors hover:text-brand-800 ${
                     pathname === link.href ? 'text-brand-800' : 'text-gray-600'
                   }`}
                 >
@@ -181,7 +181,7 @@ export default function Header() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-sm font-semibold transition-colors hover:text-brand-800 ${
+                className={`text-sm font-semibold uppercase transition-colors hover:text-brand-800 ${
                   pathname === link.href ? 'text-brand-800' : 'text-gray-600'
                 }`}
               >
@@ -258,7 +258,7 @@ export default function Header() {
                     <Link
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`text-base font-semibold leading-6 p-3 transition-colors flex justify-between items-center ${
+                      className={`text-base font-semibold uppercase leading-6 p-3 transition-colors flex justify-between items-center ${
                         pathname === link.href ? 'bg-brand-50 text-brand-800' : 'text-gray-900 bg-white hover:bg-gray-50'
                       }`}
                     >
@@ -295,7 +295,7 @@ export default function Header() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`text-base font-semibold leading-6 p-3 rounded-xl transition-colors ${
+                    className={`text-base font-semibold uppercase leading-6 p-3 rounded-xl transition-colors ${
                       pathname === link.href ? 'bg-brand-50 text-brand-800' : 'text-gray-900 hover:bg-gray-50'
                     }`}
                   >
