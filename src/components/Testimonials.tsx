@@ -68,15 +68,15 @@ export default function Testimonials() {
 
   return (
     <>
-    <section className="py-12 md:py-16 lg:py-20 bg-brand-900 text-white overflow-hidden relative" id="testimonials">
-      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')] opacity-10"></div>
+    <section className="py-16 md:py-24 lg:py-32 bg-brand-50 relative" id="testimonials">
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/noise-pattern-with-subtle-cross-lines.png')] opacity-[0.03]"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Tiêu đề nằm trên cùng */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-brand-300 font-semibold tracking-wider uppercase text-sm mb-3">{t("Hơn cả sự hài lòng")}</h2>
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-            {t("Lời tâm tình từ")} <br className="hidden md:block" /> <span className="font-serif italic font-normal text-brand-100">{t("Đồng Niềng")}</span>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-brand-600 font-bold tracking-widest uppercase text-sm mb-4">{t("Hơn cả sự hài lòng")}</h2>
+          <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-brand-950">
+            {t("Lời tâm tình từ")} <br className="hidden md:block" /> <span className="font-serif italic font-normal text-[#3DCAA0]">{t("Đồng Niềng")}</span>
           </h3>
         </div>
 
@@ -85,7 +85,7 @@ export default function Testimonials() {
           {/* Nút điều hướng - Trái */}
           <button 
             onClick={() => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/10 hover:bg-brand-500 border border-white/20 text-white backdrop-blur-md transition-all duration-300 shadow-xl hover:scale-110"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white hover:bg-brand-50 border border-brand-100 text-brand-900 transition-all duration-300 shadow-lg hover:scale-110"
             aria-label="Xem nhận xét trước"
           >
             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
@@ -94,17 +94,17 @@ export default function Testimonials() {
           {/* Nút điều hướng - Phải */}
           <button 
             onClick={() => setCurrentIndex((prev) => (prev + 1) % testimonials.length)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/10 hover:bg-brand-500 border border-white/20 text-white backdrop-blur-md transition-all duration-300 shadow-xl hover:scale-110"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white hover:bg-brand-50 border border-brand-100 text-brand-900 transition-all duration-300 shadow-lg hover:scale-110"
             aria-label="Xem nhận xét tiếp theo"
           >
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
           </button>
 
           {/* Testimonial Card */}
-          <div className="flex flex-col lg:flex-row items-stretch rounded-[2rem] overflow-hidden bg-white/5 border border-white/10 shadow-2xl backdrop-blur-lg w-full">
+          <div className="flex flex-col lg:flex-row items-stretch rounded-[2rem] overflow-hidden bg-white border border-brand-100 shadow-xl w-full min-h-[500px] lg:h-[500px]">
             
             {/* Hình ảnh */}
-            <div className="w-full lg:w-2/5 relative min-h-[300px] lg:min-h-[420px]">
+            <div className="w-full lg:w-2/5 relative min-h-[300px] lg:min-h-full">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentIndex}
@@ -130,24 +130,24 @@ export default function Testimonials() {
                   transition={{ duration: 0.5 }}
                   className="w-full flex flex-col h-full"
                 >
-                  <Quote className="absolute top-0 right-0 w-24 h-24 text-white/5 -mt-4 -mr-4 pointer-events-none" strokeWidth={1} />
+                  <Quote className="absolute top-0 right-0 w-32 h-32 text-brand-50 -mt-8 -mr-8 pointer-events-none" strokeWidth={1} />
                   
-                  <div className="flex flex-col mb-6">
-                    <div className="flex items-center gap-1 text-amber-400 mb-6">
+                  <div className="flex flex-col flex-grow min-h-0 overflow-y-auto pr-4 mb-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-brand-200 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                    <div className="flex items-center gap-1 text-amber-400 mb-6 shrink-0">
                       {[...Array(5)].map((_, index) => (
                         <Star key={index} className="w-5 h-5 fill-current" />
                       ))}
                     </div>
                     
-                    <p className="text-white text-xl md:text-2xl leading-relaxed italic relative z-10 font-medium">
+                    <p className="text-gray-700 text-xl md:text-2xl leading-relaxed italic relative z-10 font-medium">
                       &quot;{t(testimonials[currentIndex].content)}&quot;
                     </p>
                   </div>
                   
-                  <div className="mt-auto pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
+                  <div className="mt-auto pt-8 border-t border-brand-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10 shrink-0">
                     <div className="flex flex-col">
                        {(testimonials[currentIndex].name || testimonials[currentIndex].customerName) && (
-                          <span className="text-white font-bold text-xl">
+                          <span className="text-brand-950 font-bold text-xl">
                             {testimonials[currentIndex].name || testimonials[currentIndex].customerName}
                           </span>
                        )}
@@ -156,7 +156,7 @@ export default function Testimonials() {
                            <button 
                              key={i} 
                              onClick={() => setCurrentIndex(i)}
-                             className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-8 bg-brand-400' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+                             className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-8 bg-[#3DCAA0]' : 'w-2 bg-brand-200 hover:bg-brand-300'}`}
                              aria-label={`Nhận xét ${i + 1}`}
                            />
                          ))}
@@ -165,10 +165,10 @@ export default function Testimonials() {
 
                     <Link
                       href={testimonials[currentIndex].productId ? `/product/${testimonials[currentIndex].productId}` : `/products`}
-                      className="group flex flex-row items-center gap-2 text-brand-300 hover:text-white transition-colors font-medium text-base bg-white/5 hover:bg-brand-600 px-5 py-2.5 rounded-full border border-white/10 hover:border-transparent shrink-0"
+                      className="group flex flex-row items-center gap-2 text-brand-700 hover:text-brand-900 transition-colors font-medium text-base bg-brand-50 hover:bg-brand-100 px-6 py-3 rounded-full border border-brand-100 shrink-0"
                     >
                       <span>
-                        {t('Xem thêm về')} <span className="font-bold">{testimonials[currentIndex].productName || testimonials[currentIndex].product || 'Sản phẩm'}</span>
+                        {t('Xem thêm về')} <span className="font-bold text-[#3DCAA0]">{testimonials[currentIndex].productName || testimonials[currentIndex].product || 'Sản phẩm'}</span>
                       </span>
                       <ArrowRight className="w-4 h-4 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -181,10 +181,10 @@ export default function Testimonials() {
       </div>
       </div>
     </section>
-    <div className="py-12 bg-white flex justify-center w-full relative z-10">
+    <div className="py-12 bg-transparent flex justify-center w-full relative z-10">
       <Link
         href="/products"
-        className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-900 bg-amber-400 hover:bg-amber-300 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-200 uppercase tracking-wide gap-2"
+        className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-[#3DCAA0] hover:bg-[#34b08b] rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-200 uppercase tracking-wide gap-2"
       >
         {t('Khám phá thêm')}
         <ArrowRight className="w-5 h-5" />
