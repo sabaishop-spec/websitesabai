@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Pencil, Trash2, Plus, Image as ImageIcon, X, Database, ArrowUp, ArrowDown } from 'lucide-react';
+import { Pencil, Trash2, Plus, Image as ImageIcon, X, Database, ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { db, auth, collection, getDocs, doc, setDoc, deleteDoc, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, onAuthStateChanged, User, writeBatch } from '../localDB';
 import AdminUsersManager from '../components/AdminUsersManager';
 import AdminTestimonialsManager from '../components/AdminTestimonialsManager';
 import SiteSettingsManager from '../components/SiteSettingsManager';
 import AdminBlogManager from '../components/AdminBlogManager';
 import AdminSubscribersManager from '../components/AdminSubscribersManager';
+import AdminAboutManager from '../components/AdminAboutManager';
 import Link from 'next/link';
 import { compressImage } from '../lib/imageUtils';
 
@@ -53,7 +54,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab, user, onLogout }: any)
             <h2 className="text-2xl font-bold text-brand-400">Furano Admin</h2>
           </div>
           <nav className="mt-4">
-            {['Dashboard', 'Site Settings', 'Categories & Products', 'Testimonials', 'Blog Posts', 'FAQs', 'Subscribers', 'Admin Users'].map((tab) => (
+            {['Dashboard', 'Site Settings', 'About Page', 'Categories & Products', 'Testimonials', 'Blog Posts', 'FAQs', 'Subscribers', 'Admin Users'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -61,6 +62,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab, user, onLogout }: any)
               >
                 {tab === 'Dashboard' && 'Bảng Điều khiển'}
                 {tab === 'Site Settings' && 'Cài đặt Giao diện & Ảnh'}
+                {tab === 'About Page' && 'Trang Giới Thiệu (About)'}
                 {tab === 'Categories & Products' && 'Danh mục & Sản phẩm'}
                 {tab === 'Testimonials' && 'Lời tâm sự'}
                 {tab === 'Blog Posts' && 'Góc kiến thức'}
@@ -971,6 +973,10 @@ export default function AdminPage() {
       
       <TabPanel active={activeTab === 'Site Settings'}>
         <SiteSettingsManager />
+      </TabPanel>
+
+      <TabPanel active={activeTab === 'About Page'}>
+        <AdminAboutManager />
       </TabPanel>
 
       <TabPanel active={activeTab === 'Testimonials'}>
