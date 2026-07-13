@@ -317,21 +317,49 @@ export default function About() {
       </section>
 
       {/* 4. Những ngày niềng răng */}
-      <section className="py-24 md:py-40 bg-brand-950 text-white px-4 lg:mt-32">
-        <div className="max-w-[1200px] mx-auto">
-          <h2 className="text-5xl md:text-7xl font-serif mb-20 max-w-4xl leading-[1.1]">
-            Những ngày niềng răng không phải lúc nào cũng dễ dàng
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-white/20 pt-20">
-            {content.struggles.map((item, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.15 }}>
-                <div className="text-brand-600 mb-6">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+      <section className="py-24 md:py-40 bg-white px-4 lg:mt-20">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex flex-col md:flex-row gap-16 md:gap-24 mb-20">
+             <div className="md:w-1/2">
+                <h2 className="text-5xl md:text-7xl font-serif text-brand-950 leading-[1.1]">
+                  Những ngày niềng răng không phải lúc nào cũng dễ dàng
+                </h2>
+             </div>
+             <div className="md:w-1/2 flex items-end">
+                <p className="text-xl text-gray-500 font-light leading-relaxed max-w-lg">
+                  Trong suốt quá trình chỉnh nha, mỗi giai đoạn đều đòi hỏi sự kiên nhẫn và cách chăm sóc đặc biệt để bảo vệ nụ cười của bạn.
+                </p>
+             </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="md:col-span-7 bg-brand-50 rounded-[40px] p-12 md:p-16 flex flex-col justify-between min-h-[400px] lg:min-h-[500px] group hover:bg-brand-100 transition-colors">
+               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm mb-12">
+                 <span className="text-brand-900 font-serif text-2xl font-bold italic">1</span>
+               </div>
+               <div>
+                 <h3 className="text-4xl md:text-5xl font-serif text-brand-950 mb-6 leading-tight">{content.struggles[0].title}</h3>
+                 <p className="text-gray-600 text-xl font-light leading-relaxed max-w-md">{content.struggles[0].desc}</p>
+               </div>
+            </motion.div>
+            
+            <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="flex-1 bg-white border border-brand-100 rounded-[40px] p-10 flex flex-col justify-center group hover:border-brand-300 transition-colors shadow-sm hover:shadow-md">
+                <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center mb-8">
+                   <span className="text-brand-900 font-serif text-xl font-bold italic">2</span>
                 </div>
-                <h3 className="text-3xl font-medium mb-6">{item.title}</h3>
-                <p className="text-gray-300 font-light text-xl leading-relaxed">{item.desc}</p>
+                <h3 className="text-3xl font-serif text-brand-950 mb-4">{content.struggles[1].title}</h3>
+                <p className="text-gray-600 text-lg font-light leading-relaxed">{content.struggles[1].desc}</p>
               </motion.div>
-            ))}
+
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="flex-1 bg-brand-900 text-white rounded-[40px] p-10 flex flex-col justify-center group shadow-xl">
+                <div className="w-12 h-12 rounded-full bg-brand-800 flex items-center justify-center mb-8">
+                   <span className="text-brand-200 font-serif text-xl font-bold italic">3</span>
+                </div>
+                <h3 className="text-3xl font-serif mb-4">{content.struggles[2].title}</h3>
+                <p className="text-brand-100/80 text-lg font-light leading-relaxed">{content.struggles[2].desc}</p>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -365,19 +393,28 @@ export default function About() {
       </section>
 
       {/* 6. Giá trị cốt lõi */}
-      <section className="py-24 md:py-40 px-4 bg-brand-900 text-white">
-        <div className="max-w-[1400px] mx-auto">
-          <h2 className="text-5xl md:text-7xl font-serif text-center mb-24">Giá trị cốt lõi</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {content.coreValues.map((val, idx) => (
-              <motion.div key={idx} whileHover={{ y: -10 }} className="bg-brand-950/50 border border-brand-800 p-10 md:p-12 rounded-[40px] text-center">
-                <div className="w-20 h-20 mx-auto bg-brand-800 rounded-full flex items-center justify-center mb-8">
-                  <div className="w-5 h-5 bg-brand-600 rounded-full"></div>
-                </div>
-                <h3 className="text-3xl font-serif mb-6">{val.title}</h3>
-                <p className="text-gray-300 font-light text-lg leading-relaxed">{val.desc}</p>
-              </motion.div>
-            ))}
+      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50">
+        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-20">
+          <div className="lg:w-1/3">
+             <div className="sticky top-40">
+               <span className="text-brand-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Giá trị cốt lõi</span>
+               <h2 className="text-5xl md:text-7xl font-serif text-brand-950 leading-[1.1] mb-8">Điều định hình FURANO</h2>
+               <p className="text-gray-600 text-xl font-light leading-relaxed">Chúng tôi luôn đặt sự thấu hiểu và trải nghiệm của khách hàng làm kim chỉ nam trong mọi quyết định phát triển sản phẩm.</p>
+             </div>
+          </div>
+          <div className="lg:w-2/3">
+             <div className="flex flex-col">
+               {content.coreValues.map((val, idx) => (
+                 <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="border-t border-brand-200 py-12 md:py-16 flex flex-col md:flex-row gap-8 md:gap-16 group">
+                    <span className="text-2xl font-serif text-brand-300 md:w-16">0{idx + 1}</span>
+                    <div>
+                      <h3 className="text-3xl md:text-4xl font-serif text-brand-950 mb-6 group-hover:text-brand-600 transition-colors">{val.title}</h3>
+                      <p className="text-gray-600 text-xl font-light leading-relaxed max-w-2xl">{val.desc}</p>
+                    </div>
+                 </motion.div>
+               ))}
+               <div className="border-t border-brand-200"></div>
+             </div>
           </div>
         </div>
       </section>
