@@ -183,7 +183,7 @@ export default function About() {
     <div className="bg-white selection:bg-brand-100 selection:text-brand-950 font-sans overflow-hidden">
       
       {/* 1. Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#FAF9F7] pt-20">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-brand-50 pt-20">
         {/* Massive background text */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
@@ -216,7 +216,7 @@ export default function About() {
             {content.hero.desc}
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
-             <a href="#story" className="inline-flex flex-col items-center gap-4 text-brand-900 hover:text-[#3DCAA0] transition-colors group">
+             <a href="#story" className="inline-flex flex-col items-center gap-4 text-brand-900 hover:text-brand-600 transition-colors group">
                <span className="text-sm uppercase tracking-widest font-bold">Khám phá</span>
                <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center">
                  <ArrowDown className="w-5 h-5 animate-bounce" />
@@ -236,7 +236,7 @@ export default function About() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-12 left-10 right-10">
                 <h3 className="text-5xl md:text-6xl font-serif text-white mb-6 leading-tight">{content.story.title}</h3>
-                <div className="w-20 h-1.5 bg-[#3DCAA0]"></div>
+                <div className="w-20 h-1.5 bg-brand-600"></div>
               </div>
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function About() {
                   {content.story.desc3}
                 </p>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }} className="p-10 md:p-12 bg-brand-50 rounded-3xl border-l-8 border-[#3DCAA0]">
+              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }} className="p-10 md:p-12 bg-brand-50 rounded-3xl border-l-8 border-brand-600">
                 <p className="text-2xl md:text-3xl font-serif text-brand-900 italic leading-relaxed">
                   "{content.story.quote}"
                 </p>
@@ -273,28 +273,43 @@ export default function About() {
       <section className="py-24 md:py-40 bg-brand-50 px-4 overflow-hidden">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
-            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
+            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col">
+              <Link href="/about/su-menh" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">01</span>
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Sứ mệnh</h3>
-                <p className="text-gray-600 font-light text-xl leading-relaxed">{content.missionVision.mission}</p>
+                <p className="text-gray-600 font-light text-xl leading-relaxed flex-grow">{content.missionVision.mission}</p>
+                <div className="mt-8 flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
+                  <span className="mr-2">Xem chi tiết</span>
+                  <ArrowDown className="w-5 h-5 -rotate-90" />
+                </div>
               </div>
             </motion.div>
             
-            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-24">
+            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-24 flex flex-col">
+              <Link href="/about/tam-nhin" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">02</span>
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Tầm nhìn</h3>
-                <p className="text-gray-600 font-light text-xl leading-relaxed">{content.missionVision.vision}</p>
+                <p className="text-gray-600 font-light text-xl leading-relaxed flex-grow">{content.missionVision.vision}</p>
+                <div className="mt-8 flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
+                  <span className="mr-2">Xem chi tiết</span>
+                  <ArrowDown className="w-5 h-5 -rotate-90" />
+                </div>
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-48">
+            <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-48 flex flex-col">
+              <Link href="/about/triet-ly" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">03</span>
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Triết lý</h3>
-                <p className="text-gray-600 font-light text-xl leading-relaxed mb-8">{content.missionVision.philosophy}</p>
-                <p className="font-serif text-[#3DCAA0] text-2xl leading-relaxed">"{content.missionVision.philosophyHighlight}"</p>
+                <p className="text-gray-600 font-light text-xl leading-relaxed mb-8 flex-grow">{content.missionVision.philosophy}</p>
+                <p className="font-serif text-brand-600 text-2xl leading-relaxed mb-8">"{content.missionVision.philosophyHighlight}"</p>
+                <div className="mt-auto flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
+                  <span className="mr-2">Xem chi tiết</span>
+                  <ArrowDown className="w-5 h-5 -rotate-90" />
+                </div>
               </div>
             </motion.div>
           </div>
@@ -310,7 +325,7 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 border-t border-white/20 pt-20">
             {content.struggles.map((item, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.15 }}>
-                <div className="text-[#3DCAA0] mb-6">
+                <div className="text-brand-600 mb-6">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
                 </div>
                 <h3 className="text-3xl font-medium mb-6">{item.title}</h3>
@@ -335,9 +350,9 @@ export default function About() {
                 <motion.div 
                   key={idx}
                   initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ margin: "-10%" }}
-                  className="bg-[#FAF9F7] p-10 md:p-16 rounded-[40px] flex flex-col sm:flex-row gap-8 sm:gap-12 hover:bg-brand-50 transition-colors"
+                  className="bg-brand-50 p-10 md:p-16 rounded-[40px] flex flex-col sm:flex-row gap-8 sm:gap-12 hover:bg-brand-100 transition-colors"
                 >
-                  <span className="text-6xl md:text-8xl font-serif text-[#3DCAA0] leading-none">{item.num}</span>
+                  <span className="text-6xl md:text-8xl font-serif text-brand-600 leading-none">{item.num}</span>
                   <div>
                     <h3 className="text-3xl md:text-4xl font-serif text-brand-950 mb-6">{item.title}</h3>
                     <p className="text-gray-600 font-light text-xl leading-relaxed">{item.desc}</p>
@@ -357,7 +372,7 @@ export default function About() {
             {content.coreValues.map((val, idx) => (
               <motion.div key={idx} whileHover={{ y: -10 }} className="bg-brand-950/50 border border-brand-800 p-10 md:p-12 rounded-[40px] text-center">
                 <div className="w-20 h-20 mx-auto bg-brand-800 rounded-full flex items-center justify-center mb-8">
-                  <div className="w-5 h-5 bg-[#3DCAA0] rounded-full"></div>
+                  <div className="w-5 h-5 bg-brand-600 rounded-full"></div>
                 </div>
                 <h3 className="text-3xl font-serif mb-6">{val.title}</h3>
                 <p className="text-gray-300 font-light text-lg leading-relaxed">{val.desc}</p>
@@ -380,12 +395,12 @@ export default function About() {
                   className="flex flex-col md:flex-row items-center gap-8 md:gap-16 group"
                 >
                   <div className={`w-full md:w-1/2 flex ${idx % 2 === 0 ? 'justify-end md:order-1' : 'justify-start md:order-2'}`}>
-                    <span className="text-[120px] md:text-[200px] font-black text-[#FAF9F7] group-hover:text-[#3DCAA0] transition-colors leading-none tracking-tighter">
+                    <span className="text-[120px] md:text-[200px] font-black text-brand-50 group-hover:text-brand-600 transition-colors leading-none tracking-tighter">
                       {item.year}
                     </span>
                   </div>
                   <div className={`w-full md:w-1/2 ${idx % 2 === 0 ? 'md:order-2 text-left' : 'md:order-1 md:text-right'}`}>
-                    <p className="text-3xl md:text-4xl font-light text-brand-950 leading-relaxed border-b-4 border-brand-50 pb-8 group-hover:border-[#3DCAA0] transition-colors">
+                    <p className="text-3xl md:text-4xl font-light text-brand-950 leading-relaxed border-b-4 border-brand-50 pb-8 group-hover:border-brand-600 transition-colors">
                       {item.text}
                     </p>
                   </div>
@@ -397,7 +412,7 @@ export default function About() {
       )}
 
       {/* 8. Ba nguyên tắc & Phát triển */}
-      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-[#FAF9F7]">
+      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50">
         <div className="max-w-[1400px] mx-auto flex flex-col xl:flex-row items-center gap-20">
           <div className="flex-1 w-full order-2 xl:order-1">
              <motion.div
@@ -426,7 +441,7 @@ export default function About() {
                 <ul className="space-y-6">
                   {content.science.checks.map((check: string, idx: number) => (
                      <li key={idx} className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm">
-                       <span className="w-3 h-3 rounded-full bg-[#3DCAA0] mt-2.5 flex-shrink-0"></span>
+                       <span className="w-3 h-3 rounded-full bg-brand-600 mt-2.5 flex-shrink-0"></span>
                        <span className="text-brand-950 text-lg leading-relaxed font-medium">{check}</span>
                      </li>
                   ))}
@@ -463,13 +478,13 @@ export default function About() {
                  transition={{ duration: 0.6, delay: idx * 0.2 }}
                  className="relative z-10 w-1/3 px-8 flex flex-col items-center text-center group"
                >
-                 <div className="w-8 h-8 rounded-full bg-white border-4 border-brand-100 group-hover:border-[#3DCAA0] transition-colors flex items-center justify-center mb-10">
-                   <div className="w-2 h-2 rounded-full bg-brand-900 group-hover:bg-[#3DCAA0] transition-colors"></div>
+                 <div className="w-8 h-8 rounded-full bg-white border-4 border-brand-100 group-hover:border-brand-600 transition-colors flex items-center justify-center mb-10">
+                   <div className="w-2 h-2 rounded-full bg-brand-900 group-hover:bg-brand-600 transition-colors"></div>
                  </div>
                  <span className="text-sm text-gray-400 font-bold tracking-[0.2em] uppercase mb-6 block">Giai đoạn 0{idx + 1}</span>
                  <h3 className="text-3xl font-serif text-brand-950 mb-6">{item.phase}</h3>
                  <p className="text-gray-600 font-light leading-relaxed text-lg mb-8">{item.desc}</p>
-                 <Link href={item.link} className="text-lg font-medium text-brand-900 hover:text-[#3DCAA0] transition-colors underline underline-offset-8 decoration-brand-200 hover:decoration-[#3DCAA0]">
+                 <Link href={item.link} className="text-lg font-medium text-brand-900 hover:text-brand-600 transition-colors underline underline-offset-8 decoration-brand-200 hover:decoration-brand-600">
                    Khám phá sản phẩm
                  </Link>
                </motion.div>
@@ -490,12 +505,12 @@ export default function About() {
                  className="relative z-10 pl-10 group"
                >
                  <div className="absolute top-2 -left-[21px] w-8 h-8 rounded-full bg-white border-4 border-brand-100 flex items-center justify-center">
-                   <div className="w-2 h-2 rounded-full bg-[#3DCAA0]"></div>
+                   <div className="w-2 h-2 rounded-full bg-brand-600"></div>
                  </div>
                  <span className="text-xs text-gray-400 font-bold tracking-[0.2em] uppercase mb-3 block">Giai đoạn 0{idx + 1}</span>
                  <h3 className="text-2xl font-serif text-brand-950 mb-4">{item.phase}</h3>
                  <p className="text-gray-600 font-light leading-relaxed text-lg mb-6">{item.desc}</p>
-                 <Link href={item.link} className="text-lg font-medium text-brand-900 hover:text-[#3DCAA0] underline underline-offset-8">
+                 <Link href={item.link} className="text-lg font-medium text-brand-900 hover:text-brand-600 underline underline-offset-8">
                    Khám phá
                  </Link>
                </motion.div>
@@ -572,7 +587,7 @@ export default function About() {
             <div className="flex justify-center">
               <Link
                 href="/products"
-                className="px-12 py-6 bg-white text-brand-950 text-xl font-bold rounded-full hover:bg-[#3DCAA0] hover:text-white transition-colors"
+                className="px-12 py-6 bg-white text-brand-950 text-xl font-bold rounded-full hover:bg-brand-600 hover:text-white transition-colors"
               >
                 Khám phá sản phẩm
               </Link>
