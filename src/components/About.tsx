@@ -238,44 +238,68 @@ export default function About() {
        </section>
 
       {/* 2. Câu chuyện FURANO */}
-      <section id="story" className="relative bg-white py-16 md:py-24 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
-        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-0 items-center">
-          {/* Image Side */}
-          <div className="lg:w-1/2 p-4 md:p-12 lg:p-20 w-full">
-            <div className="relative w-full aspect-square md:aspect-[4/5] rounded-[40px] overflow-hidden shadow-xl">
-              <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div className="absolute bottom-8 md:bottom-12 left-8 md:left-10 right-8 md:right-10">
-                <h3 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white mb-6 leading-tight">{content.story.title}</h3>
-                <div className="w-16 md:w-20 h-1.5 bg-brand-600"></div>
-              </div>
-            </div>
-          </div>
+      <section id="story" className="relative bg-white py-16 md:py-32 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Text Side */}
-          <div className="lg:w-1/2 p-4 md:p-8 lg:p-16 w-full">
-            <div className="max-w-xl mx-auto space-y-8">
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
-                  {content.story.desc1}
-                </p>
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
-                  {content.story.desc2}
-                </p>
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
-                  {content.story.desc3}
-                </p>
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="p-8 md:p-10 bg-brand-50 rounded-[24px] border-l-4 border-brand-600 mt-8">
-                <p className="text-lg md:text-xl font-serif text-brand-900 italic leading-relaxed">
-                  "{content.story.quote}"
-                </p>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-0 items-center">
+            
+            {/* Left Content Card - Overlaps Image */}
+            <div className="md:col-start-1 md:col-end-8 lg:col-end-6 md:row-start-1 z-20 order-2 md:order-1">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="bg-white md:rounded-[40px] md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] md:p-12 lg:p-16 relative"
+              >
+                {/* Decorative background element */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-[80px] md:rounded-tr-[40px] -z-10 hidden md:block"></div>
+                
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-serif text-brand-950 mb-8 leading-[1.1] relative">
+                  <span className="block text-brand-300/20 text-8xl absolute -top-12 -left-4 -z-10 select-none hidden md:block">Story</span>
+                  {(content.story.title || "").split(' ').map((word, i) => (
+                    <span key={i} className={word.toUpperCase() === 'FURANO' ? 'text-brand-600 block mt-2' : ''}>{word} </span>
+                  ))}
+                </h2>
+                
+                <div className="space-y-6 relative z-10">
+                  <p className="text-xl md:text-2xl font-medium text-brand-900 leading-relaxed">
+                    {content.story.desc1}
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed font-light">
+                    {content.story.desc2}
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed font-light">
+                    {content.story.desc3}
+                  </p>
+                </div>
+                
+                {/* Mobile Quote */}
+                <div className="mt-8 p-6 bg-brand-50 rounded-2xl border-l-4 border-brand-600 md:hidden">
+                  <p className="text-lg font-serif italic text-brand-900 leading-relaxed">
+                    "{content.story.quote}"
+                  </p>
+                </div>
               </motion.div>
             </div>
+
+            {/* Right Image - Overlapped by text */}
+            <div className="md:col-start-6 lg:col-start-5 md:col-end-13 md:row-start-1 z-10 relative order-1 md:order-2 mb-4 md:mb-0">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+                className="aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
+              >
+                <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-brand-900/10 mix-blend-multiply"></div>
+              </motion.div>
+              
+              {/* Desktop Floating Quote */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+                className="absolute -bottom-16 right-4 lg:right-12 bg-brand-950 text-white p-8 lg:p-10 rounded-[30px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] max-w-[320px] lg:max-w-[400px] z-30 hidden md:block border border-brand-800/50"
+              >
+                <svg className="w-10 h-10 lg:w-12 lg:h-12 text-brand-400 mb-4 lg:mb-6 opacity-40" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                <p className="text-lg lg:text-xl font-serif italic leading-relaxed text-brand-50">"{content.story.quote}"</p>
+              </motion.div>
+            </div>
+
           </div>
         </div>
       </section>
