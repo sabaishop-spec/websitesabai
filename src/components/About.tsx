@@ -271,24 +271,27 @@ export default function About() {
                   </p>
                 </div>
                 
-                {/* Quote */}
-                <div className="mt-8 md:mt-12 p-6 md:p-8 lg:p-10 bg-brand-950 rounded-2xl md:rounded-[30px] shadow-lg relative overflow-hidden">
-                  <svg className="absolute -top-2 -right-2 w-20 h-20 md:w-24 md:h-24 text-brand-800/30" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                  <p className="text-lg md:text-xl font-serif italic text-white leading-relaxed relative z-10">
-                    "{content.story.quote}"
-                  </p>
-                </div>
               </motion.div>
             </div>
 
             {/* Right Image - Overlapped by text */}
-            <div className="md:col-start-6 lg:col-start-5 md:col-end-13 md:row-start-1 z-10 relative order-1 md:order-2 mb-4 md:mb-0">
+            <div className="md:col-start-6 lg:col-start-5 md:col-end-13 md:row-start-1 z-10 relative order-1 md:order-2 mb-4 md:mb-0 flex flex-col md:items-end">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-                className="aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
+                className="w-full aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
               >
                 <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
-              </motion.div>            </div>
+              </motion.div>
+              
+              {/* Quote positioned below the image */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+                className="bg-brand-950 text-white p-6 md:p-8 lg:p-10 rounded-[24px] md:rounded-[30px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] w-full md:max-w-[400px] z-30 mt-6 md:mt-[-60px] md:mr-8 lg:mr-12 relative border border-brand-800/50 overflow-hidden"
+              >
+                <svg className="absolute -top-2 -right-2 w-20 h-20 md:w-24 md:h-24 text-brand-800/30" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                <p className="text-lg lg:text-xl font-serif italic leading-relaxed text-white relative z-10">"{content.story.quote}"</p>
+              </motion.div>
+            </div>
 
           </div>
         </div>
