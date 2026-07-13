@@ -271,9 +271,10 @@ export default function About() {
                   </p>
                 </div>
                 
-                {/* Mobile Quote */}
-                <div className="mt-8 p-6 bg-brand-50 rounded-2xl border-l-4 border-brand-600 md:hidden">
-                  <p className="text-lg font-serif italic text-brand-900 leading-relaxed">
+                {/* Quote */}
+                <div className="mt-8 md:mt-12 p-6 md:p-8 lg:p-10 bg-brand-950 rounded-2xl md:rounded-[30px] shadow-lg relative overflow-hidden">
+                  <svg className="absolute -top-2 -right-2 w-20 h-20 md:w-24 md:h-24 text-brand-800/30" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                  <p className="text-lg md:text-xl font-serif italic text-white leading-relaxed relative z-10">
                     "{content.story.quote}"
                   </p>
                 </div>
@@ -287,18 +288,7 @@ export default function About() {
                 className="aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
               >
                 <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-brand-900/10 mix-blend-multiply"></div>
-              </motion.div>
-              
-              {/* Desktop Floating Quote */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
-                className="absolute -bottom-16 right-4 lg:right-12 bg-brand-950 text-white p-8 lg:p-10 rounded-[30px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] max-w-[320px] lg:max-w-[400px] z-30 hidden md:block border border-brand-800/50"
-              >
-                <svg className="w-10 h-10 lg:w-12 lg:h-12 text-brand-400 mb-4 lg:mb-6 opacity-40" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                <p className="text-lg lg:text-xl font-serif italic leading-relaxed text-brand-50">"{content.story.quote}"</p>
-              </motion.div>
-            </div>
+              </motion.div>            </div>
 
           </div>
         </div>
