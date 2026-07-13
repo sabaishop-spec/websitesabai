@@ -183,7 +183,7 @@ export default function About() {
     <div className="bg-white selection:bg-brand-100 selection:text-brand-950 font-sans overflow-hidden">
       
       {/* 1. Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-brand-50 pt-20">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-brand-50 pt-20 pb-32">
         {/* Massive background text */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
@@ -238,7 +238,7 @@ export default function About() {
        </section>
 
       {/* 2. Câu chuyện FURANO (Sticky Scroll) */}
-      <section id="story" className="relative bg-white py-12 md:py-0">
+      <section id="story" className="relative bg-white py-12 md:py-0 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row">
           {/* Sticky Image Side */}
           <div className="md:w-1/2 md:h-screen md:sticky md:top-0 p-4 md:p-12 lg:p-20 flex items-center justify-center">
@@ -281,7 +281,7 @@ export default function About() {
       </section>
 
       {/* 3. Sứ mệnh - Tầm nhìn - Triết lý */}
-      <section className="py-24 md:py-40 bg-brand-50 px-4 overflow-hidden">
+      <section className="py-24 md:py-40 bg-brand-50 px-4 overflow-hidden rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
             <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col">
@@ -328,7 +328,7 @@ export default function About() {
       </section>
 
       {/* 3.5 Đội ngũ FURANO */}
-      <section className="py-24 md:py-40 bg-white px-4">
+      <section className="py-24 md:py-40 bg-white px-4 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)] pb-32">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-16 md:gap-24">
           <motion.div 
             initial={{ opacity: 0, x: -50 }} 
@@ -365,7 +365,7 @@ export default function About() {
       </section>
 
       {/* 4. Những ngày niềng răng */}
-      <section className="py-24 md:py-40 bg-white px-4 lg:mt-20">
+      <section className="py-24 md:py-40 bg-brand-50 px-4 rounded-[40px] md:rounded-[80px] mx-4 md:mx-8 -mt-20 z-30 relative shadow-xl mb-24">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col md:flex-row gap-16 md:gap-24 mb-20">
              <div className="md:w-1/2">
@@ -381,8 +381,8 @@ export default function About() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="md:col-span-7 bg-brand-50 rounded-[40px] p-12 md:p-16 flex flex-col justify-between min-h-[400px] lg:min-h-[500px] group hover:bg-brand-100 transition-colors">
-               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm mb-12">
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="md:col-span-7 bg-white rounded-[40px] p-12 md:p-16 flex flex-col justify-between min-h-[400px] lg:min-h-[500px] group hover:shadow-md transition-shadow">
+               <div className="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center shadow-sm mb-12">
                  <span className="text-brand-900 font-serif text-2xl font-bold italic">1</span>
                </div>
                <div>
@@ -392,8 +392,8 @@ export default function About() {
             </motion.div>
             
             <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
-              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="flex-1 bg-white border border-brand-100 rounded-[40px] p-10 flex flex-col justify-center group hover:border-brand-300 transition-colors shadow-sm hover:shadow-md">
-                <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center mb-8">
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="flex-1 bg-brand-100/30 border border-brand-200 rounded-[40px] p-10 flex flex-col justify-center group hover:border-brand-400 transition-colors shadow-sm hover:shadow-md">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-8">
                    <span className="text-brand-900 font-serif text-xl font-bold italic">2</span>
                 </div>
                 <h3 className="text-3xl font-serif text-brand-950 mb-4">{content.struggles[1].title}</h3>
@@ -413,7 +413,7 @@ export default function About() {
       </section>
 
       {/* 5. Những điều FURANO ưu tiên */}
-      <section className="py-24 md:py-40 px-4 bg-white overflow-hidden">
+      <section className="py-24 md:py-40 px-4 bg-white overflow-hidden rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col lg:flex-row gap-20">
             <div className="lg:w-2/5">
@@ -441,7 +441,7 @@ export default function About() {
       </section>
 
       {/* 6. Giá trị cốt lõi */}
-      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50">
+      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-20">
           <div className="lg:w-1/3">
              <div className="sticky top-40">
@@ -469,7 +469,7 @@ export default function About() {
 
       {/* 7. Hành trình của FURANO (Timeline) */}
       {(data?.timeline?.length > 0 ? data.timeline : content.timelineFallback)?.length > 0 && (
-        <section className="py-24 md:py-40 px-4 bg-white overflow-hidden">
+        <section className="py-24 md:py-40 px-4 bg-white overflow-hidden rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
           <div className="max-w-[1200px] mx-auto">
             <h2 className="text-5xl md:text-7xl font-serif text-brand-950 mb-32 text-center">Hành trình của chúng tôi</h2>
             <div className="space-y-40">
@@ -497,7 +497,7 @@ export default function About() {
       )}
 
       {/* 8. Ba nguyên tắc & Phát triển */}
-      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50">
+      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-brand-50 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto flex flex-col xl:flex-row items-center gap-20">
           <div className="flex-1 w-full order-2 xl:order-1">
              <motion.div
@@ -537,7 +537,7 @@ export default function About() {
       </section>
 
       {/* 9. Hành trình chăm sóc răng niềng */}
-      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-white rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1400px] mx-auto">
           <motion.div
              initial={{ opacity: 0, y: 20 }}
@@ -605,7 +605,7 @@ export default function About() {
       </section>
 
       {/* 10. Thông tin công ty */}
-      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-50 rounded-t-[80px] lg:rounded-t-[120px]">
+      <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-brand-50 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1200px] mx-auto">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
               <motion.div
@@ -655,7 +655,7 @@ export default function About() {
       </section>
 
       {/* 11. CTA cuối trang */}
-      <section className="py-32 md:py-48 px-4 sm:px-6 lg:px-8 bg-brand-950 text-white text-center">
+      <section className="py-32 md:py-48 px-4 sm:px-6 lg:px-8 bg-brand-950 text-white text-center rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 relative shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1000px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
