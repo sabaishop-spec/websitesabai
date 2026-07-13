@@ -237,41 +237,41 @@ export default function About() {
          )}
        </section>
 
-      {/* 2. Câu chuyện FURANO (Sticky Scroll) */}
-      <section id="story" className="relative bg-white py-12 md:py-0 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row">
-          {/* Sticky Image Side */}
-          <div className="md:w-1/2 md:h-screen md:sticky md:top-0 p-4 md:p-12 lg:p-20 flex items-center justify-center">
-            <div className="relative w-full aspect-square md:h-full md:aspect-auto rounded-[40px] overflow-hidden shadow-2xl">
+      {/* 2. Câu chuyện FURANO */}
+      <section id="story" className="relative bg-white py-16 md:py-24 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)]">
+        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-0 items-center">
+          {/* Image Side */}
+          <div className="lg:w-1/2 p-4 md:p-12 lg:p-20 w-full">
+            <div className="relative w-full aspect-square md:aspect-[4/5] rounded-[40px] overflow-hidden shadow-xl">
               <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div className="absolute bottom-12 left-10 right-10">
-                <h3 className="text-5xl md:text-6xl font-serif text-white mb-6 leading-tight">{content.story.title}</h3>
-                <div className="w-20 h-1.5 bg-brand-600"></div>
+              <div className="absolute bottom-8 md:bottom-12 left-8 md:left-10 right-8 md:right-10">
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white mb-6 leading-tight">{content.story.title}</h3>
+                <div className="w-16 md:w-20 h-1.5 bg-brand-600"></div>
               </div>
             </div>
           </div>
           
-          {/* Scrolling Text Side */}
-          <div className="md:w-1/2 p-4 md:p-12 lg:p-24 md:py-[30vh]">
-            <div className="max-w-xl mx-auto space-y-32">
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }}>
-                <p className="text-3xl md:text-4xl font-light text-brand-950 leading-[1.6]">
+          {/* Text Side */}
+          <div className="lg:w-1/2 p-4 md:p-8 lg:p-16 w-full">
+            <div className="max-w-xl mx-auto space-y-8">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
                   {content.story.desc1}
                 </p>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }}>
-                <p className="text-3xl md:text-4xl font-light text-brand-950 leading-[1.6]">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
                   {content.story.desc2}
                 </p>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }}>
-                <p className="text-3xl md:text-4xl font-light text-brand-950 leading-[1.6]">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+                <p className="text-lg md:text-xl font-light text-brand-950 leading-[1.8]">
                   {content.story.desc3}
                 </p>
               </motion.div>
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ margin: "-20%" }} transition={{ duration: 0.8 }} className="p-10 md:p-12 bg-brand-50 rounded-3xl border-l-8 border-brand-600">
-                <p className="text-2xl md:text-3xl font-serif text-brand-900 italic leading-relaxed">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="p-8 md:p-10 bg-brand-50 rounded-[24px] border-l-4 border-brand-600 mt-8">
+                <p className="text-lg md:text-xl font-serif text-brand-900 italic leading-relaxed">
                   "{content.story.quote}"
                 </p>
               </motion.div>
