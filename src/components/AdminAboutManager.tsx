@@ -14,7 +14,11 @@ export default function AdminAboutManager() {
     teamText1: '',
     teamText2: '',
     teamImage: '',
+    heroImage: '',
+    struggles: [],
     coreValues: [],
+    commitments: [],
+    journey: [],
     timeline: [
       { year: "2018", text: "FURANO được thành lập", side: "left" },
       { year: "2019", text: "Ra mắt dòng sản phẩm Ortho chuyên biệt", side: "right" },
@@ -116,6 +120,49 @@ export default function AdminAboutManager() {
     </div>
   );
 
+  const renderListManager = (title: string, key: string, fields: {name: string, label: string, type: 'text' | 'textarea'}[]) => (
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex justify-between items-center mb-4 pb-2 border-b">
+        <h3 className="font-bold text-lg">{title}</h3>
+        <button onClick={() => {
+          const newItem = fields.reduce((acc, f) => ({...acc, [f.name]: ''}), {});
+          const newList = [...(data[key] || []), newItem];
+          handleChange(key, newList);
+        }} className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-sm font-medium flex items-center gap-1">
+          <Plus className="w-4 h-4"/> Thêm mục
+        </button>
+      </div>
+      
+      <div className="space-y-4">
+        {(data[key] || []).map((item: any, idx: number) => (
+          <div key={idx} className="flex flex-col gap-4 p-4 border rounded-xl bg-gray-50 relative pr-12">
+            <button onClick={() => {
+              const newList = [...data[key]];
+              newList.splice(idx, 1);
+              handleChange(key, newList);
+            }} className="absolute top-4 right-4 text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4"/></button>
+            
+            {fields.map(f => (
+              <div key={f.name} className="w-full">
+                <label className="block text-xs font-bold text-gray-700 mb-1">{f.label}</label>
+                {f.type === 'textarea' ? (
+                  <textarea value={item[f.name]} onChange={e => {
+                    const t = [...data[key]]; t[idx][f.name] = e.target.value; handleChange(key, t);
+                  }} className="w-full border p-2 rounded h-20" />
+                ) : (
+                  <input type="text" value={item[f.name]} onChange={e => {
+                    const t = [...data[key]]; t[idx][f.name] = e.target.value; handleChange(key, t);
+                  }} className="w-full border p-2 rounded" />
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+        {(!data[key] || data[key].length === 0) && <p className="text-gray-500 text-sm italic">Chưa có mục nào.</p>}
+      </div>
+    </div>
+  );
+
   if (loading) return <div className="animate-pulse bg-gray-100 h-96 rounded-xl w-full"></div>;
 
   return (
@@ -137,6 +184,7 @@ export default function AdminAboutManager() {
         {/* Hero Section */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h3 className="font-bold text-lg mb-4 pb-2 border-b">1. Phần Banner Chính</h3>
+          {renderImageUpload('Ảnh Nền (Hero Image)', 'heroImage')}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Tiêu đề chính</label>
@@ -184,10 +232,33 @@ export default function AdminAboutManager() {
           </div>
         </div>
 
+        {/* Dynamic Lists */}
+        {renderListManager('4. Những ngày niềng răng (Khó khăn)', 'struggles', [
+          { name: 'title', label: 'Tiêu đề', type: 'text' },
+          { name: 'desc', label: 'Mô tả', type: 'textarea' }
+        ])}
+
+        {renderListManager('5. Những điều FURANO ưu tiên', 'commitments', [
+          { name: 'num', label: 'Số thứ tự (Vd: 01)', type: 'text' },
+          { name: 'title', label: 'Tiêu đề', type: 'text' },
+          { name: 'desc', label: 'Mô tả', type: 'textarea' }
+        ])}
+
+        {renderListManager('6. Giá trị cốt lõi', 'coreValues', [
+          { name: 'title', label: 'Tiêu đề', type: 'text' },
+          { name: 'desc', label: 'Mô tả', type: 'textarea' }
+        ])}
+
+        {renderListManager('7. Hành trình chăm sóc răng niềng', 'journey', [
+          { name: 'phase', label: 'Giai đoạn', type: 'text' },
+          { name: 'desc', label: 'Mô tả', type: 'textarea' },
+          { name: 'link', label: 'Đường dẫn liên kết (URL)', type: 'text' }
+        ])}
+
         {/* Timeline */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-4 pb-2 border-b">
-            <h3 className="font-bold text-lg">4. Hành trình FURANO (Timeline)</h3>
+            <h3 className="font-bold text-lg">8. Hành trình FURANO (Timeline lịch sử)</h3>
             <button onClick={() => {
               const newTimeline = [...(data.timeline || []), { year: new Date().getFullYear(), text: '', side: 'left' }];
               handleChange('timeline', newTimeline);
@@ -236,7 +307,7 @@ export default function AdminAboutManager() {
 
         {/* Science & Lab */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-lg mb-4 pb-2 border-b">5. Phát triển dựa trên Khoa học</h3>
+          <h3 className="font-bold text-lg mb-4 pb-2 border-b">9. Phát triển dựa trên Khoa học</h3>
           {renderImageUpload('Ảnh Phòng Lab', 'labImage')}
           
           <div className="mt-6">

@@ -37,7 +37,7 @@ export default function About() {
       eyebrow: "VỀ FURANO",
       title: data?.heroTitle || "Chăm sóc nụ cười, từ những ngày còn mắc cài.",
       desc: data?.heroSubtitle || "FURANO phát triển các giải pháp chăm sóc răng miệng dành riêng cho những nhu cầu xuất hiện trong và sau quá trình chỉnh nha.",
-      image: "/images/team-furano.jpeg"
+      image: data?.heroImage || ""
     },
     story: {
       title: "Câu chuyện FURANO",
@@ -60,7 +60,7 @@ export default function About() {
       highlight: "Tận tâm trong từng giải pháp\nThấu hiểu trong từng trải nghiệm",
       image: data?.teamImage || "/images/team-furano.jpeg"
     },
-    struggles: [
+    struggles: data?.struggles?.length > 0 ? data.struggles : [
       {
         title: "Những vị trí khó làm sạch",
         desc: "Thức ăn và mảng bám dễ lưu lại ở khu vực quanh dây cung và mắc cài."
@@ -74,7 +74,7 @@ export default function About() {
         desc: "Hàm duy trì vẫn cần được làm sạch đúng cách để hạn chế cặn bám và mùi khó chịu."
       }
     ],
-    commitments: [
+    commitments: data?.commitments?.length > 0 ? data.commitments : [
       {
         num: "01",
         title: "An toàn",
@@ -91,7 +91,7 @@ export default function About() {
         desc: "Thành phần, công dụng, cách sử dụng và những lưu ý quan trọng cần được trình bày rõ ràng để người dùng có thể lựa chọn phù hợp."
       }
     ],
-    coreValues: [
+    coreValues: data?.coreValues?.length > 0 ? data.coreValues : [
       {
         title: "Thấu hiểu",
         desc: "FURANO bắt đầu từ những khó khăn thực tế của người đang niềng, vừa tháo niềng và đeo hàm duy trì."
@@ -122,7 +122,7 @@ export default function About() {
       },
       {
         num: "03",
-        title: "Thông tin rõ ràng",
+        title: "Thông margin rõ ràng",
         desc: "Công dụng, cách sử dụng và giới hạn sản phẩm cần được giải thích bằng ngôn ngữ dễ hiểu."
       }
     ],
@@ -139,7 +139,7 @@ export default function About() {
       ],
       image: data?.labImage || "/images/furano-lab.png"
     },
-    journey: [
+    journey: data?.journey?.length > 0 ? data.journey : [
       {
         phase: "Đang niềng",
         desc: "Làm sạch quanh mắc cài, chăm sóc nướu và duy trì cảm giác hơi thở thơm mát.",
@@ -199,7 +199,7 @@ export default function About() {
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
           <motion.span 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="inline-block py-2 px-6 rounded-full bg-brand-950 text-white text-xs font-bold tracking-widest uppercase mb-8"
+            className="inline-block py-2 px-6 rounded-full bg-brand-950 text-white text-xs font-bold tracking-widest uppercase mb-8 shadow-sm"
           >
             {content.hero.eyebrow}
           </motion.span>
@@ -216,15 +216,26 @@ export default function About() {
             {content.hero.desc}
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
-             <a href="#story" className="inline-flex flex-col items-center gap-4 text-brand-900 hover:text-brand-600 transition-colors group">
-               <span className="text-sm uppercase tracking-widest font-bold">Khám phá</span>
-               <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center">
-                 <ArrowDown className="w-5 h-5 animate-bounce" />
-               </div>
-             </a>
-          </motion.div>
-        </div>
-      </section>
+              <a href="#story" className="inline-flex flex-col items-center gap-4 text-brand-900 hover:text-brand-600 transition-colors group">
+                <span className="text-sm uppercase tracking-widest font-bold">Khám phá</span>
+                <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center">
+                  <ArrowDown className="w-5 h-5 animate-bounce" />
+                </div>
+              </a>
+           </motion.div>
+         </div>
+
+         {content.hero.image && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] px-4 opacity-30 pointer-events-none"
+            >
+               <img src={content.hero.image} alt="Hero image" className="w-full h-auto max-h-[35vh] object-cover rounded-t-[40px] md:rounded-t-[80px]" />
+            </motion.div>
+         )}
+       </section>
 
       {/* 2. Câu chuyện FURANO (Sticky Scroll) */}
       <section id="story" className="relative bg-white py-12 md:py-0">
@@ -313,6 +324,43 @@ export default function About() {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* 3.5 Đội ngũ FURANO */}
+      <section className="py-24 md:py-40 bg-white px-4">
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-16 md:gap-24">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }} 
+            whileInView={{ opacity: 1, x: 0 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-1/2 relative"
+          >
+            <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative z-10">
+              <img src={content.team.image} alt={content.team.title} className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute -bottom-8 -right-8 w-2/3 aspect-square bg-brand-50 rounded-[40px] -z-10"></div>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }} 
+            whileInView={{ opacity: 1, x: 0 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="w-full md:w-1/2"
+          >
+            <h2 className="text-5xl md:text-7xl font-serif text-brand-950 leading-[1.1] mb-10">{content.team.title}</h2>
+            <div className="space-y-6 text-gray-600 font-light text-xl leading-relaxed mb-12">
+               <p>{content.team.text1}</p>
+               <p>{content.team.text2}</p>
+            </div>
+            <div className="p-10 border border-brand-200 rounded-[32px] bg-brand-50/50">
+               <p className="text-2xl md:text-3xl font-serif text-brand-900 leading-relaxed italic whitespace-pre-line">
+                 "{content.team.highlight}"
+               </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
