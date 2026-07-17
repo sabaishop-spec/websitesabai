@@ -92,7 +92,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
     );
   }
 
-  const currentImage = hasVariants && product.variants ? product.variants[safeVariantIndex]?.image : product.image;
+  const currentImage = (hasVariants && product.variants && product.variants[safeVariantIndex]?.image) || product.image;
 
   const productSchema = {
     "@context": "https://schema.org/",

@@ -39,7 +39,7 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
     return selectedVariant >= 0 && selectedVariant < product.variants.length ? selectedVariant : 0;
   }, [selectedVariant, hasVariants, product.variants]);
 
-  const currentImage = hasVariants && product.variants ? product.variants[safeVariantIndex].image : product.image;
+  const currentImage = (hasVariants && product.variants && product.variants[safeVariantIndex]?.image) || product.image;
 
   return (
     <motion.div
