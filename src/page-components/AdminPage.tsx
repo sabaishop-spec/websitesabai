@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Pencil, Trash2, Plus, Image as ImageIcon, X, Database, ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { db, auth, collection, getDocs, doc, setDoc, deleteDoc, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, onAuthStateChanged, User, writeBatch } from '../localDB';
+import { supabase } from '../lib/supabase';
 import AdminUsersManager from '../components/AdminUsersManager';
 import AdminTestimonialsManager from '../components/AdminTestimonialsManager';
 import SiteSettingsManager from '../components/SiteSettingsManager';
@@ -249,19 +250,153 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                     className="w-full px-3 py-2 border rounded-lg h-32 focus:ring-2 focus:ring-brand-500"
                   />
                 ) : field.type === 'variants' ? (
-                  <div className="space-y-2 border p-4 rounded-lg bg-gray-50">
-                     <p className="text-xs text-gray-500 mb-2">Chỉnh sửa JSON cho variants (màu sắc, ảnh phân loại)</p>
-                     <textarea
-                      value={typeof val === 'string' ? val : JSON.stringify(val || [], null, 2)}
-                      onChange={(e) => {
-                        try {
-                           handleChange(field.name, JSON.parse(e.target.value));
-                        } catch(err) {
-                           handleChange(field.name, e.target.value); // Keep as string if invalid, will fail later or we can handle it
-                        }
-                      }}
-                      className="w-full px-3 py-2 border rounded-lg h-40 font-mono text-sm"
-                     />
+                  // Visual Variants Editor
+                  <div className="space-y-3 border p-4 rounded-xl bg-gray-50">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-semibold text-gray-700">Phân loại màu sắc & Ảnh</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const current = Array.isArray(val) ? val : [];
+                          handleChange(field.name, [...current, { name: '', colorClass: 'bg-gray-400', image: '' }]);
+                        }}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-lg hover:bg-brand-700"
+                      >
+                        <Plus className="w-3 h-3" /> Thêm màu
+                      </button>
+                    </div>
+
+                    {/* Color palette presets */}
+                    {(() => {
+                      const COLOR_OPTIONS = [
+                        { label: 'Trắng', cls: 'bg-white border border-gray-300' },
+                        { label: 'Đen', cls: 'bg-gray-900' },
+                        { label: 'Xám', cls: 'bg-gray-400' },
+                        { label: 'Hồng nhạt', cls: 'bg-pink-200' },
+                        { label: 'Hồng', cls: 'bg-pink-400' },
+                        { label: 'Đỏ', cls: 'bg-red-500' },
+                        { label: 'Cam', cls: 'bg-orange-400' },
+                        { label: 'Vàng', cls: 'bg-yellow-400' },
+                        { label: 'Xanh lá nhạt', cls: 'bg-green-300' },
+                        { label: 'Xanh lá', cls: 'bg-green-500' },
+                        { label: 'Xanh mint', cls: 'bg-teal-400' },
+                        { label: 'Xanh dương nhạt', cls: 'bg-blue-200' },
+                        { label: 'Xanh dương', cls: 'bg-blue-500' },
+                        { label: 'Tím nhạt', cls: 'bg-purple-300' },
+                        { label: 'Tím', cls: 'bg-purple-500' },
+                        { label: 'Nâu', cls: 'bg-amber-700' },
+                      ];
+                      const variants: any[] = Array.isArray(val) ? val : [];
+
+                      return variants.map((variant: any, idx: number) => (
+                        <div key={idx} className="bg-white border rounded-xl p-4 space-y-3 relative shadow-sm">
+                          {/* Remove button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newVals = variants.filter((_, i) => i !== idx);
+                              handleChange(field.name, newVals);
+                            }}
+                            className="absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+
+                          <div className="flex items-center gap-3 pr-8">
+                            {/* Color swatch preview */}
+                            <div className={`w-10 h-10 rounded-full shadow-inner flex-shrink-0 ${variant.colorClass || 'bg-gray-200'}`} />
+                            {/* Name input */}
+                            <input
+                              type="text"
+                              placeholder="Tên màu (VD: Xanh biển)"
+                              value={variant.name || ''}
+                              onChange={(e) => {
+                                const newVals = [...variants];
+                                newVals[idx] = { ...newVals[idx], name: e.target.value };
+                                handleChange(field.name, newVals);
+                              }}
+                              className="flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
+                            />
+                          </div>
+
+                          {/* Color class picker */}
+                          <div>
+                            <p className="text-xs text-gray-500 mb-2 font-medium">Chọn màu:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {COLOR_OPTIONS.map(opt => (
+                                <button
+                                  key={opt.cls}
+                                  type="button"
+                                  title={opt.label}
+                                  onClick={() => {
+                                    const newVals = [...variants];
+                                    newVals[idx] = { ...newVals[idx], colorClass: opt.cls };
+                                    handleChange(field.name, newVals);
+                                  }}
+                                  className={`w-7 h-7 rounded-full ${opt.cls} flex-shrink-0 transition-all ${
+                                    variant.colorClass === opt.cls
+                                      ? 'ring-2 ring-brand-600 ring-offset-2 scale-110'
+                                      : 'hover:scale-110 hover:ring-2 hover:ring-gray-300 hover:ring-offset-1'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Image upload */}
+                          <div>
+                            <p className="text-xs text-gray-500 mb-2 font-medium">Ảnh cho màu này:</p>
+                            <div className="flex gap-3 items-start">
+                              {variant.image && (
+                                <img src={variant.image} alt={variant.name} className="w-20 h-20 object-cover rounded-lg border shadow-sm flex-shrink-0" />
+                              )}
+                              <div className="flex-1 space-y-2">
+                                <input
+                                  type="text"
+                                  placeholder="URL ảnh..."
+                                  value={variant.image || ''}
+                                  onChange={(e) => {
+                                    const newVals = [...variants];
+                                    newVals[idx] = { ...newVals[idx], image: e.target.value };
+                                    handleChange(field.name, newVals);
+                                  }}
+                                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
+                                />
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                      const fileExt = file.name.split('.').pop();
+                                      const fileName = `${Math.random().toString(36).substring(2, 12)}_${Date.now()}.${fileExt}`;
+                                      const filePath = `products/variants/${fileName}`;
+                                      const { error } = await supabase.storage.from('public_assets').upload(filePath, file);
+                                      if (error) {
+                                        window.alert(`Lỗi upload: ${error.message}`);
+                                      } else {
+                                        const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+                                        const newVals = [...variants];
+                                        newVals[idx] = { ...newVals[idx], image: publicUrlData.publicUrl };
+                                        handleChange(field.name, newVals);
+                                      }
+                                    } catch (err) {
+                                      console.error('Lỗi xử lý ảnh variant', err);
+                                    }
+                                  }}
+                                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+
+                    {(!Array.isArray(val) || val.length === 0) && (
+                      <p className="text-xs text-gray-400 italic text-center py-4">Chưa có phân loại màu nào. Bấm "Thêm màu" để bắt đầu.</p>
+                    )}
                   </div>
                 ) : field.type === 'reviews_editor' ? (
                   <div className="space-y-4 border p-4 rounded-lg bg-gray-50">
@@ -698,6 +833,7 @@ const CategoriesProductsManager = () => {
     { name: 'name', label: 'Tên Sản phẩm', type: 'text' },
     { name: 'tag', label: 'Thẻ nổi bật (VD: Bán chạy)', type: 'text' },
     { name: 'image', label: 'Ảnh Chính (URL) (Khuyên dùng: Tỷ lệ 1:1 vuông, 600x600px)', type: 'image' },
+    { name: 'variants', label: 'Phân loại màu sắc & Ảnh riêng theo màu', type: 'variants' },
     { name: 'features', label: 'Đặc điểm nổi bật (Mỗi dòng 1 cái)', type: 'array' },
     { name: 'mainUses', label: 'Công dụng chính (Mỗi dòng 1 cái)', type: 'array' },
     { name: 'ingredients', label: 'Thành phần (Mỗi dòng 1 cái)', type: 'array' },
@@ -705,6 +841,7 @@ const CategoriesProductsManager = () => {
     { name: 'specs', label: 'Thông số kỹ thuật', type: 'text' },
     { name: 'reviews', label: 'Đánh giá khách hàng', type: 'reviews_editor' }
   ];
+
 
   if (loading) return <AdminLoadingSkeleton />;
 

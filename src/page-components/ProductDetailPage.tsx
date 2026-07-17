@@ -15,6 +15,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -42,7 +43,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
     window.scrollTo(0, 0);
 
     const handleUpdate = () => {
-      fetchProduct();
+      setForceRefresh(v => v + 1);
     };
     if (typeof window !== 'undefined') {
       window.addEventListener('localDB_updated', handleUpdate);
@@ -52,7 +53,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
         window.removeEventListener('localDB_updated', handleUpdate);
       }
     };
-  }, [id]);
+  }, [id, forceRefresh]);
 
   const hasVariants = product?.variants && product.variants.length > 0;
 

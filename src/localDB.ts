@@ -76,7 +76,10 @@ export const getDocs = async (collectionRef: any) => {
       const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
       // Skip cache if admin is logged in, to always see fresh data
       const isAdmin = localStorage.getItem('auth_user') !== null;
-      if (!isAdmin && cachedTime && Date.now() - parseInt(cachedTime) < CACHE_TTL) {
+      // Also skip cache if data was invalidated after cache was written (admin saved from another tab)
+      const invalidatedAt = localStorage.getItem('supabase_cache_invalidated_at');
+      const cacheIsStale = invalidatedAt && cachedTime && parseInt(invalidatedAt) > parseInt(cachedTime);
+      if (!isAdmin && !cacheIsStale && cachedTime && Date.now() - parseInt(cachedTime) < CACHE_TTL) {
         const cachedData = localStorage.getItem(CACHE_KEY);
         if (cachedData) {
           data = JSON.parse(cachedData);
@@ -176,10 +179,13 @@ export const setDoc = async (docRef: any, data: any, options?: any) => {
   }
   
   if (typeof window !== 'undefined') {
+    const now = Date.now().toString();
     localStorage.removeItem('supabase_cache_' + docRef.path);
     localStorage.removeItem('supabase_cache_time_' + docRef.path);
+    // Broadcast invalidation timestamp so all tabs know cache is stale
+    localStorage.setItem('supabase_cache_invalidated_at', now);
     window.dispatchEvent(new Event('localDB_updated'));
-    localStorage.setItem('localDB_updated_event', Date.now().toString());
+    localStorage.setItem('localDB_updated_event', now);
   }
   
   // Xóa cache của Next.js khi upload ảnh / lưu thay đổi để CDN + server cập nhật data mới.
@@ -216,10 +222,12 @@ export const deleteDoc = async (docRef: any) => {
   }
   
   if (typeof window !== 'undefined') {
+    const now = Date.now().toString();
     localStorage.removeItem('supabase_cache_' + docRef.path);
     localStorage.removeItem('supabase_cache_time_' + docRef.path);
+    localStorage.setItem('supabase_cache_invalidated_at', now);
     window.dispatchEvent(new Event('localDB_updated'));
-    localStorage.setItem('localDB_updated_event', Date.now().toString());
+    localStorage.setItem('localDB_updated_event', now);
   }
   
   try {

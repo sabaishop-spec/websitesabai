@@ -129,6 +129,7 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
 export default function Products() {
   const { t } = useTranslation();
   const [categories, setCategories] = useState<any[]>([]);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -156,7 +157,7 @@ export default function Products() {
     fetchCats();
 
     const handleUpdate = () => {
-      fetchCats();
+      setForceRefresh(v => v + 1);
     };
     if (typeof window !== 'undefined') {
       window.addEventListener('localDB_updated', handleUpdate);
@@ -166,7 +167,7 @@ export default function Products() {
         window.removeEventListener('localDB_updated', handleUpdate);
       }
     };
-  }, []);
+  }, [forceRefresh]);
 
   return (
     <section className="py-24 bg-brand-50 relative" id="products">
