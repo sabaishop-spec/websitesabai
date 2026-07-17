@@ -319,6 +319,21 @@ const ItemModal = ({ item, fields, onSave, onClose, isProduct = false }: any) =>
                             />
                           </div>
 
+                          {/* Variant Description */}
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1 font-medium">Mô tả riêng cho màu này (không bắt buộc):</p>
+                            <textarea
+                              placeholder="Nội dung/mô tả sản phẩm khi chọn màu này..."
+                              value={variant.description || ''}
+                              onChange={(e) => {
+                                const newVals = [...variants];
+                                newVals[idx] = { ...newVals[idx], description: e.target.value };
+                                handleChange(field.name, newVals);
+                              }}
+                              className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 h-20"
+                            />
+                          </div>
+
                           {/* Color class picker */}
                           <div>
                             <p className="text-xs text-gray-500 mb-2 font-medium">Chọn màu:</p>

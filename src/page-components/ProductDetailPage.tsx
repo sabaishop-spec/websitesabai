@@ -144,8 +144,15 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
             )}
 
             {hasVariants && product.variants && (
-              <div className="p-4 bg-brand-50 rounded-xl">
+              <div className="p-4 bg-brand-50 rounded-xl space-y-2">
                 <p className="text-brand-800 font-medium">{t("Đang chọn:")} <span className="font-bold">{t(product.variants[safeVariantIndex]?.name)}</span></p>
+                {product.variants[safeVariantIndex]?.description && (
+                  <div className="pt-2 border-t border-brand-100/50">
+                    <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                      {t(product.variants[safeVariantIndex].description)}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
