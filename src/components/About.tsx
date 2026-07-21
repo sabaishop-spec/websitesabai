@@ -232,7 +232,7 @@ export default function About() {
               transition={{ delay: 0.8, duration: 0.8 }}
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] px-4 opacity-30 pointer-events-none"
             >
-               <img src={content.hero.image} alt="Hero image" className="w-full h-auto max-h-[35vh] object-cover rounded-t-[40px] md:rounded-t-[80px]" />
+               <img src={content.hero.image} alt="Hero image" loading="eager" fetchPriority="high" decoding="async" className="w-full h-auto max-h-[35vh] object-cover rounded-t-[40px] md:rounded-t-[80px]" />
             </motion.div>
          )}
        </section>
@@ -280,7 +280,7 @@ export default function About() {
                 initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
                 className="w-full aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
               >
-                <img src={content.story.image} alt="Câu chuyện FURANO" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={content.story.image} alt="Câu chuyện FURANO" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
               </motion.div>
               
               {/* Quote positioned below the image */}
@@ -355,7 +355,7 @@ export default function About() {
             className="w-full md:w-1/2 relative"
           >
             <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative z-10">
-              <img src={content.team.image} alt={content.team.title} className="w-full h-full object-cover" />
+              <img src={content.team.image} alt={content.team.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             </div>
             <div className="absolute -bottom-8 -right-8 w-2/3 aspect-square bg-brand-50 rounded-[40px] -z-10"></div>
           </motion.div>
@@ -524,7 +524,7 @@ export default function About() {
                transition={{ duration: 0.8 }}
                className="aspect-[4/3] rounded-[40px] overflow-hidden shadow-2xl"
              >
-                <img src={content.science.image} alt="Phát triển sản phẩm FURANO" className="w-full h-full object-cover" />
+                <img src={content.science.image} alt="Phát triển sản phẩm FURANO" loading="lazy" decoding="async" className="w-full h-full object-cover" />
              </motion.div>
           </div>
           <div className="flex-1 w-full order-1 xl:order-2">
@@ -664,7 +664,7 @@ export default function About() {
                 transition={{ duration: 0.8 }}
                 className="bg-brand-100 rounded-[40px] overflow-hidden aspect-square lg:aspect-[4/5] flex items-center justify-center relative"
               >
-                 <img src="/images/furano-lab.png" alt="Office" className="absolute inset-0 w-full h-full object-cover grayscale opacity-20" />
+                 <img src="/images/furano-lab.png" alt="Office" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover grayscale opacity-20" />
                  <span className="relative z-10 text-brand-900/40 font-serif italic text-3xl">Bản đồ FURANO</span>
               </motion.div>
            </div>

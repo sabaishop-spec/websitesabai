@@ -67,6 +67,8 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
               key={currentImage}
               src={currentImage}
               alt={t(product.name)}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               onError={() => setImgError(true)}
             />

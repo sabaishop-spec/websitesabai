@@ -120,6 +120,9 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
                 key={currentImage}
                 src={currentImage || undefined}
                 alt={product.name}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover mix-blend-multiply rounded-2xl"
               />
             </div>

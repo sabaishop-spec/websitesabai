@@ -55,15 +55,17 @@ export default function AdminAboutManager() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       await setDoc(doc(db, 'settings', 'about'), data, { merge: true });
       alert("Đã lưu nội dung trang Giới Thiệu!");
-    } catch (e) {
-      alert("Lỗi khi lưu");
+    } catch (e: any) {
+      const msg = e?.message || e?.details || JSON.stringify(e);
+      alert(`Lỗi khi lưu: ${msg}`);
+      console.error("Save About error:", e);
     } finally {
       setSaving(false);
     }
   };
+
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     const file = e.target.files?.[0];

@@ -67,7 +67,7 @@ const setMemData = (path: string, data: any[]) => {
 export const getDocs = async (collectionRef: any) => {
   const CACHE_KEY = 'supabase_cache_' + collectionRef.path;
   const CACHE_TIME_KEY = 'supabase_cache_time_' + collectionRef.path;
-  const CACHE_TTL = 1000 * 60 * 60; // 1 hour
+  const CACHE_TTL = 1000 * 60 * 10; // 10 minutes (reduced from 1 hour for freshness)
 
   let data: any[] = [];
   if (HAS_SUPABASE) {
