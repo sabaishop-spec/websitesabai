@@ -17,7 +17,9 @@ export default function About() {
       try {
         const snap = await getDoc(doc(db, 'settings', 'about'));
         if (snap.exists()) {
-          setData(snap.data());
+          const raw = snap.data();
+          // Data is stored in the `content` JSONB column
+          setData(raw?.content || raw);
         }
         const snapSettings = await getDoc(doc(db, 'settings', 'site'));
         if (snapSettings.exists()) {

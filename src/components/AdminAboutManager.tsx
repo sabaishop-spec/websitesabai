@@ -37,7 +37,12 @@ export default function AdminAboutManager() {
       try {
         const snap = await getDoc(doc(db, 'settings', 'about'));
         if (snap.exists()) {
-          setData(snap.data());
+          // Data is stored in the `content` JSONB column
+          const raw = snap.data();
+          const loaded = raw?.content || raw;
+          if (loaded && typeof loaded === 'object') {
+            setData((prev: any) => ({ ...prev, ...loaded }));
+          }
         }
       } catch (err) {
         // console.error(err);
@@ -55,7 +60,8 @@ export default function AdminAboutManager() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await setDoc(doc(db, 'settings', 'about'), data, { merge: true });
+      // Store all About data inside the `content` JSONB column
+      await setDoc(doc(db, 'settings', 'about'), { content: data }, { merge: true });
       alert("Đã lưu nội dung trang Giới Thiệu!");
     } catch (e: any) {
       const msg = e?.message || e?.details || JSON.stringify(e);
