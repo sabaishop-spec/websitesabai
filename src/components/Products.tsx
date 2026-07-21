@@ -30,17 +30,20 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
   const [imgError, setImgError] = useState(false);
 
   // Reset image error state when variant changes
-  useEffect(() => {
-    setImgError(false);
-  }, [selectedVariant]);
+  // (removed – now handled by currentImage effect below)
 
   const safeVariantIndex = useMemo(() => {
     if (!hasVariants || !product.variants) return 0;
     return selectedVariant >= 0 && selectedVariant < product.variants.length ? selectedVariant : 0;
   }, [selectedVariant, hasVariants, product.variants]);
 
+  // Fallback: if variant has no image, use the product's main image
   const currentImage = (hasVariants && product.variants && product.variants[safeVariantIndex]?.image) || product.image;
 
+  // Reset error state whenever the resolved image URL changes (variant switch or admin update)
+  useEffect(() => {
+    setImgError(false);
+  }, [currentImage]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -61,6 +64,7 @@ function ProductCard({ product, index = 0 }: { product: ProductDetail; index?: n
         <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 mb-3 flex-shrink-0">
           {!imgError && currentImage ? (
             <img
+              key={currentImage}
               src={currentImage}
               alt={t(product.name)}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
