@@ -185,7 +185,7 @@ export default function About() {
     <div className="bg-white selection:bg-brand-100 selection:text-brand-950 font-sans overflow-hidden">
       
       {/* 1. Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-brand-50 pt-20 pb-32">
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-brand-50 pt-32 pb-0">
         {/* Massive background text */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
@@ -198,7 +198,7 @@ export default function About() {
           </h1>
         </motion.div>
         
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex-1 flex flex-col justify-center mt-10">
           <motion.span 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
             className="inline-block py-2 px-6 rounded-full bg-brand-950 text-white text-xs font-bold tracking-widest uppercase mb-8 shadow-sm"
@@ -217,7 +217,7 @@ export default function About() {
           >
             {content.hero.desc}
           </motion.p>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mb-12">
               <a href="#story" className="inline-flex flex-col items-center gap-4 text-brand-900 hover:text-brand-600 transition-colors group">
                 <span className="text-sm uppercase tracking-widest font-bold">Khám phá</span>
                 <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center">
@@ -232,9 +232,9 @@ export default function About() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] px-4 opacity-30 pointer-events-none"
+              className="relative z-20 w-full max-w-[1200px] px-4 mx-auto"
             >
-               <img src={content.hero.image} alt="Hero image" loading="eager" fetchPriority="high" decoding="async" className="w-full h-auto max-h-[35vh] object-cover rounded-t-[40px] md:rounded-t-[80px]" />
+               <img src={content.hero.image} alt="Hero image" loading="eager" fetchPriority="high" decoding="async" className="w-full h-auto max-h-[45vh] lg:max-h-[55vh] object-cover rounded-t-[40px] md:rounded-t-[80px] shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.15)]" />
             </motion.div>
          )}
        </section>
@@ -243,13 +243,13 @@ export default function About() {
       <section id="story" className="relative bg-white py-16 md:py-32 rounded-t-[40px] md:rounded-t-[80px] -mt-12 z-20 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-0 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
             
-            {/* Left Content Card - Overlaps Image */}
-            <div className="md:col-start-1 md:col-end-8 lg:col-end-6 md:row-start-1 z-20 order-2 md:order-1">
+            {/* Left Content Card */}
+            <div className="z-20 order-2 md:order-1">
               <motion.div 
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                className="bg-white md:rounded-[40px] md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] md:p-12 lg:p-16 relative"
+                className="bg-white md:rounded-[40px] md:shadow-sm md:p-8 lg:p-12 relative"
               >
                 {/* Decorative background element */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-[80px] md:rounded-tr-[40px] -z-10 hidden md:block"></div>
@@ -276,8 +276,8 @@ export default function About() {
               </motion.div>
             </div>
 
-            {/* Right Image - Overlapped by text */}
-            <div className="md:col-start-6 lg:col-start-5 md:col-end-13 md:row-start-1 z-10 relative order-1 md:order-2 mb-4 md:mb-0 flex flex-col md:items-end">
+            {/* Right Image */}
+            <div className="z-10 relative order-1 md:order-2 flex flex-col md:items-end">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
                 className="w-full aspect-square md:aspect-[4/3] lg:aspect-[16/10] rounded-[40px] overflow-hidden shadow-2xl relative"
@@ -288,7 +288,7 @@ export default function About() {
               {/* Quote positioned below the image */}
               <motion.div 
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
-                className="bg-brand-950 text-white p-6 md:p-8 lg:p-10 rounded-[24px] md:rounded-[30px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] w-full md:max-w-[400px] z-30 mt-6 md:mt-[-60px] md:mr-8 lg:mr-12 relative border border-brand-800/50 overflow-hidden"
+                className="bg-brand-950 text-white p-6 md:p-8 lg:p-10 rounded-[24px] md:rounded-[30px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] w-full md:max-w-[400px] z-30 mt-6 relative border border-brand-800/50 overflow-hidden"
               >
                 <svg className="absolute -top-2 -right-2 w-20 h-20 md:w-24 md:h-24 text-brand-800/30" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
                 <p className="text-lg lg:text-xl font-serif italic leading-relaxed text-white relative z-10">"{content.story.quote}"</p>
