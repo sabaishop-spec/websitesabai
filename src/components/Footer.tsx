@@ -1,5 +1,5 @@
 'use client';
-import { Facebook, Instagram, Phone, Mail, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Phone, Mail, MapPin, ArrowRight, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import FuranoLogo from './FuranoLogo';
@@ -27,82 +27,147 @@ export default function Footer() {
   const { t } = useTranslation();
   const settings = useSiteSettings();
 
-  return (
-    <footer className="bg-brand-50 text-gray-600 pt-20 pb-10 border-t border-brand-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+  const socialLinks = [
+    { href: settings.facebookLink && settings.facebookLink !== "" ? settings.facebookLink : "https://www.facebook.com/SabaiCare79", icon: Facebook, label: "Facebook", hoverBg: "hover:bg-[#1877F2]" },
+    { href: settings.tiktokLink || "https://tiktok.com", icon: TiktokIcon, label: "TikTok", hoverBg: "hover:bg-black" },
+    { href: settings.zaloLink || "https://zalo.me/0869857395", icon: ZaloIcon, label: "Zalo", hoverBg: "hover:bg-[#0068FF]" },
+    { href: settings.shopeeLink || "https://shopee.vn/sabaicare", icon: ShopeeIcon, label: "Shopee", hoverBg: "hover:bg-[#EE4D2D]" },
+  ];
 
-          {/* Brand Info */}
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center mb-6">
-              <FuranoLogo className="w-auto h-12" />
+  const supportLinks = [
+    { href: "/shipping-policy", label: "Chính sách vận chuyển" },
+    { href: "/return-policy", label: "Chính sách đổi trả & hoàn tiền" },
+    { href: "/privacy-policy", label: "Chính sách bảo mật thông tin" },
+    { href: "/shopping-guide", label: "Hướng dẫn mua hàng" },
+    { href: "/order-tracking", label: "Tra cứu đơn hàng" },
+  ];
+
+  const productLinks = [
+    { href: "/products", label: "Chăm sóc khi niềng" },
+    { href: "/products", label: "Chăm sóc sau niềng (duy trì)" },
+    { href: "/products", label: "Trắng răng & khử mùi" },
+  ];
+
+  return (
+    <footer className="bg-brand-950 text-white relative overflow-hidden">
+      {/* Decorative top border */}
+      <div className="h-1 w-full bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600" />
+
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-20 pb-12">
+        {/* Top Section: Brand + Social */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-16">
+          
+          {/* Brand Column - Takes more space */}
+          <div className="lg:col-span-5">
+            <Link href="/" className="inline-flex items-center mb-8 group">
+              <FuranoLogo className="w-auto h-14 brightness-0 invert group-hover:opacity-80 transition-opacity" />
             </Link>
-            <p className="text-sm leading-relaxed mb-6">
+            <p className="text-base leading-relaxed text-brand-100/70 mb-10 max-w-md">
               {t(settings.footerDescription || "Thương hiệu dược mỹ phẩm hàng đầu cung cấp giải pháp chăm sóc toàn diện chuẩn y khoa thiết kế riêng cho người niềng răng tại Việt Nam.")}
             </p>
-            <div className="flex gap-4">
-              <a href={settings.facebookLink && settings.facebookLink !== "" ? settings.facebookLink : "https://www.facebook.com/SabaiCare79"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href={settings.tiktokLink || "https://tiktok.com"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-brand-600 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
-                <TiktokIcon className="w-5 h-5" />
-              </a>
-              <a href={settings.zaloLink || "https://zalo.me/0869857395"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
-                <ZaloIcon className="w-5 h-5" />
-              </a>
-              <a href={settings.shopeeLink || "https://shopee.vn/sabaicare"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white hover:bg-[#EE4D2D] hover:text-white flex items-center justify-center transition-colors text-gray-500 shadow-sm">
-                <ShopeeIcon className="w-6 h-6" />
-              </a>
+            
+            {/* Social Icons */}
+            <div className="flex gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-12 h-12 rounded-xl bg-white/10 ${social.hoverBg} hover:text-white flex items-center justify-center transition-all duration-300 text-brand-100/60 hover:scale-105 hover:shadow-lg`}
+                  title={social.label}
+                >
+                  <social.icon className="w-5 h-5" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Liên Hệ")}</h4>
-            <ul className="space-y-4 text-sm">
-              <li className="flex gap-3">
-                <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
-                <span>{t(settings.address || "Chung cư Hoàng Dương, Số 50, Ngõ 83, đường Ngọc Hồi, Yên Sở, Hà Nội")}</span>
-              </li>
-              <li className="flex gap-3 items-center">
-                <Phone className="w-5 h-5 text-gray-400 shrink-0" />
-                <span>{settings.phone || "0869857395"}</span>
-              </li>
-              <li className="flex gap-3 items-center">
-                <Mail className="w-5 h-5 text-gray-400 shrink-0" />
-                <span>{settings.email || "cskh@sabaicare.vn"}</span>
-              </li>
-            </ul>
-          </div>
+          {/* Links Columns */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-12">
+            {/* Contact Info */}
+            <div>
+              <h4 className="text-sm font-bold tracking-widest uppercase text-brand-300 mb-6">{t("Liên Hệ")}</h4>
+              <ul className="space-y-5">
+                <li className="flex gap-3 items-start group">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
+                    <MapPin className="w-4 h-4 text-brand-400" />
+                  </div>
+                  <span className="text-sm text-brand-100/70 leading-relaxed">{t(settings.address || "Chung cư Hoàng Dương, Số 50, Ngõ 83, đường Ngọc Hồi, Yên Sở, Hà Nội")}</span>
+                </li>
+                <li className="flex gap-3 items-center group">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
+                    <Phone className="w-4 h-4 text-brand-400" />
+                  </div>
+                  <span className="text-sm text-brand-100/70">{settings.phone || "0869857395"}</span>
+                </li>
+                <li className="flex gap-3 items-center group">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
+                    <Mail className="w-4 h-4 text-brand-400" />
+                  </div>
+                  <span className="text-sm text-brand-100/70">{settings.email || "cskh@sabaicare.vn"}</span>
+                </li>
+              </ul>
+            </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Hỗ Trợ Khách Hàng")}</h4>
-            <ul className="space-y-3 text-sm flex flex-col">
-              <li><Link href="/shipping-policy" className="hover:text-brand-800 transition-colors">{t("Chính sách vận chuyển")}</Link></li>
-              <li><Link href="/return-policy" className="hover:text-brand-800 transition-colors">{t("Chính sách đổi trả & hoàn tiền")}</Link></li>
-              <li><Link href="/privacy-policy" className="hover:text-brand-800 transition-colors">{t("Chính sách bảo mật thông tin")}</Link></li>
-              <li><Link href="/shopping-guide" className="hover:text-brand-800 transition-colors">{t("Hướng dẫn mua hàng")}</Link></li>
-              <li><Link href="/order-tracking" className="hover:text-brand-800 transition-colors">{t("Tra cứu đơn hàng")}</Link></li>
-            </ul>
-          </div>
+            {/* Customer Support */}
+            <div>
+              <h4 className="text-sm font-bold tracking-widest uppercase text-brand-300 mb-6">{t("Hỗ Trợ")}</h4>
+              <ul className="space-y-4">
+                {supportLinks.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link href={link.href} className="text-sm text-brand-100/70 hover:text-white transition-colors flex items-center gap-2 group">
+                      <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-brand-400" />
+                      {t(link.label)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Products */}
-          <div>
-            <h4 className="text-brand-950 font-bold mb-6 text-lg">{t("Sản Phẩm")}</h4>
-            <ul className="space-y-3 text-sm flex flex-col">
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc khi niềng")}</Link></li>
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Chăm sóc sau niềng (duy trì)")}</Link></li>
-              <li><Link href="/products" className="hover:text-brand-800 transition-colors">{t("Trắng răng & khử mùi")}</Link></li>
-            </ul>
+            {/* Products */}
+            <div>
+              <h4 className="text-sm font-bold tracking-widest uppercase text-brand-300 mb-6">{t("Sản Phẩm")}</h4>
+              <ul className="space-y-4">
+                {productLinks.map((link, i) => (
+                  <li key={i}>
+                    <Link href={link.href} className="text-sm text-brand-100/70 hover:text-white transition-colors flex items-center gap-2 group">
+                      <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-brand-400" />
+                      {t(link.label)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              
+              {/* Quick Action */}
+              <div className="mt-8">
+                <Link 
+                  href="/about" 
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-brand-400 hover:text-brand-300 transition-colors group"
+                >
+                  {t("Về Furano")}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </div>
           </div>
-
         </div>
 
-        <div className="pt-8 border-t border-brand-200 flex flex-col md:flex-row justify-center items-center gap-4 text-xs text-gray-500">
-          <p>&copy; {new Date().getFullYear()} {t("CÔNG TY TNHH FURANO VN. All rights reserved.")}</p>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-brand-100/40">
+            &copy; {new Date().getFullYear()} {t("CÔNG TY TNHH FURANO VN. All rights reserved.")}
+          </p>
+          <p className="text-sm text-brand-100/40 flex items-center gap-1.5">
+            Made with <Heart className="w-3.5 h-3.5 text-red-400 fill-red-400" /> in Vietnam
+          </p>
         </div>
       </div>
+
+      {/* Decorative background elements */}
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-900/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-brand-800/20 rounded-full blur-[100px] pointer-events-none" />
     </footer>
   );
 }

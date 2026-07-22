@@ -896,6 +896,62 @@ const CategoriesProductsManager = () => {
                  <h3 className="text-xl font-bold">Sản phẩm: {selectedCat.title}</h3>
                  <button onClick={() => setEditingProduct({})} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg flex items-center gap-2"><Plus className="w-4 h-4" /> Thêm SP</button>
                </div>
+
+               {/* Hero Image inline preview & quick upload */}
+               <div className="mb-6 border rounded-xl overflow-hidden bg-gray-50">
+                 <div className="flex items-center justify-between px-4 py-2 bg-gray-100 border-b">
+                   <span className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                     <ImageIcon className="w-4 h-4" /> Ảnh bìa danh mục (Hero Image)
+                   </span>
+                   <label className="px-3 py-1 text-xs bg-brand-600 text-white rounded-lg cursor-pointer hover:bg-brand-700 flex items-center gap-1.5 font-semibold">
+                     <ImageIcon className="w-3.5 h-3.5" /> Đổi ảnh
+                     <input
+                       type="file"
+                       accept="image/*"
+                       className="hidden"
+                       onChange={async (e) => {
+                         const file = e.target.files?.[0];
+                         if (!file) return;
+                         try {
+                           const fileExt = file.name.split('.').pop();
+                           const fileName = `hero_${selectedCat.id}_${Date.now()}.${fileExt}`;
+                           const filePath = `products/hero/${fileName}`;
+                           const { error } = await supabase.storage.from('public_assets').upload(filePath, file);
+                           if (error) {
+                             window.alert(`Lỗi upload: ${error.message}`);
+                           } else {
+                             const { data: publicUrlData } = supabase.storage.from('public_assets').getPublicUrl(filePath);
+                             await setDoc(doc(db, 'products', selectedCat.id), { ...selectedCat, heroImage: publicUrlData.publicUrl }, { merge: true });
+                             fetchCategories();
+                           }
+                         } catch (err) {
+                           console.error('Lỗi upload hero image', err);
+                         }
+                       }}
+                     />
+                   </label>
+                 </div>
+                 {selectedCat.heroImage ? (
+                   <div className="relative group">
+                     <img src={selectedCat.heroImage} alt="Hero" className="w-full h-32 object-cover" />
+                     <button
+                       onClick={async () => {
+                         if (!confirm("Xóa ảnh bìa?")) return;
+                         await setDoc(doc(db, 'products', selectedCat.id), { ...selectedCat, heroImage: '' }, { merge: true });
+                         fetchCategories();
+                       }}
+                       className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                     >
+                       <X className="w-3.5 h-3.5" />
+                     </button>
+                   </div>
+                 ) : (
+                   <div className="h-24 flex items-center justify-center text-gray-400 text-sm italic">
+                     Chưa có ảnh bìa. Bấm "Đổi ảnh" để thêm.
+                   </div>
+                 )}
+               </div>
+
                <div className="grid grid-cols-2 gap-4">
                   {selectedCat.products?.map((p: any) => (
                     <div key={p.id} onClick={() => setEditingProduct(p)} className="border rounded-xl p-3 flex gap-4 bg-white relative group cursor-pointer hover:border-brand-500 hover:shadow-md transition-all">
