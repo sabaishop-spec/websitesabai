@@ -303,42 +303,27 @@ export default function About() {
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
             <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <Link href="/about/su-menh" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">01</span>
               <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Sứ mệnh</h3>
                 <p className="text-gray-600 font-light text-xl leading-relaxed flex-grow">{content.missionVision.mission}</p>
-                <div className="mt-8 flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
-                  <span className="mr-2">Xem chi tiết</span>
-                  <ArrowDown className="w-5 h-5 -rotate-90" />
-                </div>
               </div>
             </motion.div>
             
             <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-24 flex flex-col">
-              <Link href="/about/tam-nhin" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">02</span>
               <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Tầm nhìn</h3>
                 <p className="text-gray-600 font-light text-xl leading-relaxed flex-grow">{content.missionVision.vision}</p>
-                <div className="mt-8 flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
-                  <span className="mr-2">Xem chi tiết</span>
-                  <ArrowDown className="w-5 h-5 -rotate-90" />
-                </div>
               </div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="bg-white p-12 md:p-16 rounded-[40px] shadow-sm relative overflow-hidden group hover:shadow-2xl transition-all duration-500 lg:translate-y-48 flex flex-col">
-              <Link href="/about/triet-ly" className="absolute inset-0 z-20"></Link>
               <span className="absolute -right-8 -top-12 text-[200px] font-black text-brand-50/50 group-hover:text-brand-100 transition-colors pointer-events-none select-none">03</span>
               <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-4xl font-serif text-brand-950 mb-8">Triết lý</h3>
                 <p className="text-gray-600 font-light text-xl leading-relaxed mb-8 flex-grow">{content.missionVision.philosophy}</p>
-                <p className="font-serif text-brand-600 text-2xl leading-relaxed mb-8">"{content.missionVision.philosophyHighlight}"</p>
-                <div className="mt-auto flex items-center text-brand-600 font-medium group-hover:text-brand-700 transition-colors">
-                  <span className="mr-2">Xem chi tiết</span>
-                  <ArrowDown className="w-5 h-5 -rotate-90" />
-                </div>
+                <p className="font-serif text-brand-600 text-2xl leading-relaxed">"{content.missionVision.philosophyHighlight}"</p>
               </div>
             </motion.div>
           </div>
