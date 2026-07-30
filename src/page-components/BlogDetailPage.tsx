@@ -139,10 +139,25 @@ export default function BlogDetailPage({ initialPost }: { initialPost?: any }) {
               return validBlocks.length > 0 ? (
                  <BlockRenderer blocks={validBlocks} showTOC={post.showTOC} />
               ) : (
-                 <div 
-                   className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown"
-                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getLocalized('content') || '', { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling'] }) }}
-                 />
+                 (() => {
+                   const rawContent = getLocalized('content') || '';
+                   // Detect if content is markdown (has ## headers, **bold**, - lists etc.)
+                   const isMarkdown = /^#{1,6}\s|\*\*|^\s*[-*]\s|^\s*\d+\.\s/m.test(rawContent);
+                   
+                   if (isMarkdown) {
+                     return (
+                       <div className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700">
+                         <ReactMarkdown>{rawContent}</ReactMarkdown>
+                       </div>
+                     );
+                   }
+                   return (
+                     <div 
+                       className="prose prose-lg md:prose-xl prose-brand max-w-none text-gray-700 view-markdown"
+                       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rawContent, { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling'] }) }}
+                     />
+                   );
+                 })()
               );
             })()}
 
