@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   let { data: post, error } = await query.limit(1).maybeSingle();
 
   if (error) {
-    console.error('Error fetching blog post metadata:', error);
+    console.warn('Warning fetching blog post metadata (falling back to static):', error.message);
   }
 
   if (!post) {
@@ -80,7 +80,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   let { data: post, error } = await query.limit(1).maybeSingle();
 
   if (error) {
-    console.error('Error fetching blog post:', error);
+    console.warn('Warning fetching blog post (falling back to static):', error.message);
   }
 
   if (!post) {
