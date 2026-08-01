@@ -79,7 +79,7 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
         ) : (
            <>
             {/* Featured Post + Recent Posts Layout */}
-            {filteredPosts.length > 0 && (
+            {!selectedCategory && filteredPosts.length > 0 && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
                 {/* Featured Post - Large */}
                 <Link href={`/blog/${filteredPosts[0].slug || filteredPosts[0].id}`} className="lg:col-span-7 block group cursor-pointer">
@@ -159,15 +159,15 @@ function BlogPageContent({ initialPosts, initialCategories }: { initialPosts: an
               </div>
             )}
 
-            {/* Remaining Posts Grid */}
-            {filteredPosts.length > 5 && (
+            {/* All Posts Grid */}
+            {filteredPosts.length > 0 && (
               <>
                 <div className="flex items-center gap-4 mb-8">
                   <h3 className="text-lg font-bold text-brand-950">{t("Tất cả bài viết")}</h3>
                   <div className="flex-1 h-px bg-gray-200" />
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredPosts.slice(5, visibleCount).map((post, index) => (
+                  {filteredPosts.slice(0, visibleCount).map((post, index) => (
                     <Link href={`/blog/${post.slug || post.id}`} key={post.id} className="block group cursor-pointer h-full">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
