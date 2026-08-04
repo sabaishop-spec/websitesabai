@@ -1,6 +1,52 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/src/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// Safely parse date strings (handling DD/MM/YYYY, Vietnamese 'Thg', and standard formats)
+// falling back to the current date if parsing fails.
+function parseDateSafely(dateStr: any): Date {
+  if (!dateStr) return new Date();
+  
+  // Try direct parsing first
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) {
+    return parsed;
+  }
+  
+  // Try custom parsing
+  try {
+    if (typeof dateStr === 'string') {
+      // Handle DD/MM/YYYY
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          const day = parts[0].padStart(2, '0');
+          const month = parts[1].padStart(2, '0');
+          const year = parts[2];
+          const test = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(test.getTime())) return test;
+        }
+      }
+      
+      // Handle "DD Thg MM, YYYY" (e.g. "05 Thg 6, 2026")
+      const match = dateStr.match(/(\d+)\s+Thg\s+(\d+),\s+(\d+)/i);
+      if (match) {
+        const day = match[1].padStart(2, '0');
+        const month = match[2].padStart(2, '0');
+        const year = match[3];
+        const test = new Date(`${year}-${month}-${day}`);
+        if (!isNaN(test.getTime())) return test;
+      }
+    }
+  } catch (e) {
+    // ignore parsing errors
+  }
+
+  return new Date(); // Safe fallback
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn';
 
@@ -61,49 +107,88 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch blog posts
-  const { data: posts } = await supabase
-    .from('blogPosts')
-    .select('id, slug, date')
-    .or('status.eq.published,status.is.null')
-    .is('deletedAt', null);
+  // Fetch blog posts safely
+  let posts: any[] = [];
+  try {
+    const { data, error } = await supabase
+      .from('blogPosts')
+      .select('id, slug, date')
+      .or('status.eq.published,status.is.null')
+      .is('deletedAt', null);
+      
+    if (!error && data) {
+      posts = data;
+    } else if (error) {
+      console.warn('Sitemap: Supabase query error for blog posts:', error.message);
+    }
+  } catch (err: any) {
+    console.error('Sitemap: Exception fetching blog posts:', err.message || err);
+  }
 
-  const postUrls: MetadataRoute.Sitemap = (posts || []).map((post) => ({
+  const postUrls: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug || post.id}`,
-    lastModified: post.date ? new Date(post.date) : new Date(),
+    lastModified: parseDateSafely(post.date),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
 
-  // Fallback to static posts if DB is empty
+  // Fallback to static posts if DB query yielded no results
   if (postUrls.length === 0) {
     try {
       const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
       const staticPostUrls: MetadataRoute.Sitemap = staticPosts.map((post) => ({
         url: `${baseUrl}/blog/${post.id}`,
-        lastModified: new Date(),
+        lastModified: parseDateSafely(post.date),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       }));
       postUrls.push(...staticPostUrls);
-    } catch (_) {
-      // silently ignore
+    } catch (e: any) {
+      console.error('Sitemap: Failed to load static posts fallback:', e.message || e);
     }
   }
 
-  // Fetch products
-  const { data: products } = await supabase
-    .from('products')
-    .select('id, slug')
-    .or('status.eq.published,status.is.null')
-    .is('deletedAt', null);
+  // Fetch products safely
+  let dbProducts: any[] = [];
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, slug')
+      .or('status.eq.published,status.is.null')
+      .is('deletedAt', null);
+      
+    if (!error && data) {
+      dbProducts = data;
+    } else if (error) {
+      console.warn('Sitemap: Supabase query error for products:', error.message);
+    }
+  } catch (err: any) {
+    console.error('Sitemap: Exception fetching products:', err.message || err);
+  }
 
-  const productUrls: MetadataRoute.Sitemap = (products || []).map((product) => ({
+  const productUrls: MetadataRoute.Sitemap = dbProducts.map((product) => ({
     url: `${baseUrl}/product/${product.slug || product.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
+
+  // Fallback to static products if DB query yielded no results
+  if (productUrls.length === 0) {
+    try {
+      const { categories: staticCats } = await import('@/src/data/products');
+      const staticProducts = staticCats.flatMap(cat => cat.products || []);
+      const staticProductUrls: MetadataRoute.Sitemap = staticProducts.map((prod) => ({
+        url: `${baseUrl}/product/${prod.id}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }));
+      productUrls.push(...staticProductUrls);
+    } catch (e: any) {
+      console.error('Sitemap: Failed to load static products fallback:', e.message || e);
+    }
+  }
 
   return [...staticPages, ...productUrls, ...postUrls];
 }
