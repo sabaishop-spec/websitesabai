@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title,
     description,
-    keywords: post.seoKeywords || post.tags?.join(', ') || 'nha khoa, chăm sóc răng miệng, furano, chỉnh nha, răng niềng, bàn chải kẽ, fluocaril',
+    keywords: post.seoKeywords || post.tags?.join(', ') || 'niềng răng, kem đánh răng cho người niềng răng, furano, chăm sóc răng niềng, bàn chải kẽ, nha khoa, chỉnh nha',
     alternates: {
       canonical: url,
     },
@@ -122,6 +122,31 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     }
   } : null;
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Trang Chủ',
+        item: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Góc Kiến Thức',
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: validPost?.title || 'Bài Viết',
+        item: url,
+      },
+    ],
+  };
+
   return (
     <MainLayout>
       {jsonLd && (
@@ -130,6 +155,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <BlogDetailPage initialPost={validPost} />
     </MainLayout>
   );

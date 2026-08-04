@@ -7,10 +7,10 @@ import { supabase } from '@/src/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-  let title = 'FURANO - Chuyên gia chăm sóc răng niềng';
-  let description = 'FURANO - Chuyên gia chăm sóc răng niềng';
+  let title = 'FURANO - Kem Đánh Răng & Chăm Sóc Răng Cho Người Niềng Răng';
+  let description = 'FURANO - Chuyên gia cung cấp kem đánh răng cho người niềng răng, bàn chải kẽ, nước súc miệng và sản phẩm chăm sóc răng niềng chuyên biệt.';
   let icon = '/favicon.svg';
-  let keywords = 'bàn chải kẽ, fluocaril, furano, nha khoa, răng niềng, chăm sóc răng miệng, chỉnh nha';
+  let keywords = 'furano, kem đánh răng cho người niềng răng, niềng răng, kem đánh răng niềng răng, bàn chải kẽ, nước súc miệng, sáp nha khoa, fluocaril, chăm sóc răng niềng, chỉnh nha, nha khoa, furano.vn';
 
   try {
     const { data } = await supabase
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: title,
-      template: `%s | ${title}`
+      template: `%s | FURANO - Chuyên Gia Chăm Sóc Răng Niềng`
     },
     description,
     keywords,
@@ -71,6 +71,21 @@ export async function generateMetadata(): Promise<Metadata> {
     formatDetection: {
       telephone: false,
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    authors: [{ name: 'FURANO', url: process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn' }],
+    creator: 'FURANO',
+    publisher: 'FURANO',
+    category: 'health',
     other: {
       // Geo Tags for Vietnam
       'geo.region': 'VN',

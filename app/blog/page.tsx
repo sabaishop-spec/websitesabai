@@ -5,20 +5,29 @@ import { supabase } from '@/src/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn';
+
 export const metadata: Metadata = {
-  title: 'Blog Kiến Thức Chỉnh Nha',
-  description: 'Khám phá các bài viết, chia sẻ kiến thức về chỉnh nha, chăm sóc răng niềng từ chuyên gia nha khoa FURANO.',
-  keywords: 'bàn chải kẽ, fluocaril, blog nha khoa, kiến thức chỉnh nha, chăm sóc răng niềng, furano, răng miệng',
+  title: 'Kiến Thức Niềng Răng & Chăm Sóc Răng Miệng Khi Niềng - FURANO Blog',
+  description:
+    'Tổng hợp kiến thức chuyên sâu về niềng răng, hướng dẫn chọn kem đánh răng cho người niềng răng, chế độ ăn, vệ sinh răng miệng khi niềng từ chuyên gia FURANO.',
+  keywords:
+    'niềng răng, kiến thức niềng răng, kem đánh răng cho người niềng răng, chăm sóc răng niềng, vệ sinh răng miệng khi niềng, bàn chải kẽ, invisalign, mắc cài, furano, blog nha khoa',
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog`,
+    canonical: `${baseUrl}/blog`,
   },
   openGraph: {
-    title: 'Blog Kiến Thức Chỉnh Nha - FURANO',
-    description: 'Khám phá các bài viết, chia sẻ kiến thức về chỉnh nha, chăm sóc răng niềng từ chuyên gia nha khoa FURANO.',
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog`,
+    title: 'Kiến Thức Niềng Răng & Chăm Sóc Răng Miệng Khi Niềng - FURANO Blog',
+    description:
+      'Tổng hợp kiến thức chuyên sâu về niềng răng, hướng dẫn chọn kem đánh răng cho người niềng răng từ chuyên gia FURANO.',
+    url: `${baseUrl}/blog`,
     siteName: 'FURANO',
     locale: 'vi_VN',
     type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -44,22 +53,42 @@ export default async function Page() {
     fetchedCategories = Array.from(new Set(fetchedPosts.map((p: any) => p.category)));
   }
 
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/blog`;
+  const url = `${baseUrl}/blog`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Blog Kiến Thức Chỉnh Nha - FURANO',
-    description: 'Khám phá các bài viết, chia sẻ kiến thức về chỉnh nha, chăm sóc răng niềng từ chuyên gia nha khoa FURANO.',
+    name: 'Kiến Thức Niềng Răng & Chăm Sóc Răng Miệng - FURANO Blog',
+    description:
+      'Tổng hợp kiến thức chuyên sâu về niềng răng, hướng dẫn chọn kem đánh răng cho người niềng răng từ chuyên gia FURANO.',
     url: url,
     publisher: {
       '@type': 'Organization',
       name: 'FURANO',
       logo: {
         '@type': 'ImageObject',
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn'}/logo.png`
-      }
-    }
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Trang Chủ',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Góc Kiến Thức Niềng Răng',
+        item: `${baseUrl}/blog`,
+      },
+    ],
   };
 
   return (
@@ -68,9 +97,13 @@ export default async function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogPage 
-        initialPosts={fetchedPosts} 
-        initialCategories={fetchedCategories} 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <BlogPage
+        initialPosts={fetchedPosts}
+        initialCategories={fetchedCategories}
       />
     </MainLayout>
   );
