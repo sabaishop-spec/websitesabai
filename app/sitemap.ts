@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
     {
       url: `${baseUrl}/products`,
@@ -112,7 +112,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const { data, error } = await supabase
       .from('blogPosts')
-      .select('id, slug, date')
+      .select('id, slug, date, image')
       .or('status.eq.published,status.is.null')
       .is('deletedAt', null);
       
@@ -125,23 +125,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: Exception fetching blog posts:', err.message || err);
   }
 
-  const postUrls: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug || post.id}`,
-    lastModified: parseDateSafely(post.date),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const postUrls: MetadataRoute.Sitemap = posts.map((post) => {
+    const imagesList = post.image ? [post.image] : [];
+    return {
+      url: `${baseUrl}/blog/${post.slug || post.id}`,
+      lastModified: parseDateSafely(post.date),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      images: imagesList,
+    };
+  });
 
   // Fallback to static posts if DB query yielded no results
   if (postUrls.length === 0) {
     try {
       const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
-      const staticPostUrls: MetadataRoute.Sitemap = staticPosts.map((post) => ({
-        url: `${baseUrl}/blog/${post.id}`,
-        lastModified: parseDateSafely(post.date),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-      }));
+      const staticPostUrls: MetadataRoute.Sitemap = staticPosts.map((post) => {
+        const imagesList = post.image ? [post.image] : [];
+        return {
+          url: `${baseUrl}/blog/${post.id}`,
+          lastModified: parseDateSafely(post.date),
+          changeFrequency: 'monthly' as const,
+          priority: 0.7,
+          images: imagesList,
+        };
+      });
       postUrls.push(...staticPostUrls);
     } catch (e: any) {
       console.error('Sitemap: Failed to load static posts fallback:', e.message || e);
@@ -153,7 +161,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('id, slug')
+      .select('id, slug, images')
       .or('status.eq.published,status.is.null')
       .is('deletedAt', null);
       
@@ -166,24 +174,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: Exception fetching products:', err.message || err);
   }
 
-  const productUrls: MetadataRoute.Sitemap = dbProducts.map((product) => ({
-    url: `${baseUrl}/product/${product.slug || product.id}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+  const productUrls: MetadataRoute.Sitemap = dbProducts.map((product) => {
+    let imagesList: string[] = [];
+    if (product.images && Array.isArray(product.images)) {
+      imagesList = product.images.filter((img: any) => typeof img === 'string' && img.startsWith('http'));
+    }
+    return {
+      url: `${baseUrl}/product/${product.slug || product.id}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+      images: imagesList,
+    };
+  });
 
   // Fallback to static products if DB query yielded no results
   if (productUrls.length === 0) {
     try {
       const { categories: staticCats } = await import('@/src/data/products');
       const staticProducts = staticCats.flatMap(cat => cat.products || []);
-      const staticProductUrls: MetadataRoute.Sitemap = staticProducts.map((prod) => ({
-        url: `${baseUrl}/product/${prod.id}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }));
+      const staticProductUrls: MetadataRoute.Sitemap = staticProducts.map((prod) => {
+        const imagesList = [prod.image, ...(prod.variants?.map(v => v.image) || [])].filter(Boolean) as string[];
+        return {
+          url: `${baseUrl}/product/${prod.id}`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.8,
+          images: imagesList,
+        };
+      });
       productUrls.push(...staticProductUrls);
     } catch (e: any) {
       console.error('Sitemap: Failed to load static products fallback:', e.message || e);
