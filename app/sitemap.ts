@@ -47,6 +47,18 @@ function parseDateSafely(dateStr: any): Date {
   return new Date(); // Safe fallback
 }
 
+// Escape special XML characters in URLs (& -> &amp;) to prevent XML parse errors
+function escapeXmlUrl(url: string): string {
+  if (!url) return '';
+  return url
+    .replace(/&amp;/g, '&')   // first normalize any already-escaped ampersands
+    .replace(/&/g, '&amp;')    // then escape all ampersands
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://furano.vn';
 
@@ -126,7 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const postUrls: MetadataRoute.Sitemap = posts.map((post) => {
-    const imagesList = post.image ? [post.image] : [];
+    const imagesList = post.image ? [escapeXmlUrl(post.image)] : [];
     return {
       url: `${baseUrl}/blog/${post.slug || post.id}`,
       lastModified: parseDateSafely(post.date),
@@ -141,7 +153,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
       const { blogPosts: staticPosts } = await import('@/src/data/blogPosts');
       const staticPostUrls: MetadataRoute.Sitemap = staticPosts.map((post) => {
-        const imagesList = post.image ? [post.image] : [];
+        const imagesList = post.image ? [escapeXmlUrl(post.image)] : [];
         return {
           url: `${baseUrl}/blog/${post.id}`,
           lastModified: parseDateSafely(post.date),
@@ -177,7 +189,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const productUrls: MetadataRoute.Sitemap = dbProducts.map((product) => {
     let imagesList: string[] = [];
     if (product.images && Array.isArray(product.images)) {
-      imagesList = product.images.filter((img: any) => typeof img === 'string' && img.startsWith('http'));
+      imagesList = product.images
+        .filter((img: any) => typeof img === 'string' && img.startsWith('http'))
+        .map((img: string) => escapeXmlUrl(img));
     }
     return {
       url: `${baseUrl}/product/${product.slug || product.id}`,
@@ -194,7 +208,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const { categories: staticCats } = await import('@/src/data/products');
       const staticProducts = staticCats.flatMap(cat => cat.products || []);
       const staticProductUrls: MetadataRoute.Sitemap = staticProducts.map((prod) => {
-        const imagesList = [prod.image, ...(prod.variants?.map(v => v.image) || [])].filter(Boolean) as string[];
+        const imagesList = [prod.image, ...(prod.variants?.map(v => v.image) || [])]
+          .filter(Boolean)
+          .map((img) => escapeXmlUrl(img as string));
         return {
           url: `${baseUrl}/product/${prod.id}`,
           lastModified: new Date(),
