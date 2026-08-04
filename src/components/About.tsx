@@ -425,7 +425,7 @@ export default function About() {
               </h2>
             </div>
             <div className="lg:w-3/5 space-y-8">
-              {content.commitments.map((item, idx) => (
+              {content.commitments.map((item: any, idx: number) => (
                 <motion.div 
                   key={idx}
                   initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ margin: "-10%" }}
@@ -455,7 +455,7 @@ export default function About() {
           </div>
           <div className="lg:w-2/3">
              <div className="flex flex-col">
-               {content.coreValues.map((val, idx) => (
+               {content.coreValues.map((val: any, idx: number) => (
                  <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="border-t border-brand-200 py-12 md:py-16 flex flex-col md:flex-row gap-8 md:gap-16 group">
                     <span className="text-2xl font-serif text-brand-300 md:w-16">0{idx + 1}</span>
                     <div>
@@ -557,7 +557,7 @@ export default function About() {
           <div className="hidden md:flex relative justify-between pt-12 pb-16">
              <div className="absolute top-16 left-0 w-full h-[2px] bg-brand-50 z-0"></div>
              
-             {content.journey.map((item, idx) => (
+             {content.journey.map((item: any, idx: number) => (
                <motion.div 
                  key={idx}
                  initial={{ opacity: 0, y: 30 }}
@@ -583,7 +583,7 @@ export default function About() {
           <div className="md:hidden flex flex-col relative pl-8 space-y-16">
              <div className="absolute top-4 bottom-4 left-[15px] w-[2px] bg-brand-50 z-0"></div>
              
-             {content.journey.map((item, idx) => (
+             {content.journey.map((item: any, idx: number) => (
                <motion.div 
                  key={idx}
                  initial={{ opacity: 0, x: -20 }}

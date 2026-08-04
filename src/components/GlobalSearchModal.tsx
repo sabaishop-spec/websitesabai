@@ -64,12 +64,12 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
     // 1. Search products
     const matchedProducts: any[] = [];
     categories.forEach(cat => {
-      cat.products.forEach(prod => {
+      cat.products.forEach((prod: any) => {
         if (
           prod.name.toLowerCase().includes(term) ||
-          prod.features?.some(f => f.toLowerCase().includes(term)) ||
-          prod.mainUses?.some(u => u.toLowerCase().includes(term)) ||
-          prod.ingredients?.some(i => i.toLowerCase().includes(term)) ||
+          prod.features?.some((f: string) => f.toLowerCase().includes(term)) ||
+          prod.mainUses?.some((u: string) => u.toLowerCase().includes(term)) ||
+          prod.ingredients?.some((i: string) => i.toLowerCase().includes(term)) ||
           cat.title.toLowerCase().includes(term)
         ) {
           matchedProducts.push({ ...prod, categoryName: cat.title });

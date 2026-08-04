@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '../localDB';
 import { compressImage } from '../lib/imageUtils';
+import { supabase } from '../lib/supabase';
 import { Pencil, Trash2, Plus, Image as ImageIcon, Check, X } from 'lucide-react';
 
 export default function AdminTestimonialsManager() {

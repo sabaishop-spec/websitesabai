@@ -137,7 +137,7 @@ export default function Header() {
                           <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/cat:opacity-100 group-hover/cat:translate-x-0 transition-all text-brand-800" />
                         </Link>
                         <div className="flex flex-col space-y-3">
-                          {category.products?.map(product => (
+                          {category.products?.map((product: any) => (
                             <Link
                               key={product.id}
                               href={`/product/${product.id}`}
@@ -275,7 +275,7 @@ export default function Header() {
                             {t(category.title)}
                           </Link>
                           <div className="flex flex-col space-y-2 pl-2">
-                            {category.products?.map(product => (
+                            {category.products?.map((product: any) => (
                               <Link
                                 key={product.id}
                                 onClick={() => setMobileMenuOpen(false)}
